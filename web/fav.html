@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>收藏 · SSD 情报日报</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SSD 日报">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<style>
+  :root{
+    --bg:#fbfbf9; --card:#fff; --fg:#191b1f; --muted:#525a66;
+    --line:#e7e4de; --accent:#0f766e; --warn:#b45309; --warn-bg:#fdf6e7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#111316; --card:#181b1f; --fg:#e8e9ea; --muted:#9098a3;
+           --line:#272b31; --accent:#5ec9bd; --warn:#e0a458; --warn-bg:#241d10; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:400 16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",
+         "Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 20px 72px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  header{padding:28px 0 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+          display:flex;justify-content:space-between;align-items:center}
+  .badge{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted);
+         letter-spacing:0;text-transform:none}
+  h1{font-size:22px;line-height:1.5;margin:10px 0 0;font-weight:650;letter-spacing:-.01em}
+  h2{font-size:13px;letter-spacing:.1em;color:var(--accent);margin:34px 0 12px;font-weight:650}
+  .point{padding:14px 0;border-bottom:1px solid var(--line)}
+  .point:last-child{border-bottom:none}
+  .pt-text{margin:0;font-size:16px}
+  .impact{margin:8px 0 0;font-size:14px;color:var(--muted);
+          padding-left:11px;border-left:2px solid var(--accent)}
+  .meta{margin:10px 0 0;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;
+        gap:8px;align-items:center}
+  .meta a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line);
+          display:inline-block;padding:4px 0}
+  .meta a:active{color:var(--accent)}
+  .tag{font-size:12px;padding:1px 7px;border-radius:4px;background:var(--line);color:var(--muted)}
+  .watch{background:var(--warn-bg);border-radius:10px;padding:14px 16px;margin-top:34px}
+  .watch h3{margin:0 0 8px;font-size:13px;color:var(--warn);letter-spacing:.06em}
+  .watch li{font-size:14px;margin:6px 0}
+  .watch ul{margin:0;padding-left:18px}
+  .price{margin-top:26px;font-size:13px;color:var(--muted);
+         padding:12px 14px;background:var(--card);border-radius:10px;border:1px solid var(--line)}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+         font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--muted)}
+  /* 归档 / 收藏两屏的列表行 */
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+       padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+  .row:last-child{border-bottom:none}
+  .row .day{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);flex:none}
+  .row .head{font-size:15px;line-height:1.55}
+  .row:active .head{color:var(--accent)}
+
+  :root{ --nav-h:56px; --safe:env(safe-area-inset-bottom,0px); }
+  body{ padding-bottom:calc(var(--nav-h) + var(--safe) + 28px) }
+  .nav{ position:fixed; left:0; right:0; bottom:0; z-index:50;
+        display:flex; background:var(--card); border-top:1px solid var(--line);
+        padding-bottom:var(--safe); }
+  .nav a{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+          padding:9px 0 8px; text-decoration:none; color:var(--muted);
+          font-size:12px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
+  .nav a.on{ color:var(--accent) }
+  .nav svg{ width:22px; height:22px; stroke:currentColor; fill:none;
+            stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
+  .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
+  .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
+        color:var(--muted); font-size:16px; line-height:1;
+        min-width:30px; min-height:30px; display:inline-flex;
+        align-items:center; justify-content:center;
+        -webkit-tap-highlight-color:transparent }
+  .fav[aria-pressed="true"]{ color:var(--accent) }
+  .empty{ color:var(--muted); font-size:14px; padding:28px 0 }
+
+  @media (prefers-color-scheme: dark){
+    .nav{ background:var(--card) }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">
+      <span>SSD 情报日报</span>
+      <span class="badge">本地保存</span>
+    </div>
+    <h1>收藏</h1>
+  </header>
+
+  <div id="fav-list"></div>
+
+  <footer>
+    <span>收藏只存在本机浏览器里，换设备或清缓存会丢</span>
+  </footer></div>
+<nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html" class="on"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
+
+<script>
+(function(){
+  var KEY = 'ssd.fav.v1';
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+  }
+  function save(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch(e){}
+  }
+  function mark(btn, on){
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? '★' : '☆';
+    btn.title = on ? '取消收藏' : '收藏';
+  }
+  function markAll(){
+    var saved = load().map(function(x){ return x.url; });
+    document.querySelectorAll('.fav').forEach(function(b){
+      mark(b, saved.indexOf(b.dataset.url || '') >= 0);
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('.fav') : null;
+    if (!btn) return;
+    e.preventDefault();
+    var url = btn.dataset.url || '';
+    if (!url) return;
+    var list = load();
+    var i = -1;
+    for (var k = 0; k < list.length; k++) if (list[k].url === url) { i = k; break; }
+    if (i >= 0) list.splice(i, 1);
+    else list.unshift({
+      url: url,
+      title: btn.dataset.title || '',
+      source: btn.dataset.source || '',
+      date: btn.dataset.date || ''
+    });
+    save(list);
+    mark(btn, i < 0);
+    // 在收藏页取消收藏时，把那条直接摘掉
+    if (i >= 0) {
+      var row = btn.closest('.point');
+      if (row && document.querySelector('#fav-list')) {
+        row.parentNode.removeChild(row);
+        if (!document.querySelector('#fav-list .point')) renderFav();
+      }
+    }
+  });
+
+  function esc(s){
+    return String(s || '').replace(/[<>&"]/g, function(c){
+      return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];
+    });
+  }
+
+  function renderFav(){
+    var list = document.querySelector('#fav-list');
+    if (!list) return;
+    var items = load();
+    if (!items.length){
+      list.innerHTML = '<p class="empty">还没有收藏。在今日日报里点条目右侧的 ☆ 就能存到这里。</p>';
+      return;
+    }
+    list.innerHTML = items.map(function(x){
+      return '<div class="point"><p class="pt-text">'
+        + '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">'
+        + esc(x.title || x.url) + '</a></p>'
+        + '<p class="meta"><span>' + esc(x.source) + ' · ' + esc(x.date) + '</span>'
+        + '<button class="fav" data-url="' + esc(x.url) + '" data-title="'
+        + esc(x.title) + '" data-source="' + esc(x.source) + '" data-date="'
+        + esc(x.date) + '" aria-pressed="true" title="取消收藏">★</button></p></div>';
+    }).join('');
+    markAll();
+  }
+
+  markAll();
+  renderFav();
+})();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker
+      .register('./sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>

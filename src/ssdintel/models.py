@@ -164,6 +164,23 @@ class Store:
         )
         self.conn.commit()
 
+    def list_reports(self, limit: int = 120) -> list[dict]:
+        """归档页用：最近几期的日期 + 标题（标题存在 payload 里）。"""
+        rows = self.conn.execute(
+            "SELECT date, json FROM reports ORDER BY date DESC LIMIT ?", (limit,)
+        ).fetchall()
+        out = []
+        for date, payload in rows:
+            try:
+                data = json.loads(payload or "{}")
+            except ValueError:
+                data = {}
+            out.append({
+                "date": date,
+                "headline": (data.get("headline") or "").strip(),
+            })
+        return out
+
     def stats(self) -> dict:
         c = self.conn.execute
         return {

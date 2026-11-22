@@ -56,7 +56,27 @@ start web\index.html
 
 这是 2026-11-22 的真实一轮：6 个 RSS 源 + 23 个公众号，784 篇公众号文章过闸门后只剩 32 条，最后日报里 33 条素材（含库里没超过 36 小时的）。**公众号的量很大、噪音也大**，闸门就是干这个的，别关。
 
-产出：`web/index.html`（今日）+ `web/d/2026-11-22.html`（归档）。
+产出是**三屏的 PWA**（不是单个网页）：
+
+| 页面 | 用途 |
+|---|---|
+| `web/index.html` | 今日日报（AI 摘要，每条可点 ☆ 收藏） |
+| `web/archive.html` | 归档列表，按日期回看任意一期 |
+| `web/fav.html` | 收藏夹（存在手机本地 localStorage，不上传） |
+| `web/d/<date>.html` | 每期日报的历史快照，从归档点进去 |
+
+底部固定导航（今日 / 归档 / 收藏）+ `manifest.webmanifest` + `apple-touch-icon`，
+所以在手机上「添加到主屏幕」之后是全屏、无地址栏、有图标的独立入口——
+用起来和 App 一样，只是不用上架、不用审核。
+
+**装到手机上**（各一次）：
+
+- iPhone：Safari 打开站点 → 分享 → 「添加到主屏幕」
+- Android：Chrome 打开 → 右上角 ⋮ → 「添加到主屏幕」/「安装应用」
+
+图标是 `icon.svg` 加 180/192/512 的 PNG（iOS 不认 SVG，必须 PNG），
+由 `src/ssdintel/icons.py` 用 Pillow 画出，`render()` 时自动写进 `web/`。
+
 
 ---
 
@@ -220,7 +240,7 @@ Cookie 过期了会打印 `Cookie 失效或配额用完，重新复制一次 Coo
 ```
 ssd-intel/
 ├── run_daily.py              主流程
-├── requirements.txt          5 个依赖，全是常见的
+├── requirements.txt          6 个依赖，全是常见的（Pillow 只用来画图标）
 ├── config/
 │   ├── sources.yaml          RSS 源（含失败记录与原因）
 │   ├── wechat_accounts.yaml  22 个公众号 + 搜索词 + 三级策略
@@ -233,8 +253,14 @@ ssd-intel/
 │   ├── feedparse.py          lxml 写的 RSS/Atom 解析器
 │   ├── score.py              三道闸门 + 跨源去重
 │   ├── report.py             组装日报（LLM 或降级）
-│   ├── render.py             渲染 HTML + PWA 文件
-│   └── templates/report.html.j2
+│   ├── render.py             渲染三屏 HTML + PWA 文件
+│   ├── shell.py              底部导航 / 收藏逻辑（三屏共用）
+│   ├── icons.py              用 Pillow 画 PWA 图标 PNG
+│   └── templates/
+│       ├── base.html.j2      公共骨架（CSS、manifest、导航、收藏脚本）
+│       ├── report.html.j2    今日 / 单期日报
+│       ├── archive.html.j2   归档列表
+│       └── fav.html.j2       收藏夹
 ├── scripts/
 │   ├── verify_sources.py     源健康检查
 │   ├── probe_feed.py         探测任意 feed 地址能不能用
@@ -242,9 +268,10 @@ ssd-intel/
 │   ├── resolve_bookids.py    从文章链接解析单个 bookId
 │   ├── measure_wechat.py     量化搜狗结果的新鲜度（验证 L1 为什么不达标）
 │   ├── inspect_db.py         看库里现在有什么
-│   └── _anchor_check.py      排查某条为什么被收/被丢（打印命中的锚点）
+│   ├── _anchor_check.py      排查某条为什么被收/被丢（打印命中的锚点）
+│   └── _test_fav.py          收藏逻辑的单元测试（node 假 DOM，13 个断言）
 ├── data/ssdintel.db          SQLite（自动建）
-└── web/                      产出
+└── web/                      产出（index / archive / fav / d/<date> + PWA 资源）
 ```
 
 ---

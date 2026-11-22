@@ -1,0 +1,22 @@
+{% extends "base.html.j2" %}
+{% block title %}归档 · SSD 情报日报{% endblock %}
+{% block body %}
+  <header>
+    <div class="kicker">
+      <span>SSD 情报日报</span>
+      <span class="badge">{{ reports|length }} 期</span>
+    </div>
+    <h1>归档</h1>
+  </header>
+
+  {% if reports %}
+    {% for it in reports %}
+    <a class="row" href="d/{{ it.date }}.html">
+      <span class="head">{{ it.headline or '（无标题）' }}</span>
+      <span class="day">{{ it.date }}</span>
+    </a>
+    {% endfor %}
+  {% else %}
+    <p class="empty">还没有历史日报。每天 08:10 会自动生成一期，跑过一天这里就有内容了。</p>
+  {% endif %}
+{% endblock %}

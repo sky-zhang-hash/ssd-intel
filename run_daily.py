@@ -148,7 +148,8 @@ def main() -> int:
         "sources": len({it.source for it in fresh}),
         "raw": len(raw),
     }
-    index = render.render(payload, ROOT / "web", stats=stats)
+    index = render.render(payload, ROOT / "web", stats=stats,
+                          reports=store.list_reports())
     store.save_report(date, payload, index.read_text(encoding="utf-8"))
 
     store.purge_old(args.keep_days)

@@ -35,15 +35,20 @@ UA = (
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
 
-# 这些错误码是账号级问题（配额耗尽 / Cookie 失效），再重试也没意义
-FATAL_CODES = {-2010, -2012, -2014, -2041}
+# 这些错误码是账号级问题（Cookie 失效 / 参数不对），再重试也没意义
+FATAL_CODES = {-2010, -2012, -2041}
+
+# -2014「请求过于频繁」不是账号问题，是限流：等一会儿重试即可。
+# （一度把它当致命错误，结果一轮只拿到 500 多篇就整个停了；实测等 20-40 秒就能恢复）
+RATE_LIMIT_CODES = {-2014}
 
 
 class WereadError(Exception):
-    def __init__(self, code, message, retriable: bool = True):
+    def __init__(self, code, message, retriable: bool = True, rate_limit: bool = False):
         super().__init__(f"[{code}] {message}")
         self.code = code
         self.retriable = retriable
+        self.rate_limit = rate_limit
 
 
 def new_session(cookie: str) -> requests.Session:
@@ -70,16 +75,33 @@ def _check(payload: dict) -> None:
     if code in FATAL_CODES:
         hint = "Cookie 失效或配额用完，重新复制一次 Cookie"
         raise WereadError(code, f"{msg or '账号级错误'}（{hint}）", retriable=False)
+    if code in RATE_LIMIT_CODES:
+        raise WereadError(code, msg or "请求过于频繁", rate_limit=True)
     raise WereadError(code, msg or "未知错误")
 
 
-def _get(session: requests.Session, path: str, params: dict, timeout: int = 25) -> dict:
+def _get(session: requests.Session, path: str, params: dict, timeout: int = 25,
+         retries: int = 3) -> dict:
+    """发请求；撞限流就退避重试，别整轮采集直接报废。"""
+    for attempt in range(retries):
+        try:
+            return _get_once(session, path, params, timeout)
+        except WereadError as e:
+            if not e.rate_limit or attempt == retries - 1:
+                raise
+            wait = 30 * (2 ** attempt)  # 30s / 60s / 120s
+            print(f"  [wx]  触发限流，等 {wait}s 重试（{attempt + 1}/{retries - 1}）")
+            time.sleep(wait)
+    raise WereadError("unreachable", "重试耗尽")
+
+
+def _get_once(session: requests.Session, path: str, params: dict, timeout: int = 25) -> dict:
     try:
         r = session.get(BASE + path, params=params, timeout=timeout)
     except requests.RequestException as e:
         raise WereadError("network", f"{type(e).__name__}: {e}") from e
-    if r.status_code == 499:  # 微信读书用 499 表示配额耗尽
-        raise WereadError(499, "配额耗尽", retriable=False)
+    if r.status_code == 499:  # 微信读书用 499 表示「太频繁 / 配额用尽」
+        raise WereadError(499, "请求过于频繁（HTTP 499）", rate_limit=True)
     if r.status_code != 200:
         raise WereadError(r.status_code, f"HTTP {r.status_code}")
     try:
@@ -176,7 +198,7 @@ def parse_articles(payload: dict) -> list[dict]:
 
 
 def fetch_articles(session: requests.Session, book_id: str, pages: int = 1,
-                   delay: float = 1.5) -> list[dict]:
+                   delay: float = 2.5) -> list[dict]:
     """翻页拉某个公众号的文章，新→旧。
 
     注意 offset 的语义：微信读书按**顶层 review group** 计数，不是按文章、也不是页码。
@@ -203,7 +225,7 @@ def fetch_articles(session: requests.Session, book_id: str, pages: int = 1,
 # 批量采集
 # --------------------------------------------------------------------------
 def collect(book_ids: dict[str, str], cookie: str, pages: int = 1,
-            delay: float = 1.5, limit: int = 0):
+            delay: float = 2.5, limit: int = 0):
     """按 {公众号名: bookId} 批量拉取。
 
     单个号失败不影响其他号——和 RSS 采集一样的容错要求。
@@ -225,6 +247,9 @@ def collect(book_ids: dict[str, str], cookie: str, pages: int = 1,
             health.append({"name": f"weread:{name}", "ok": False, "error": str(e)[:160]})
             if not e.retriable:  # Cookie 失效，后面的号也拿不到，直接停
                 print("  [wx]  Cookie 有问题，停止本轮公众号采集")
+                break
+            if e.rate_limit:  # 退避重试也没救回来，继续跑只会越撞越久
+                print("  [wx]  限流未缓解，本轮先收工（已采到的照常入库）")
                 break
             continue
 

@@ -8,6 +8,8 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from . import icons, shell
+
 TPL_DIR = Path(__file__).resolve().parent / "templates"
 
 ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -21,11 +23,20 @@ ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 MANIFEST = {
     "name": "SSD 情报日报",
     "short_name": "SSD 日报",
+    "lang": "zh-CN",
     "start_url": "./index.html",
+    "scope": "./",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#fbfbf9",
     "theme_color": "#0f766e",
-    "icons": [{"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}],
+    "icons": [
+        {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+        {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+        {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+        {"src": "./icon-maskable.png", "sizes": "512x512", "type": "image/png",
+         "purpose": "maskable"},
+    ],
 }
 
 
@@ -39,54 +50,78 @@ def _env() -> Environment:
 
 
 def render(report: dict, out_dir: str | Path, stats: dict | None = None,
-           archive: bool = True) -> Path:
+           archive: bool = True, reports: list[dict] | None = None) -> Path:
+    """生成三屏 PWA：今日（index）/ 归档 / 收藏，外加子目录里的历史页。"""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    env = _env()
+    base_ctx = {
+        "nav_css": shell.NAV_CSS,
+        "fav_js": shell.FAV_JS,
+        "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    }
 
-    html_tpl = _env().get_template("report.html.j2")
-    html = html_tpl.render(
-        r=report,
-        stats=stats or {},
-        generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
-    )
+    def page(tpl: str, active: str, root: str, **ctx) -> str:
+        return env.get_template(tpl).render(
+            **base_ctx, **ctx,
+            nav=shell.nav_html(active, root), root=root,
+        )
 
+    # 今日
     index = out / "index.html"
-    index.write_text(html, encoding="utf-8")
+    index.write_text(page(
+        "report.html.j2", "today", "./",
+        r=report, stats=stats or {},
+    ), encoding="utf-8")
 
+    # 历史页（放在 d/ 下，根路径要回退一级）
     if archive:
         d = out / "d"
         d.mkdir(exist_ok=True)
-        (d / f"{report['date']}.html").write_text(html, encoding="utf-8")
-        # 归档索引，方便回看
-        (d / "index.html").write_text(_archive_index(out), encoding="utf-8")
+        day_html = page("report.html.j2", "today", "../", r=report, stats=stats or {})
+        (d / f"{report['date']}.html").write_text(day_html, encoding="utf-8")
+
+    # 归档列表：优先用数据库里的各期标题（有 headline 才好看），没有就退回文件名
+    rows = list(reports or [])
+    if archive and not rows:
+        d = out / "d"
+        rows = [{"date": p.stem, "headline": ""}
+                for p in sorted(d.glob("*.html"), reverse=True) if p.name != "index.html"]
+    archive_html = page("archive.html.j2", "archive", "./", reports=rows)
+    (out / "archive.html").write_text(archive_html, encoding="utf-8")
+    if archive:
+        # 老链接 /d/index.html 别断，直接指向新归档页
+        (out / "d" / "index.html").write_text(
+            '<!doctype html><meta charset="utf-8">'
+            '<meta http-equiv="refresh" content="0; url=../archive.html">'
+            '<a href="../archive.html">归档</a>', encoding="utf-8")
+
+    # 收藏（纯前端渲染，无服务端数据）
+    (out / "fav.html").write_text(
+        page("fav.html.j2", "fav", "./"), encoding="utf-8")
 
     (out / "manifest.webmanifest").write_text(
         json.dumps(MANIFEST, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     (out / "icon.svg").write_text(ICON_SVG, encoding="utf-8")
+    for name, data in icons.all_icons().items():
+        (out / name).write_bytes(data)
 
-    # PWA：service worker 只做最简单的离线兜底
+    # PWA：service worker 做外壳缓存——断网也能看到最近一次打开的那屏
     (out / "sw.js").write_text(
-        "const C='ssd-intel-v1';"
-        "self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.add('./index.html'))));"
-        "self.addEventListener('fetch',e=>e.respondWith("
-        "caches.match(e.request).then(r=>r||fetch(e.request))));",
+        "const C='ssd-intel-v2';"
+        "const SHELL=['./index.html','./archive.html','./fav.html','./manifest.webmanifest'];"
+        "self.addEventListener('install',e=>e.waitUntil("
+        "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"
+        "self.addEventListener('activate',e=>e.waitUntil("
+        "caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))));"
+        "self.addEventListener('fetch',e=>{"
+        "if(e.request.method!=='GET')return;"
+        "e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{"
+        "const cp=resp.clone();caches.open(C).then(c=>c.put(e.request,cp));return resp;"
+        "}).catch(()=>caches.match('./index.html'))))});",
         encoding="utf-8",
     )
 
     print(f"  [render] {index}")
     return index
-
-
-def _archive_index(out: Path) -> str:
-    d = out / "d"
-    files = sorted((p.stem for p in d.glob("*.html") if p.name != "index.html"), reverse=True)
-    rows = "\n".join(f'<li><a href="{f}.html">{f}</a></li>' for f in files)
-    return f"""<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SSD 情报日报 · 归档</title>
-<style>body{{font:16px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-max-width:640px;margin:0 auto;padding:24px 20px 64px;color:#191b1f;background:#fbfbf9}}
-h1{{font-size:20px}}a{{color:#0f766e}}li{{margin:8px 0}}</style></head>
-<body><h1>归档</h1><ul>{rows or '<li>还没有历史日报</li>'}</ul>
-<p><a href="../index.html">← 回到今日</a></p></body></html>"""
