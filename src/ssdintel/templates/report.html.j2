@@ -18,10 +18,16 @@
         <p class="pt-text">{{ p.text }}</p>
         {% if p.impact %}<p class="impact">{{ p.impact }}</p>{% endif %}
         <p class="meta">
-          <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ p.source }}</a>
+          {% if p.url %}
+          <a class="src" href="{{ p.url }}" target="_blank" rel="noopener noreferrer"
+             title="打开原文"><span class="lbl">{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
+          {% else %}
+          <span class="nosrc">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
+          {% endif %}
           {% for c in p.cats %}<span class="tag">{{ c }}</span>{% endfor %}
           <button class="fav" data-url="{{ p.url }}" data-title="{{ p.text }}"
                   data-source="{{ p.source }}" data-date="{{ r.date }}"
+                  data-time="{{ p.time }}"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>

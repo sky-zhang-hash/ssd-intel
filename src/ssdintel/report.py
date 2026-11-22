@@ -9,12 +9,40 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import requests
 
 from .models import Item
 from . import score as scoring
+
+# 读者在国内，统一按北京时间显示；中国没有夏令时，固定 +8 比 zoneinfo 更稳
+# （Windows 上未必装了 tzdata，zoneinfo 会抛 ZoneInfoNotFoundError）。
+CST = timezone(timedelta(hours=8))
+
+
+def local_time(iso: str | None, today: str) -> str:
+    """把采集时存的 UTC ISO 时间转成「今天 15:04 / 昨天 09:12 / 11-20 18:30」。"""
+    if not iso:
+        return ""
+    try:
+        dt = datetime.fromisoformat(str(iso).replace("Z", "+00:00"))
+    except ValueError:
+        return ""
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    loc = dt.astimezone(CST)
+    hm = loc.strftime("%H:%M")
+    day = loc.strftime("%Y-%m-%d")
+    if day == today:
+        return f"今天 {hm}"
+    try:
+        yest = (datetime.strptime(today, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    except ValueError:
+        yest = ""
+    if yest and day == yest:
+        return f"昨天 {hm}"
+    return f"{loc.strftime('%m-%d')} {hm}"
 
 API_BASE = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
 API_URL = f"{API_BASE}/chat/completions"
@@ -127,6 +155,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
                 "impact": clean(p.get("impact")),
                 "source": src.source,
                 "url": src.url,
+                "time": local_time(src.published, date),
                 "cats": src.categories,
             })
         if points:
@@ -165,7 +194,8 @@ def digest_report(items: list[Item], date: str, per_section: int = 6) -> dict:
             continue
         points = [
             {"text": it.title, "impact": "", "source": it.source,
-             "url": it.url, "cats": it.categories}
+             "url": it.url, "time": local_time(it.published, date),
+             "cats": it.categories}
             for it in group_items[:per_section]
         ]
         if points:

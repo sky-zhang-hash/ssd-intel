@@ -143,11 +143,15 @@ check(JSON.parse(d.store['ssd.fav.v1']).length === 0, 'today: localStorage clear
 // 2) fav page: renders what was saved earlier
 var f = makeDom(true);
 f.store['ssd.fav.v1'] = JSON.stringify([{
-  url: 'https://example.com/b', title: 'item B', source: 'src2', date: '2026-11-22'
+  url: 'https://example.com/b', title: 'item B', source: 'src2', date: '2026-11-22',
+  time: '15:04'
 }]);
 f.boot();
 check(f.list.innerHTML.indexOf('item B') >= 0, 'fav page: renders saved item');
 check(f.list.innerHTML.indexOf('src2') >= 0, 'fav page: renders source');
+check(f.list.innerHTML.indexOf('15:04') >= 0, 'fav page: renders publish time');
+check(f.list.innerHTML.indexOf('class="src"') >= 0, 'fav page: source is a link');
+check(f.list.innerHTML.indexOf('href="https://example.com/b"') >= 0, 'fav page: links to original');
 check(f.list.innerHTML.indexOf(STAR) >= 0, 'fav page: solid star (can unfavorite)');
 check(f.list.innerHTML.indexOf('class="fav"') >= 0, 'fav page: has fav button');
 

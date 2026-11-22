@@ -43,9 +43,20 @@
           padding-left:11px;border-left:2px solid var(--accent)}
   .meta{margin:10px 0 0;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;
         gap:8px;align-items:center}
-  .meta a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line);
-          display:inline-block;padding:4px 0}
-  .meta a:active{color:var(--accent)}
+  /* 来源 + 发布时间 + ↗ 合成一个链接：读者点它到原网页。
+     宽度占满一行，标签和 ☆ 落到第二行，避免在窄屏上挤成一团。 */
+  .meta .src,.meta .nosrc{flex-basis:100%}
+  .meta .src{color:var(--accent);text-decoration:none;border:0;
+             display:flex;align-items:baseline;gap:5px;
+             padding:8px 0 7px;min-height:32px;font-variant-numeric:tabular-nums}
+  /* 下划线只画在文字下面，不要横贯整行（那样看着像分隔线） */
+  .meta .src .lbl{display:inline-flex;align-items:baseline;gap:5px;
+                  border-bottom:1px solid var(--accent)}
+  .meta .src .when{color:var(--muted)}
+  .meta .src .ext{font-size:12px;line-height:1}
+  .meta .src:active{opacity:.55}
+  .meta .nosrc{display:inline-block;padding:6px 0 4px}
+  .meta .fav{margin-left:auto}
   .tag{font-size:12px;padding:1px 7px;border-radius:4px;background:var(--line);color:var(--muted)}
   .watch{background:var(--warn-bg);border-radius:10px;padding:14px 16px;margin-top:34px}
   .watch h3{margin:0 0 8px;font-size:13px;color:var(--warn);letter-spacing:.06em}

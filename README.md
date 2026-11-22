@@ -60,7 +60,7 @@ start web\index.html
 
 | 页面 | 用途 |
 |---|---|
-| `web/index.html` | 今日日报（AI 摘要，每条可点 ☆ 收藏） |
+| `web/index.html` | 今日日报（AI 摘要，每条带发布时间，点来源名到原文，可点 ☆ 收藏） |
 | `web/archive.html` | 归档列表，按日期回看任意一期 |
 | `web/fav.html` | 收藏夹（存在手机本地 localStorage，不上传） |
 | `web/d/<date>.html` | 每期日报的历史快照，从归档点进去 |

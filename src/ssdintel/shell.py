@@ -99,7 +99,8 @@ FAV_JS = """
       url: url,
       title: btn.dataset.title || '',
       source: btn.dataset.source || '',
-      date: btn.dataset.date || ''
+      date: btn.dataset.date || '',
+      time: btn.dataset.time || ''
     });
     save(list);
     mark(btn, i < 0);
@@ -128,13 +129,17 @@ FAV_JS = """
       return;
     }
     list.innerHTML = items.map(function(x){
+      var when = x.time || x.date || '';
       return '<div class="point"><p class="pt-text">'
         + '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">'
         + esc(x.title || x.url) + '</a></p>'
-        + '<p class="meta"><span>' + esc(x.source) + ' · ' + esc(x.date) + '</span>'
+        + '<p class="meta"><a class="src" href="' + esc(x.url) + '" target="_blank" rel="noopener">'
+        + '<span class="lbl">' + esc(x.source) + (when ? '<span class="when">' + esc(when)
+        + '</span>' : '') + '<span class="ext">↗</span></span></a>'
         + '<button class="fav" data-url="' + esc(x.url) + '" data-title="'
         + esc(x.title) + '" data-source="' + esc(x.source) + '" data-date="'
-        + esc(x.date) + '" aria-pressed="true" title="取消收藏">★</button></p></div>';
+        + esc(x.date) + '" data-time="' + esc(x.time) + '"'
+        + ' aria-pressed="true" title="取消收藏">★</button></p></div>';
     }).join('');
     markAll();
   }
