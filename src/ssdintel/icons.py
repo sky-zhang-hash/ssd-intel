@@ -10,7 +10,7 @@ import io
 
 from PIL import Image, ImageDraw
 
-ACCENT = "#0f766e"
+ACCENT = "#2457F5"
 SIZES = (180, 192, 512)
 MASKABLE = 512  # 给 Android 自适应图标用的安全区版本
 

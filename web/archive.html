@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>归档 · SSD 情报日报</title>
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#2457F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -12,93 +12,122 @@
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <style>
+  /* ---------- tokens：改这一块，四屏一起变 ---------- */
   :root{
-    --bg:#fbfbf9; --card:#fff; --fg:#191b1f; --muted:#525a66;
-    --line:#e7e4de; --accent:#0f766e; --warn:#b45309; --warn-bg:#fdf6e7;
+    --bg:#F5F7FB;          /* 底色 */
+    --card:#FFFFFF;        /* 卡片 */
+    --ink:#0F172A;         /* 正文 */
+    --muted:#55657D;       /* 次要文字 */
+    --line:#E2E8F0;        /* 分隔线 */
+    --accent:#2457F5;      /* 主色：链接、主操作 */
+    --accent-ink:#FFFFFF;  /* 主色上的字 */
+    --accent-2:#0F8F8E;    /* 点缀：圆点、图形 */
+    --accent-2-ink:#0A6E6D;/* 点缀色的文字版：同样色相，压深到 4.5:1 以上 */
+    --chip:#EEF2F7;        /* 标签底 */
+    --radius:8px;
+    --shadow:0 1px 3px rgba(15,23,42,.08);
+    --font:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+    --t-xs:13px; --t-sm:13.5px; --t-md:16.5px; --t-lg:24px;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#111316; --card:#181b1f; --fg:#e8e9ea; --muted:#9098a3;
-           --line:#272b31; --accent:#5ec9bd; --warn:#e0a458; --warn-bg:#241d10; }
+    :root{
+      --bg:#0B1220; --card:#131A26; --ink:#E6EAF2; --muted:#93A1B8;
+      --line:#22304A; --accent:#6E93FF; --accent-2:#35C6C3;
+      --accent-2-ink:#5FD9D6; --chip:#1B2534;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
   }
   *{box-sizing:border-box}
   body{
-    margin:0; background:var(--bg); color:var(--fg);
-    font:400 16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",
-         "Microsoft YaHei",system-ui,sans-serif;
+    margin:0; background:var(--bg); color:var(--ink);
+    font:400 17px/1.72 var(--font);
+    font-variant-numeric:tabular-nums;      /* 数字等宽对齐 */
     -webkit-font-smoothing:antialiased;
-    padding:0 20px 72px;
+    padding:0 14px calc(72px + env(safe-area-inset-bottom,0px));
   }
   .wrap{max-width:680px;margin:0 auto}
-  header{padding:28px 0 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
-  .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-          display:flex;justify-content:space-between;align-items:center}
-  .badge{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted);
-         letter-spacing:0;text-transform:none}
-  h1{font-size:22px;line-height:1.5;margin:10px 0 0;font-weight:650;letter-spacing:-.01em}
-  h2{font-size:13px;letter-spacing:.1em;color:var(--accent);margin:34px 0 12px;font-weight:650}
-  .point{padding:14px 0;border-bottom:1px solid var(--line)}
+  header{padding:22px 4px 14px}
+  .kicker{font-size:var(--t-xs);letter-spacing:.04em;color:var(--muted);
+          display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .badge{font-size:var(--t-xs);padding:3px 9px;border-radius:6px;background:var(--chip);
+         color:var(--muted);letter-spacing:0;flex:none}
+  h1{font-size:var(--t-lg);line-height:1.42;margin:10px 0 0;font-weight:600;letter-spacing:-.01em}
+  /* 每个板块一张白卡：信息密，但边界清楚 */
+  section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+          box-shadow:var(--shadow);padding:15px 15px 5px;margin:14px 0}
+  h2{font-size:16px;line-height:1.4;color:var(--accent-2-ink);margin:2px 0 2px;font-weight:600;
+     display:flex;align-items:center;gap:7px}
+  h2::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-2);flex:none}
+  h2 .cnt{font-size:var(--t-xs);font-weight:400;color:var(--muted);margin-left:2px}
+  .point{padding:13px 0;border-bottom:1px solid var(--line)}
   .point:last-child{border-bottom:none}
-  .pt-text{margin:0;font-size:16px}
-  .impact{margin:8px 0 0;font-size:14px;color:var(--muted);
-          padding-left:11px;border-left:2px solid var(--accent)}
-  .meta{margin:10px 0 0;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;
+  .pt-text{margin:0;font-size:var(--t-md);line-height:1.78}
+  .impact{margin:9px 0 0;font-size:15px;line-height:1.7;color:var(--muted);
+          padding-left:11px;border-left:3px solid var(--accent-2)}
+  .meta{margin:10px 0 0;font-size:var(--t-sm);color:var(--muted);display:flex;flex-wrap:wrap;
         gap:8px;align-items:center}
   /* 来源 + 发布时间 + ↗ 合成一个链接：读者点它到原网页。
      宽度占满一行，标签和 ☆ 落到第二行，避免在窄屏上挤成一团。 */
   .meta .src,.meta .nosrc{flex-basis:100%}
   .meta .src{color:var(--accent);text-decoration:none;border:0;
-             display:flex;align-items:baseline;gap:5px;
-             padding:8px 0 7px;min-height:32px;font-variant-numeric:tabular-nums}
+             display:flex;align-items:baseline;gap:6px;
+             padding:9px 0 8px;min-height:34px}
   /* 下划线只画在文字下面，不要横贯整行（那样看着像分隔线） */
-  .meta .src .lbl{display:inline-flex;align-items:baseline;gap:5px;
+  .meta .src .lbl{display:inline-flex;align-items:baseline;gap:6px;
                   border-bottom:1px solid var(--accent)}
   .meta .src .when{color:var(--muted)}
-  .meta .src .ext{font-size:12px;line-height:1}
+  .meta .src .ext{font-size:var(--t-xs);line-height:1}
   .meta .src:active{opacity:.55}
-  .meta .nosrc{display:inline-block;padding:6px 0 4px}
+  .meta .nosrc{display:inline-block;padding:7px 0 5px}
   .meta .fav{margin-left:auto}
-  .tag{font-size:12px;padding:1px 7px;border-radius:4px;background:var(--line);color:var(--muted)}
+  .tag{font-size:var(--t-xs);padding:2px 8px;border-radius:6px;background:var(--chip);
+       color:var(--muted);white-space:nowrap}
   /* 「全部」页：纯清单，标题本身就是原文链接 */
-  .pt-text a.title{color:var(--ink);text-decoration:none;display:inline-block;padding:3px 0}
+  .pt-text a.title{color:var(--ink);text-decoration:none;display:inline-block;padding:4px 0}
   .pt-text a.title:active{opacity:.6}
-  h2 .cnt{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
-  .note p{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 4px}
-  .watch{background:var(--warn-bg);border-radius:10px;padding:14px 16px;margin-top:34px}
-  .watch h3{margin:0 0 8px;font-size:13px;color:var(--warn);letter-spacing:.06em}
-  .watch li{font-size:14px;margin:6px 0}
+  .note p{font-size:var(--t-sm);color:var(--muted);line-height:1.7;margin:0 0 6px}
+  .watch{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+         box-shadow:var(--shadow);padding:15px 16px;margin-top:14px}
+  .watch h3{margin:0 0 8px;font-size:16px;color:var(--accent-2-ink);font-weight:600;
+            display:flex;align-items:center;gap:7px}
+  .watch h3::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-2)}
+  .watch li{font-size:16px;line-height:1.72;margin:7px 0}
   .watch ul{margin:0;padding-left:18px}
-  .price{margin-top:26px;font-size:13px;color:var(--muted);
-         padding:12px 14px;background:var(--card);border-radius:10px;border:1px solid var(--line)}
-  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
-         font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  footer a{color:var(--muted)}
+  .price{margin-top:14px;font-size:var(--t-sm);line-height:1.7;color:var(--muted);
+         padding:13px 15px;background:var(--card);border-radius:var(--radius);
+         border:1px solid var(--line);box-shadow:var(--shadow)}
+  footer{margin-top:26px;padding:14px 4px 0;border-top:1px solid var(--line);
+         font-size:var(--t-xs);color:var(--muted);display:flex;justify-content:space-between;
+         flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
   /* 归档 / 收藏两屏的列表行 */
   .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
-       padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+       padding:15px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
   .row:last-child{border-bottom:none}
-  .row .day{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);flex:none}
-  .row .head{font-size:15px;line-height:1.55}
+  .row .day{font-size:var(--t-xs);color:var(--muted);flex:none}
+  .row .head{font-size:16px;line-height:1.55}
   .row:active .head{color:var(--accent)}
 
   :root{ --nav-h:56px; --safe:env(safe-area-inset-bottom,0px); }
   body{ padding-bottom:calc(var(--nav-h) + var(--safe) + 28px) }
   .nav{ position:fixed; left:0; right:0; bottom:0; z-index:50;
         display:flex; background:var(--card); border-top:1px solid var(--line);
+        box-shadow:0 -1px 3px rgba(15,23,42,.06);
         padding-bottom:var(--safe); }
   .nav a{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
-          padding:9px 0 8px; text-decoration:none; color:var(--muted);
-          font-size:12px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
+          padding:8px 0 7px; text-decoration:none; color:var(--muted);
+          font-size:13px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
   .nav a.on{ color:var(--accent) }
   .nav svg{ width:22px; height:22px; stroke:currentColor; fill:none;
             stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
   .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
   .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
-        color:var(--muted); font-size:16px; line-height:1;
+        color:var(--muted); font-size:19px; line-height:1;
         min-width:30px; min-height:30px; display:inline-flex;
         align-items:center; justify-content:center;
         -webkit-tap-highlight-color:transparent }
   .fav[aria-pressed="true"]{ color:var(--accent) }
-  .empty{ color:var(--muted); font-size:14px; padding:28px 0 }
+  .empty{ color:var(--muted); font-size:16px; line-height:1.7; padding:26px 0 }
 
   @media (prefers-color-scheme: dark){
     .nav{ background:var(--card) }
@@ -117,7 +146,7 @@
   </header>
 
     <a class="row" href="d/2026-11-22.html">
-      <span class="head">慧荣首秀PCIe 6.0主控，群联把NPU塞进SSD</span>
+      <span class="head">慧荣首秀PCIe 6.0主控SM8466，群联把NPU塞进SSD</span>
       <span class="day">2026-11-22</span>
     </a>
 </div>

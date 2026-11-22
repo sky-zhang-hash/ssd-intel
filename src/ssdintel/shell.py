@@ -16,21 +16,22 @@ NAV_CSS = """
   body{ padding-bottom:calc(var(--nav-h) + var(--safe) + 28px) }
   .nav{ position:fixed; left:0; right:0; bottom:0; z-index:50;
         display:flex; background:var(--card); border-top:1px solid var(--line);
+        box-shadow:0 -1px 3px rgba(15,23,42,.06);
         padding-bottom:var(--safe); }
   .nav a{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
-          padding:9px 0 8px; text-decoration:none; color:var(--muted);
-          font-size:12px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
+          padding:8px 0 7px; text-decoration:none; color:var(--muted);
+          font-size:13px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
   .nav a.on{ color:var(--accent) }
   .nav svg{ width:22px; height:22px; stroke:currentColor; fill:none;
             stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
   .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
   .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
-        color:var(--muted); font-size:16px; line-height:1;
+        color:var(--muted); font-size:19px; line-height:1;
         min-width:30px; min-height:30px; display:inline-flex;
         align-items:center; justify-content:center;
         -webkit-tap-highlight-color:transparent }
   .fav[aria-pressed="true"]{ color:var(--accent) }
-  .empty{ color:var(--muted); font-size:14px; padding:28px 0 }
+  .empty{ color:var(--muted); font-size:16px; line-height:1.7; padding:26px 0 }
 
   @media (prefers-color-scheme: dark){
     .nav{ background:var(--card) }

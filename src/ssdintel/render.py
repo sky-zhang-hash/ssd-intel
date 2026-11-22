@@ -13,7 +13,7 @@ from . import icons, shell
 TPL_DIR = Path(__file__).resolve().parent / "templates"
 
 ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="112" fill="#0f766e"/>
+<rect width="512" height="512" rx="112" fill="#2457F5"/>
 <rect x="150" y="120" width="212" height="272" rx="28" fill="none" stroke="#fff" stroke-width="26"/>
 <rect x="196" y="176" width="120" height="26" rx="13" fill="#fff"/>
 <rect x="196" y="238" width="120" height="26" rx="13" fill="#fff" opacity=".55"/>
@@ -28,8 +28,8 @@ MANIFEST = {
     "scope": "./",
     "display": "standalone",
     "orientation": "portrait",
-    "background_color": "#fbfbf9",
-    "theme_color": "#0f766e",
+    "background_color": "#F5F7FB",
+    "theme_color": "#2457F5",
     "icons": [
         {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
         {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
