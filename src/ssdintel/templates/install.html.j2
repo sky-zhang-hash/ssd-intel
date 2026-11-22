@@ -37,7 +37,7 @@
   <section class="qrbox">
     <h2>用手机扫这个</h2>
     <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&amp;margin=8&amp;data={{ site_url }}"
-         alt="站点二维码" width="260" height="260">
+         alt="站点二维码" width="260" height="260" onerror="this.style.display='none'">
     <p class="qrurl">{{ site_url }}</p>
     <p class="note">手机相机扫一下就能打开；打不开就直接把上面这行地址打进浏览器。</p>
   </section>

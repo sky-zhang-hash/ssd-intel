@@ -38,12 +38,22 @@
     }
   }
   *{box-sizing:border-box}
+  /* 手机浏览器（尤其微信内置、Android WebView）会按自己的字号策略把正文缩小，
+     这里关掉自动调整，让 17px 就是 17px */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font:400 17px/1.72 var(--font);
     font-variant-numeric:tabular-nums;      /* 数字等宽对齐 */
     -webkit-font-smoothing:antialiased;
     padding:0 14px calc(72px + env(safe-area-inset-bottom,0px));
+  }
+  /* 电脑上屏幕宽，17px 会显得小，单独提一档 */
+  @media (min-width:760px){
+    body{font-size:18px}
+    .pt-text{font-size:18px}
+    .impact{font-size:17px}
+    .wrap{max-width:720px}
   }
   .wrap{max-width:680px;margin:0 auto}
   header{padding:22px 4px 14px}
@@ -188,7 +198,7 @@
   <section class="qrbox">
     <h2>用手机扫这个</h2>
     <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&amp;margin=8&amp;data=https://sky-zhang-hash.github.io/ssd-intel/"
-         alt="站点二维码" width="260" height="260">
+         alt="站点二维码" width="260" height="260" onerror="this.style.display='none'">
     <p class="qrurl">https://sky-zhang-hash.github.io/ssd-intel/</p>
     <p class="note">手机相机扫一下就能打开；打不开就直接把上面这行地址打进浏览器。</p>
   </section>

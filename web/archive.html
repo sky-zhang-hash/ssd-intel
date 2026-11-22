@@ -38,12 +38,22 @@
     }
   }
   *{box-sizing:border-box}
+  /* 手机浏览器（尤其微信内置、Android WebView）会按自己的字号策略把正文缩小，
+     这里关掉自动调整，让 17px 就是 17px */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font:400 17px/1.72 var(--font);
     font-variant-numeric:tabular-nums;      /* 数字等宽对齐 */
     -webkit-font-smoothing:antialiased;
     padding:0 14px calc(72px + env(safe-area-inset-bottom,0px));
+  }
+  /* 电脑上屏幕宽，17px 会显得小，单独提一档 */
+  @media (min-width:760px){
+    body{font-size:18px}
+    .pt-text{font-size:18px}
+    .impact{font-size:17px}
+    .wrap{max-width:720px}
   }
   .wrap{max-width:680px;margin:0 auto}
   header{padding:22px 4px 14px}
@@ -160,7 +170,7 @@
   </header>
 
     <a class="row" href="d/2026-11-22.html">
-      <span class="head">慧荣首秀PCIe 6.0主控SM8466，群联把NPU塞进SSD</span>
+      <span class="head">慧荣首秀PCIe 6.0主控，群联把NPU塞进SSD</span>
       <span class="day">2026-11-22</span>
     </a>
 </div>
