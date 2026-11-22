@@ -12,6 +12,9 @@ from . import icons, shell
 
 TPL_DIR = Path(__file__).resolve().parent / "templates"
 
+# 说明页里要给人看的地址；页面内部一律用相对路径，只有这里写死
+SITE_URL = "https://sky-zhang-hash.github.io/ssd-intel/"
+
 ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 <rect width="512" height="512" rx="112" fill="#2457F5"/>
 <rect x="150" y="120" width="212" height="272" rx="28" fill="none" stroke="#fff" stroke-width="26"/>
@@ -24,8 +27,11 @@ MANIFEST = {
     "name": "SSD 情报日报",
     "short_name": "SSD 日报",
     "lang": "zh-CN",
+    "id": "./",
     "start_url": "./index.html",
     "scope": "./",
+    "display_override": ["standalone", "minimal-ui"],
+    "categories": ["news", "business"],
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#F5F7FB",
@@ -85,6 +91,11 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
         window=report.get("window") or "",
     ), encoding="utf-8")
 
+    # 装到手机（说明页）
+    (out / "install.html").write_text(page(
+        "install.html.j2", "today", "./", site_url=SITE_URL,
+    ), encoding="utf-8")
+
     # 历史页（放在 d/ 下，根路径要回退一级）
     if archive:
         d = out / "d"
@@ -121,7 +132,7 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     # PWA：service worker 做外壳缓存——断网也能看到最近一次打开的那屏
     (out / "sw.js").write_text(
         "const C='ssd-intel-v2';"
-        "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./manifest.webmanifest'];"
+        "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./install.html','./manifest.webmanifest'];"
         "self.addEventListener('install',e=>e.waitUntil("
         "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"
         "self.addEventListener('activate',e=>e.waitUntil("

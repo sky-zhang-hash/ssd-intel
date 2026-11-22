@@ -56,7 +56,7 @@ start web\index.html
 
 这是 2026-11-22 的真实一轮：6 个 RSS 源 + 23 个公众号，784 篇公众号文章过闸门后只剩 32 条，最后日报里 33 条素材（含库里没超过 36 小时的）。**公众号的量很大、噪音也大**，闸门就是干这个的，别关。
 
-产出是**四屏的 PWA**（不是单个网页）：
+产出是**五屏的 PWA**（不是单个网页）：
 
 | 页面 | 用途 |
 |---|---|
@@ -64,6 +64,7 @@ start web\index.html
 | `web/all.html` | 全部素材：窗口内**所有**条目，按日期倒序，不摘要不排序（想看全量就看这屏） |
 | `web/archive.html` | 归档列表，按日期回看任意一期 |
 | `web/fav.html` | 收藏夹（存在手机本地 localStorage，不上传） |
+| `web/install.html` | 装到手机的图文说明（iPhone / Android / 电脑，带二维码） |
 | `web/d/<date>.html` | 每期日报的历史快照，从归档点进去 |
 
 底部固定导航（今日 / 全部 / 归档 / 收藏）+ `manifest.webmanifest` + `apple-touch-icon`，**视觉**（专业科技 / 冷灰蓝）：tokens 全在 `src/ssdintel/templates/base.html.j2` 顶部的 `:root` 里，改那一块四屏一起变——底色 `#F5F7FB`、卡片 `#FFFFFF`、正文 `#0F172A`、次要 `#55657D`、分隔 `#E2E8F0`、主色 `#2457F5`（只给链接和主操作）、点缀 `#0F8F8E`（板块圆点、大字），文字版的点缀另压深成 `--accent-2-ink:#0A6E6D` 以满足 4.5:1 对比度；圆角 8px、阴影 `0 1px 3px rgba(15,23,42,.08)`、数字统一 `font-variant-numeric:tabular-nums`。正文 17px、条目正文 16.5px——手机上不眯眼。深色模式用同一套变量另给一组值。
@@ -255,8 +256,8 @@ ssd-intel/
 │   ├── feedparse.py          lxml 写的 RSS/Atom 解析器
 │   ├── score.py              三道闸门 + 跨源去重
 │   ├── report.py             组装日报（LLM 或降级）
-│   ├── render.py             渲染四屏 HTML + PWA 文件
-│   ├── shell.py              底部导航 / 收藏逻辑（四屏共用）
+│   ├── render.py             渲染五屏 HTML + PWA 文件
+│   ├── shell.py              底部导航 / 收藏逻辑（五屏共用）
 │   ├── icons.py              用 Pillow 画 PWA 图标 PNG
 │   └── templates/
 │       ├── base.html.j2      公共骨架（CSS、manifest、导航、收藏脚本）

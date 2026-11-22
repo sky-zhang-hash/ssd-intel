@@ -26,7 +26,7 @@ NAV_CSS = """
             stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
   .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
   .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
-        color:var(--muted); font-size:19px; line-height:1;
+        color:var(--muted); font-size:17px; line-height:1;
         min-width:30px; min-height:30px; display:inline-flex;
         align-items:center; justify-content:center;
         -webkit-tap-highlight-color:transparent }

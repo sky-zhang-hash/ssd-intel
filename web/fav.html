@@ -27,7 +27,7 @@
     --radius:8px;
     --shadow:0 1px 3px rgba(15,23,42,.08);
     --font:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
-    --t-xs:13px; --t-sm:13.5px; --t-md:16.5px; --t-lg:24px;
+    --t-xs:13px; --t-sm:14px; --t-md:17px; --t-lg:24px;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -62,7 +62,7 @@
   .point{padding:13px 0;border-bottom:1px solid var(--line)}
   .point:last-child{border-bottom:none}
   .pt-text{margin:0;font-size:var(--t-md);line-height:1.78}
-  .impact{margin:9px 0 0;font-size:15px;line-height:1.7;color:var(--muted);
+  .impact{margin:9px 0 0;font-size:16px;line-height:1.7;color:var(--muted);
           padding-left:11px;border-left:3px solid var(--accent-2)}
   .meta{margin:10px 0 0;font-size:var(--t-sm);color:var(--muted);display:flex;flex-wrap:wrap;
         gap:8px;align-items:center}
@@ -83,6 +83,20 @@
   .tag{font-size:var(--t-xs);padding:2px 8px;border-radius:6px;background:var(--chip);
        color:var(--muted);white-space:nowrap}
   /* 「全部」页：纯清单，标题本身就是原文链接 */
+  /* 安装说明页 */
+  .steps{margin:8px 0 10px;padding-left:22px}
+  .steps li{margin:6px 0;line-height:1.7}
+  .steps li b{font-weight:600}
+  ul.steps{list-style:disc}
+  .note{color:var(--muted);font-size:14px;line-height:1.7;margin:10px 0 0}
+  .qrbox{text-align:center}
+  .qr{display:block;margin:12px auto 8px;border-radius:8px;background:#fff;
+      width:200px;height:200px}
+  .qrurl{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+         font-size:13px;color:var(--accent);word-break:break-all;margin:0}
+  .footlink{margin:18px 0 0;font-size:14px}
+  .footlink a{color:var(--accent);text-decoration:none;
+              display:inline-block;padding:8px 0;border-bottom:1px solid var(--accent)}
   .pt-text a.title{color:var(--ink);text-decoration:none;display:inline-block;padding:4px 0}
   .pt-text a.title:active{opacity:.6}
   .note p{font-size:var(--t-sm);color:var(--muted);line-height:1.7;margin:0 0 6px}
@@ -122,7 +136,7 @@
             stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
   .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
   .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
-        color:var(--muted); font-size:19px; line-height:1;
+        color:var(--muted); font-size:17px; line-height:1;
         min-width:30px; min-height:30px; display:inline-flex;
         align-items:center; justify-content:center;
         -webkit-tap-highlight-color:transparent }
