@@ -66,7 +66,8 @@ start web\index.html
 | `web/fav.html` | 收藏夹（存在手机本地 localStorage，不上传） |
 | `web/d/<date>.html` | 每期日报的历史快照，从归档点进去 |
 
-底部固定导航（今日 / 全部 / 归档 / 收藏）+ `manifest.webmanifest` + `apple-touch-icon`，
+底部固定导航（今日 / 全部 / 归档 / 收藏）+ `manifest.webmanifest` + `apple-touch-icon`，**视觉**（专业科技 / 冷灰蓝）：tokens 全在 `src/ssdintel/templates/base.html.j2` 顶部的 `:root` 里，改那一块四屏一起变——底色 `#F5F7FB`、卡片 `#FFFFFF`、正文 `#0F172A`、次要 `#55657D`、分隔 `#E2E8F0`、主色 `#2457F5`（只给链接和主操作）、点缀 `#0F8F8E`（板块圆点、大字），文字版的点缀另压深成 `--accent-2-ink:#0A6E6D` 以满足 4.5:1 对比度；圆角 8px、阴影 `0 1px 3px rgba(15,23,42,.08)`、数字统一 `font-variant-numeric:tabular-nums`。正文 17px、条目正文 16.5px——手机上不眯眼。深色模式用同一套变量另给一组值。
+
 所以在手机上「添加到主屏幕」之后是全屏、无地址栏、有图标的独立入口——
 用起来和 App 一样，只是不用上架、不用审核。
 
