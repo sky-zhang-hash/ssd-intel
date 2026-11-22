@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{% block title %}SSD 情报日报{% endblock %}</title>
 <meta name="theme-color" content="#2457F5">
+<meta name="built" content="{{ built_at }}">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -125,6 +126,7 @@
   .row .head{font-size:16px;line-height:1.55}
   .row:active .head{color:var(--accent)}
 {{ nav_css | safe }}
+{{ pull_css | safe }}
   /* 电脑上屏幕宽，17px 会显得小，单独提一档 */
   @media (min-width:760px){
     body{font-size:18px}
@@ -140,6 +142,7 @@
 {% block body %}{% endblock %}
 </div>
 {{ nav | safe }}
+{{ pull_js | safe }}
 {{ fav_js | safe }}
 <script>
   if ('serviceWorker' in navigator) {

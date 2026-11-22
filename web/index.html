@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SSD 情报日报 · 2026-11-22</title>
 <meta name="theme-color" content="#2457F5">
+<meta name="built" content="2026-11-22 23:11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -150,6 +151,16 @@
     .nav{ background:var(--card) }
   }
 
+
+  #pull{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none;
+        display:flex;justify-content:center;align-items:flex-end;
+        height:56px;transform:translateY(-56px);opacity:0;
+        transition:transform .18s ease, opacity .18s ease;
+        font-size:14px;color:var(--muted)}
+  #pull.on{transform:translateY(0)}
+  #pull span{background:var(--card);border:1px solid var(--line);
+             box-shadow:var(--shadow);border-radius:999px;padding:6px 14px}
+
   /* 电脑上屏幕宽，17px 会显得小，单独提一档 */
   @media (min-width:760px){
     body{font-size:18px}
@@ -167,49 +178,49 @@
       <span>SSD 情报日报 · 2026-11-22 · 近 7 天</span>
       <span class="badge">AI 摘要</span>
     </div>
-    <h1>慧荣首秀PCIe 6.0主控，群联把NPU塞进SSD</h1>
+    <h1>慧荣首秀PCIe 6.0主控SM8466，群联把NPU塞进SSD</h1>
   </header>
 
     <section>
       <h2>主控与新品</h2>
       <article class="point">
-        <p class="pt-text">慧荣在SC26首次公开展示数据中心级SM8466，这是MonTitan系列首款PCIe 6.0 x4主控，最终版已完成流片、样片即将送样，搭载该主控的SSD预计2027年末至2028年初上市。PCIe 6.0主控进入样片阶段，意味着eSSD接口换代的时间表开始清晰。</p>
-<p class="impact">PCIe 6.0 eSSD量产窗口指向2027年底，主控厂抢在标准落地前锁定数据中心客户</p>        <p class="meta">
+        <p class="pt-text">慧荣在SC26首次公开展示数据中心级SM8466，为其MonTitan系列首款PCIe 6.0 x4主控，最终版已完成流片、样片即将送样，搭载该主控的SSD预计2027年末至2028年初上市。PCIe 6.0主控进入送样阶段，意味着eSSD接口代际切换的竞争提前到主控层。</p>
+<p class="impact">主控厂开始为2027—2028年数据中心平台卡位，PCIe 5.0产品窗口期被压缩。</p>        <p class="meta">
           <a class="src" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">超能网<span class="when">昨天 00:39</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>          <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣在SC26首次公开展示数据中心级SM8466，这是MonTitan系列首款PCIe 6.0 x4主控，最终版已完成流片、样片即将送样，搭载该主控的SSD预计2027年末至2028年初上市。PCIe 6.0主控进入样片阶段，意味着eSSD接口换代的时间表开始清晰。"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>          <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣在SC26首次公开展示数据中心级SM8466，为其MonTitan系列首款PCIe 6.0 x4主控，最终版已完成流片、样片即将送样，搭载该主控的SSD预计2027年末至2028年初上市。PCIe 6.0主控进入送样阶段，意味着eSSD接口代际切换的竞争提前到主控层。"
                   data-source="超能网" data-date="2026-11-22"
                   data-time="昨天 00:39"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">群联在SC26详解两款企业级设计：一款内置NPU并配64GB、130GB/s带宽内存，可在盘内直接跑PyTorch、vLLM、OpenVINO和llama.cpp；另一款在单控制器后融合pSLC缓存与大容量QLC。计算存储从概念走向可编程框架，SSD开始承担部分推理负载。</p>
-<p class="impact">盘内推理可减少KV Cache与权重在主机与盘之间的搬运，对AI服务器存储层级设计构成新变量</p>        <p class="meta">
+        <p class="pt-text">群联在SC26详解两款企业级SSD设计：一款内置NPU并配64GB、130GB/s带宽内存，可在盘内直接跑PyTorch、vLLM、OpenVINO与llama.cpp；另一款在单控制器后融合pSLC缓存与大容量QLC。计算存储从概念走向可编程框架落地。</p>
+<p class="impact">SSD从纯存储件变为带算力的节点，企业级产品定义和主控架构都要重做。</p>        <p class="meta">
           <a class="src" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">斯托瑞吉<span class="when">昨天 09:48</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联在SC26详解两款企业级设计：一款内置NPU并配64GB、130GB/s带宽内存，可在盘内直接跑PyTorch、vLLM、OpenVINO和llama.cpp；另一款在单控制器后融合pSLC缓存与大容量QLC。计算存储从概念走向可编程框架，SSD开始承担部分推理负载。"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联在SC26详解两款企业级SSD设计：一款内置NPU并配64GB、130GB/s带宽内存，可在盘内直接跑PyTorch、vLLM、OpenVINO与llama.cpp；另一款在单控制器后融合pSLC缓存与大容量QLC。计算存储从概念走向可编程框架落地。"
                   data-source="斯托瑞吉" data-date="2026-11-22"
                   data-time="昨天 09:48"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">Microchip发布第四代Flashtec NVMe 4016主控，PCIe Gen5 x4接口、16个可编程NAND通道，顺序性能超过14GB/s。16通道可编程架构面向需要灵活适配不同颗粒的企业级与定制场景，Gen5主控的通道数竞争继续升级。</p>
-<p class="impact">高通道可编程主控利好大容量eSSD与定制固件客户，加剧企业级主控份额争夺</p>        <p class="meta">
+        <p class="pt-text">Microchip发布第四代Flashtec NVMe 4016主控，PCIe Gen5 x4接口、16个可编程NAND通道，顺序性能超14GB/s。可编程通道数提升，面向的是需要灵活适配不同颗粒与固件的数据中心定制盘。</p>
+<p class="impact">企业级主控向多通道、可编程方向走，利好QLC大容量盘与定制化方案。</p>        <p class="meta">
           <a class="src" href="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">StorageReview<span class="when">11-19 03:10</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" data-title="Microchip发布第四代Flashtec NVMe 4016主控，PCIe Gen5 x4接口、16个可编程NAND通道，顺序性能超过14GB/s。16通道可编程架构面向需要灵活适配不同颗粒的企业级与定制场景，Gen5主控的通道数竞争继续升级。"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" data-title="Microchip发布第四代Flashtec NVMe 4016主控，PCIe Gen5 x4接口、16个可编程NAND通道，顺序性能超14GB/s。可编程通道数提升，面向的是需要灵活适配不同颗粒与固件的数据中心定制盘。"
                   data-source="StorageReview" data-date="2026-11-22"
                   data-time="11-19 03:10"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">有SSD主控厂商发生控制权易主。主控行业近年持续整合，中小厂商在PCIe 6.0研发投入与客户认证门槛抬升下承压，股权变动可能改变其产品路线与客户导入节奏。</p>
-<p class="impact">需关注易主后原有主控型号的供货连续性与固件支持</p>        <p class="meta">
+        <p class="pt-text">有SSD主控厂商发生控制权易主。主控行业集中度高，股权变动往往伴随产品线取舍或客户结构重排，需观察其现有企业级与消费级项目是否延续。</p>
+<p class="impact">中小主控厂整合加速，客户导入节奏可能受扰动。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">全球SSD · 11-16 15:31</span>
-<span class="tag">主控</span><span class="tag">产品</span>          <button class="fav" data-url="" data-title="有SSD主控厂商发生控制权易主。主控行业近年持续整合，中小厂商在PCIe 6.0研发投入与客户认证门槛抬升下承压，股权变动可能改变其产品路线与客户导入节奏。"
+<span class="tag">主控</span><span class="tag">产品</span>          <button class="fav" data-url="" data-title="有SSD主控厂商发生控制权易主。主控行业集中度高，股权变动往往伴随产品线取舍或客户结构重排，需观察其现有企业级与消费级项目是否延续。"
                   data-source="全球SSD" data-date="2026-11-22"
                   data-time="11-16 15:31"
                   aria-pressed="false" title="收藏">☆</button>
@@ -219,31 +230,31 @@
     <section>
       <h2>颗粒与工艺</h2>
       <article class="point">
-        <p class="pt-text">三星V10 BV-NAND把层数推到400层以上，主打更高密度与能效，获FMS 2026 3D &amp; NAND创新奖，官方称可支撑128TB SSD与下一代PCIe Gen7 SSD。层数竞赛直接对应企业级单盘容量上限，为Gen7世代预留带宽余量。</p>
-<p class="impact">400层以上颗粒是128TB级eSSD的物理前提，将拉开与原厂二线梯队的容量差距</p>        <p class="meta">
+        <p class="pt-text">三星V10 BV-NAND把层数推到400层以上，兼顾密度、性能与能效，获FMS 2026 3D &amp; NAND创新奖，官方称可支撑128TB SSD与下一代PCIe Gen7 SSD。层数竞赛直接对应单盘容量上限的提升。</p>
+<p class="impact">400层以上颗粒为128TB级eSSD铺路，QLC/TLC高密度方案加速。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">斯托瑞吉 · 11-15 09:00</span>
-<span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="三星V10 BV-NAND把层数推到400层以上，主打更高密度与能效，获FMS 2026 3D &amp; NAND创新奖，官方称可支撑128TB SSD与下一代PCIe Gen7 SSD。层数竞赛直接对应企业级单盘容量上限，为Gen7世代预留带宽余量。"
+<span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="三星V10 BV-NAND把层数推到400层以上，兼顾密度、性能与能效，获FMS 2026 3D &amp; NAND创新奖，官方称可支撑128TB SSD与下一代PCIe Gen7 SSD。层数竞赛直接对应单盘容量上限的提升。"
                   data-source="斯托瑞吉" data-date="2026-11-22"
                   data-time="11-15 09:00"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">光宝旗下SSSTC发布PQ2系列，是其首款工业级QLC SSD，采用铠侠BiCS FLASH第8代QLC，PCIe Gen4 x4，顺序读取最高7000MB/s。QLC从消费级下探到工业M.2，说明QLC耐久与掉电管理已能满足工规场景。</p>
-<p class="impact">工业级QLC打开边缘与嵌入式新战场，铠侠颗粒借子公司渠道扩大出货</p>        <p class="meta">
+        <p class="pt-text">光宝旗下SSSTC发布首款工业级QLC SSD PQ2，采用铠侠BiCS FLASH第8代QLC，PCIe Gen4 x4，顺序读取最高7000MB/s。QLC从消费/读取密集场景向工业级M.2渗透，说明耐久与固件管理已有针对性设计。</p>
+<p class="impact">工业级市场开始接受QLC，颗粒厂QLC出货渠道拓宽。</p>        <p class="meta">
           <a class="src" href="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">StorageReview<span class="when">11-18 21:27</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" data-title="光宝旗下SSSTC发布PQ2系列，是其首款工业级QLC SSD，采用铠侠BiCS FLASH第8代QLC，PCIe Gen4 x4，顺序读取最高7000MB/s。QLC从消费级下探到工业M.2，说明QLC耐久与掉电管理已能满足工规场景。"
+<span class="tag">颗粒</span><span class="tag">产品</span>          <button class="fav" data-url="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" data-title="光宝旗下SSSTC发布首款工业级QLC SSD PQ2，采用铠侠BiCS FLASH第8代QLC，PCIe Gen4 x4，顺序读取最高7000MB/s。QLC从消费/读取密集场景向工业级M.2渗透，说明耐久与固件管理已有针对性设计。"
                   data-source="StorageReview" data-date="2026-11-22"
                   data-time="11-18 21:27"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">业界探索在3D NAND结构内做存内计算（CiM）：利用其数百层高密度容纳大模型参数，把乘加运算搬到阵列内完成，规避数据反复搬运的功耗与延迟。该方向仍处研究阶段，但与大模型参数规模的增长方向吻合。</p>
-<p class="impact">若落地，NAND将从纯存储变为算力载体，改变SSD与计算芯片的分工</p>        <p class="meta">
+        <p class="pt-text">业界探索在3D NAND结构上做存内计算（CiM）：利用其高密度承载大模型参数，把乘加运算搬到阵列内完成，规避数据反复搬运的功耗与延迟。目前仍处研究阶段，但方向与盘内计算呼应。</p>
+<p class="impact">若落地，NAND将从存储介质变为算力载体，影响未来主控与颗粒协同设计。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">SGDLSHSV · 11-18 23:16</span>
-<span class="tag">颗粒</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="业界探索在3D NAND结构内做存内计算（CiM）：利用其数百层高密度容纳大模型参数，把乘加运算搬到阵列内完成，规避数据反复搬运的功耗与延迟。该方向仍处研究阶段，但与大模型参数规模的增长方向吻合。"
+<span class="tag">颗粒</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="业界探索在3D NAND结构上做存内计算（CiM）：利用其高密度承载大模型参数，把乘加运算搬到阵列内完成，规避数据反复搬运的功耗与延迟。目前仍处研究阶段，但方向与盘内计算呼应。"
                   data-source="SGDLSHSV" data-date="2026-11-22"
                   data-time="11-18 23:16"
                   aria-pressed="false" title="收藏">☆</button>
@@ -253,11 +264,11 @@
     <section>
       <h2>封装与制造</h2>
       <article class="point">
-        <p class="pt-text">美光新加坡HBM先进封装厂已接收首批生产设备，预计2027年初量产，初期创造约1400个岗位。该厂投资70亿美元，2026年开始运营、2027年起大幅扩大美光先进封装总产能。HBM封装产能落地节奏，直接决定AI加速卡的供给上限。</p>
-<p class="impact">先进封装产能向2027年集中释放，届时HBM供给紧张有望边际缓解，但DRAM晶圆端仍受挤占</p>        <p class="meta">
+        <p class="pt-text">美光新加坡HBM先进封装厂已接收首批生产设备，投资70亿美元，预计2027年初量产并大幅扩大先进封装总产能，初期创造约1400个岗位。HBM封装产能落地节奏，直接决定AI加速卡的供给上限。</p>
+<p class="impact">HBM封装扩产将长期挤占DRAM晶圆与先进封装资源，间接压制常规DRAM供给。</p>        <p class="meta">
           <a class="src" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">超能网<span class="when">昨天 22:00</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光新加坡HBM先进封装厂已接收首批生产设备，预计2027年初量产，初期创造约1400个岗位。该厂投资70亿美元，2026年开始运营、2027年起大幅扩大美光先进封装总产能。HBM封装产能落地节奏，直接决定AI加速卡的供给上限。"
+<span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光新加坡HBM先进封装厂已接收首批生产设备，投资70亿美元，预计2027年初量产并大幅扩大先进封装总产能，初期创造约1400个岗位。HBM封装产能落地节奏，直接决定AI加速卡的供给上限。"
                   data-source="超能网" data-date="2026-11-22"
                   data-time="昨天 22:00"
                   aria-pressed="false" title="收藏">☆</button>
@@ -267,33 +278,32 @@
     <section>
       <h2>AI × SSD</h2>
       <article class="point">
-        <p class="pt-text">有方案把640块SSD塞进一个机架，称为业界首个，AI拉货未见放缓；同期显卡Q4供货恐大减50%，原厂称服务器需求依旧强劲。SSD高密度机架化反映AI集群对近线存储容量密度的诉求正在压过单盘性能指标。</p>
-<p class="impact">高密度SSD机架方案将推动eSSD向更高容量点与更低功耗/GB演进</p>        <p class="meta">
+        <p class="pt-text">算力芯片短缺正在拖累eSSD出货节奏，同时主控厂亮出PCIe 6.0方案、3D堆叠成为热门技术，微软自研AI加速芯片。AI服务器整机供给瓶颈从存储侧传导回来，eSSD需求兑现被推迟而非消失。</p>
+<p class="impact">eSSD放量节奏后移，主控与颗粒厂需重新排产。</p>        <p class="meta">
+          <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">闪德资讯 · 11-19 10:00</span>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>          <button class="fav" data-url="" data-title="算力芯片短缺正在拖累eSSD出货节奏，同时主控厂亮出PCIe 6.0方案、3D堆叠成为热门技术，微软自研AI加速芯片。AI服务器整机供给瓶颈从存储侧传导回来，eSSD需求兑现被推迟而非消失。"
+                  data-source="闪德资讯" data-date="2026-11-22"
+                  data-time="11-19 10:00"
+                  aria-pressed="false" title="收藏">☆</button>
+        </p>
+      </article>
+      <article class="point">
+        <p class="pt-text">业界首次把640块SSD塞进一个机架，AI拉货未见放缓，原厂称Q4服务器需求依旧强劲、明年内存供应仍吃紧。高密度SSD机架方案说明AI存储正从单盘性能转向系统级密度竞争。</p>
+<p class="impact">高密度盘位与背板设计成为eSSD差异化点，利好高容量QLC。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">闪德资讯 · 11-16 10:01</span>
-<span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="" data-title="有方案把640块SSD塞进一个机架，称为业界首个，AI拉货未见放缓；同期显卡Q4供货恐大减50%，原厂称服务器需求依旧强劲。SSD高密度机架化反映AI集群对近线存储容量密度的诉求正在压过单盘性能指标。"
+<span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="" data-title="业界首次把640块SSD塞进一个机架，AI拉货未见放缓，原厂称Q4服务器需求依旧强劲、明年内存供应仍吃紧。高密度SSD机架方案说明AI存储正从单盘性能转向系统级密度竞争。"
                   data-source="闪德资讯" data-date="2026-11-22"
                   data-time="11-16 10:01"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">PE522 PCIe 5.0企业级SSD测试显示稳态波动仅0.77%，具备低延迟与高耐久特性。数据中心对存储的要求已从峰值带宽转向稳态一致性，QoS抖动成为eSSD选型的关键指标。</p>
-<p class="impact">稳态性能成为PCIe 5.0 eSSD差异化卖点，固件调度能力权重上升</p>        <p class="meta">
+        <p class="pt-text">PE522 PCIe 5.0企业级SSD测试显示稳态波动仅0.77%，具备低延迟与高耐久特性。企业级评测开始把稳态一致性作为核心指标，反映AI推理与KV Cache场景对尾延迟的敏感。</p>
+<p class="impact">稳态性能成为eSSD选型门槛，固件与GC策略权重上升。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">MicroComputer · 11-17 21:50</span>
-<span class="tag">产品</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="PE522 PCIe 5.0企业级SSD测试显示稳态波动仅0.77%，具备低延迟与高耐久特性。数据中心对存储的要求已从峰值带宽转向稳态一致性，QoS抖动成为eSSD选型的关键指标。"
+<span class="tag">产品</span><span class="tag">AI</span>          <button class="fav" data-url="" data-title="PE522 PCIe 5.0企业级SSD测试显示稳态波动仅0.77%，具备低延迟与高耐久特性。企业级评测开始把稳态一致性作为核心指标，反映AI推理与KV Cache场景对尾延迟的敏感。"
                   data-source="MicroComputer" data-date="2026-11-22"
                   data-time="11-17 21:50"
-                  aria-pressed="false" title="收藏">☆</button>
-        </p>
-      </article>
-      <article class="point">
-        <p class="pt-text">NVIDIA在GeForce Hotfix 621.35驱动中修复了一个导致SSD空闲时被大量写入的bug，问题源于nvlog日志文件的过度写入。AI PC的驱动与后台日志对SSD写入放大的影响被正式确认并修补。</p>
-<p class="impact">提示AI PC时代主机侧软件行为对SSD寿命的实际损耗，固件与驱动协同需重新评估</p>        <p class="meta">
-          <a class="src" href="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" target="_blank" rel="noopener noreferrer"
-             title="打开原文"><span class="lbl">TechPowerUp<span class="when">昨天 07:50</span><span class="ext">↗</span></span></a>
-<span class="tag">产品</span>          <button class="fav" data-url="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" data-title="NVIDIA在GeForce Hotfix 621.35驱动中修复了一个导致SSD空闲时被大量写入的bug，问题源于nvlog日志文件的过度写入。AI PC的驱动与后台日志对SSD写入放大的影响被正式确认并修补。"
-                  data-source="TechPowerUp" data-date="2026-11-22"
-                  data-time="昨天 07:50"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
@@ -301,41 +311,41 @@
     <section>
       <h2>供应链动向</h2>
       <article class="point">
-        <p class="pt-text">美光高管称DRAM供需长期无法回归平衡，2027与2028年失衡程度或超2026年，SK海力士持相同看法。原厂对远期紧缺的公开定调，会影响下游长约签订与产能预订节奏。</p>
-<p class="impact">远期紧缺预期下，模组与终端厂倾向提前锁定DRAM供应，挤压NAND端议价空间</p>        <p class="meta">
+        <p class="pt-text">美光高管称存储供给短缺短期难解，2027与2028年供需失衡程度或超2026年，SK海力士持相同看法。原厂对长周期紧张的判断，会推动客户提前锁产能、拉长合约。</p>
+<p class="impact">长约与预付款比例上升，模组厂拿货成本与确定性分化。</p>        <p class="meta">
           <a class="src" href="http://www.expreview.com/109607.html" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">超能网<span class="when">11-20 20:19</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="http://www.expreview.com/109607.html" data-title="美光高管称DRAM供需长期无法回归平衡，2027与2028年失衡程度或超2026年，SK海力士持相同看法。原厂对远期紧缺的公开定调，会影响下游长约签订与产能预订节奏。"
+<span class="tag">颗粒</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="http://www.expreview.com/109607.html" data-title="美光高管称存储供给短缺短期难解，2027与2028年供需失衡程度或超2026年，SK海力士持相同看法。原厂对长周期紧张的判断，会推动客户提前锁产能、拉长合约。"
                   data-source="超能网" data-date="2026-11-22"
                   data-time="11-20 20:19"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">应用材料称先进DRAM正成为AI设备周期中最强增量；中芯国际预计2027年代工产能紧张。设备与代工两端同时指向2027年产能瓶颈，存储与逻辑的扩产节奏出现错配。</p>
-<p class="impact">代工产能紧张将波及SSD主控与配套逻辑芯片的交付周期</p>        <p class="meta">
+        <p class="pt-text">应用材料称先进DRAM正成为AI设备周期中最强增量；中芯国际预计2027年代工产能紧张。先进DRAM与代工产能同时吃紧，说明AI对存储的拉动已外溢到制造设备与代工环节。</p>
+<p class="impact">DRAM设备与代工资源紧张，间接影响存储配套芯片供给。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">中国闪存市场 · 11-13 18:29</span>
-<span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="" data-title="应用材料称先进DRAM正成为AI设备周期中最强增量；中芯国际预计2027年代工产能紧张。设备与代工两端同时指向2027年产能瓶颈，存储与逻辑的扩产节奏出现错配。"
+<span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>          <button class="fav" data-url="" data-title="应用材料称先进DRAM正成为AI设备周期中最强增量；中芯国际预计2027年代工产能紧张。先进DRAM与代工产能同时吃紧，说明AI对存储的拉动已外溢到制造设备与代工环节。"
                   data-source="中国闪存市场" data-date="2026-11-22"
                   data-time="11-13 18:29"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">算力芯片短缺拖累eSSD出货，成为当前企业级存储需求传导的堵点；同期苹果签约五年锁定DRAM产能。头部终端以长约锁定内存，进一步压缩现货市场可获资源。</p>
-<p class="impact">eSSD出货受制于算力平台配套节奏，而非存储本身产能</p>        <p class="meta">
-          <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">闪德资讯 · 11-19 10:00</span>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>          <button class="fav" data-url="" data-title="算力芯片短缺拖累eSSD出货，成为当前企业级存储需求传导的堵点；同期苹果签约五年锁定DRAM产能。头部终端以长约锁定内存，进一步压缩现货市场可获资源。"
-                  data-source="闪德资讯" data-date="2026-11-22"
-                  data-time="11-19 10:00"
+        <p class="pt-text">有上市公司控股子公司签下超14亿元闪存颗粒采购订单。大额颗粒长约反映下游在供给偏紧预期下提前备货，锁定的是颗粒而非成品。</p>
+<p class="impact">颗粒长约增多，现货市场流通量或被进一步抽紧。</p>        <p class="meta">
+          <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">集微网 · 11-17 07:15</span>
+<span class="tag">颗粒</span>          <button class="fav" data-url="" data-title="有上市公司控股子公司签下超14亿元闪存颗粒采购订单。大额颗粒长约反映下游在供给偏紧预期下提前备货，锁定的是颗粒而非成品。"
+                  data-source="集微网" data-date="2026-11-22"
+                  data-time="11-17 07:15"
                   aria-pressed="false" title="收藏">☆</button>
         </p>
       </article>
       <article class="point">
-        <p class="pt-text">锐盟推出2mm超薄压电风扇MagicCool，用于解决高速SSD散热瓶颈。PCIe 5.0/6.0时代主控功耗抬升，被动散热逼近极限，主动散热方案开始进入SSD配套供应链。</p>
-<p class="impact">散热成为高速SSD的独立BOM项，利好微型主动散热器件供应商</p>        <p class="meta">
+        <p class="pt-text">锐盟推出2mm超薄压电风扇MagicCool，针对高速SSD散热瓶颈，帮助PCIe 5.0/6.0盘维持满血性能。接口速率提升带来功耗与发热上升，散热正成为SSD的独立部件品类。</p>
+<p class="impact">散热方案成为高速SSD能否跑满的关键，利好配套器件厂。</p>        <p class="meta">
           <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">闪存市场 · 11-13 17:17</span>
-<span class="tag">产品</span>          <button class="fav" data-url="" data-title="锐盟推出2mm超薄压电风扇MagicCool，用于解决高速SSD散热瓶颈。PCIe 5.0/6.0时代主控功耗抬升，被动散热逼近极限，主动散热方案开始进入SSD配套供应链。"
+<span class="tag">产品</span>          <button class="fav" data-url="" data-title="锐盟推出2mm超薄压电风扇MagicCool，针对高速SSD散热瓶颈，帮助PCIe 5.0/6.0盘维持满血性能。接口速率提升带来功耗与发热上升，散热正成为SSD的独立部件品类。"
                   data-source="闪存市场" data-date="2026-11-22"
                   data-time="11-13 17:17"
                   aria-pressed="false" title="收藏">☆</button>
@@ -345,18 +355,116 @@
 
   <aside class="watch">
     <h3>值得留意</h3>
-    <ul><li>3D NAND存内计算仍处研究阶段，尚无产品化时间表，需观察是否有原厂将其纳入路线图</li><li>SSD主控厂商易主的具体买方与后续产品路线尚未明确，关注是否影响在研PCIe 6.0项目</li></ul>
+    <ul><li>群联盘内NPU SSD的框架兼容性与实际能效数据尚未公布，能否被云厂商采纳待观察</li><li>慧荣SM8466样片送样后的客户导入情况，以及PCIe 6.0平台侧支持时间表</li><li>3D NAND存内计算仍处研究阶段，尚无产品化时间点</li></ul>
   </aside>
 
-  <div class="price">价格背景：NAND现货近几周跌约20%、明年合约看跌5%–10%，DRAM与HBM继续看涨，涨跌分化明显。</div>
+  <div class="price">价格背景：NAND现货近几周跌约20%、明年合约看跌5%—10%，DRAM与HBM继续看涨，价格只作背景。</div>
 
   <footer>
     <span>33 条素材 / 14 个源</span>
-    <span>2026-11-22 23:00 生成</span>
+    <span>2026-11-22 23:11 生成</span>
   </footer>
   <p class="footlink"><a href="./install.html">安装到手机，像 App 一样打开 →</a></p>
 </div>
 <nav class="nav"><a href="./index.html" class="on"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./all.html"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>全部</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
+
+<div id="pull"><span>下拉刷新</span></div>
+<script>
+(function(){
+  var el = document.getElementById('pull');
+  var label = el ? el.querySelector('span') : null;
+  if (!el || !label) return;
+
+  var startY = 0, pulling = false, dist = 0, busy = false;
+  var TRIGGER = 56;
+
+  function show(text){
+    label.textContent = text;
+    el.classList.add('on');
+  }
+  function hide(){
+    el.classList.remove('on');
+  }
+
+  function built(){
+    var m = document.querySelector('meta[name="built"]');
+    return m ? m.content : '';
+  }
+
+  function check(){
+    busy = true;
+    show('正在检查新版本…');
+    var before = built();
+    var jobs = [];
+    try {
+      jobs.push(navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all(regs.map(function(r){ return r.update(); }));
+      }));
+    } catch(e){}
+    jobs.push(fetch(location.href.split('#')[0], {cache:'no-store'})
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var m = html.match(/<meta name="built" content="([^"]*)"/);
+        var after = m ? m[1] : '';
+        if (after && after !== before) {
+          show('有新版本，正在更新…');
+          setTimeout(function(){ location.reload(); }, 350);
+          return 'reload';
+        }
+        show('已经是最新（' + (after || before) + ' 生成）');
+        setTimeout(hide, 1800);
+      })
+      .catch(function(error){
+        show('网络不通，稍后再试');
+        setTimeout(hide, 1800);
+      }));
+    Promise.all(jobs).catch(function(){}).then(function(){ busy = false; });
+  }
+
+  document.addEventListener('touchstart', function(e){
+    if (busy || window.scrollY > 2 || e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    dist = 0;
+  }, {passive:true});
+
+  document.addEventListener('touchmove', function(e){
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy <= 0) { pulling = false; hide(); return; }
+    dist = Math.min(dy * 0.55, 96);
+    el.style.transform = 'translateY(' + (dist - 56) + 'px)';
+    el.style.opacity = Math.min(1, dist / TRIGGER);
+    label.textContent = dist >= TRIGGER ? '松手刷新' : '下拉刷新';
+  }, {passive:true});
+
+  function end(){
+    if (!pulling) return;
+    pulling = false;
+    el.style.transform = '';
+    el.style.opacity = '';
+    if (dist >= TRIGGER) { check(); } else { hide(); }
+  }
+  document.addEventListener('touchend', end, {passive:true});
+  document.addEventListener('touchcancel', end, {passive:true});
+
+  // 电脑上没有下拉手势，放一个等价的文字链接（手机上不显示）
+  if (!('ontouchstart' in window)) {
+    var wrap = document.querySelector('.wrap');
+    if (wrap) {
+      var p = document.createElement('p');
+      p.className = 'footlink';
+      var a = document.createElement('a');
+      a.href = '#';
+      a.textContent = '检查更新';
+      a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
+      p.appendChild(a);
+      wrap.appendChild(p);
+    }
+  }
+})();
+</script>
+
 
 <script>
 (function(){

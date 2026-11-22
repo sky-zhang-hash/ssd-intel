@@ -152,3 +152,116 @@ FAV_JS = """
 })();
 </script>
 """
+
+# 下拉刷新：静态站没法「重新采集」，所以这里做的是「检查有没有新版本」——
+# 拉一次当前页、比对 <meta name="built">，比到新的就重载。
+# 附加价值：顺便让 Service Worker 调一次 update()，不用等它自己轮询。
+PULL_CSS = """
+  #pull{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none;
+        display:flex;justify-content:center;align-items:flex-end;
+        height:56px;transform:translateY(-56px);opacity:0;
+        transition:transform .18s ease, opacity .18s ease;
+        font-size:14px;color:var(--muted)}
+  #pull.on{transform:translateY(0)}
+  #pull span{background:var(--card);border:1px solid var(--line);
+             box-shadow:var(--shadow);border-radius:999px;padding:6px 14px}
+"""
+
+PULL_JS = """
+<div id="pull"><span>下拉刷新</span></div>
+<script>
+(function(){
+  var el = document.getElementById('pull');
+  var label = el ? el.querySelector('span') : null;
+  if (!el || !label) return;
+
+  var startY = 0, pulling = false, dist = 0, busy = false;
+  var TRIGGER = 56;
+
+  function show(text){
+    label.textContent = text;
+    el.classList.add('on');
+  }
+  function hide(){
+    el.classList.remove('on');
+  }
+
+  function built(){
+    var m = document.querySelector('meta[name="built"]');
+    return m ? m.content : '';
+  }
+
+  function check(){
+    busy = true;
+    show('正在检查新版本…');
+    var before = built();
+    var jobs = [];
+    try {
+      jobs.push(navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all(regs.map(function(r){ return r.update(); }));
+      }));
+    } catch(e){}
+    jobs.push(fetch(location.href.split('#')[0], {cache:'no-store'})
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var m = html.match(/<meta name="built" content="([^"]*)"/);
+        var after = m ? m[1] : '';
+        if (after && after !== before) {
+          show('有新版本，正在更新…');
+          setTimeout(function(){ location.reload(); }, 350);
+          return 'reload';
+        }
+        show('已经是最新（' + (after || before) + ' 生成）');
+        setTimeout(hide, 1800);
+      })
+      .catch(function(error){
+        show('网络不通，稍后再试');
+        setTimeout(hide, 1800);
+      }));
+    Promise.all(jobs).catch(function(){}).then(function(){ busy = false; });
+  }
+
+  document.addEventListener('touchstart', function(e){
+    if (busy || window.scrollY > 2 || e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    dist = 0;
+  }, {passive:true});
+
+  document.addEventListener('touchmove', function(e){
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy <= 0) { pulling = false; hide(); return; }
+    dist = Math.min(dy * 0.55, 96);
+    el.style.transform = 'translateY(' + (dist - 56) + 'px)';
+    el.style.opacity = Math.min(1, dist / TRIGGER);
+    label.textContent = dist >= TRIGGER ? '松手刷新' : '下拉刷新';
+  }, {passive:true});
+
+  function end(){
+    if (!pulling) return;
+    pulling = false;
+    el.style.transform = '';
+    el.style.opacity = '';
+    if (dist >= TRIGGER) { check(); } else { hide(); }
+  }
+  document.addEventListener('touchend', end, {passive:true});
+  document.addEventListener('touchcancel', end, {passive:true});
+
+  // 电脑上没有下拉手势，放一个等价的文字链接（手机上不显示）
+  if (!('ontouchstart' in window)) {
+    var wrap = document.querySelector('.wrap');
+    if (wrap) {
+      var p = document.createElement('p');
+      p.className = 'footlink';
+      var a = document.createElement('a');
+      a.href = '#';
+      a.textContent = '检查更新';
+      a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
+      p.appendChild(a);
+      wrap.appendChild(p);
+    }
+  }
+})();
+</script>
+"""

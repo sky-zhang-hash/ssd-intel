@@ -66,6 +66,9 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
         "nav_css": shell.NAV_CSS,
         "fav_js": shell.FAV_JS,
         "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "built_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "pull_css": shell.PULL_CSS,
+        "pull_js": shell.PULL_JS,
     }
 
     def page(tpl: str, active: str, root: str, **ctx) -> str:
