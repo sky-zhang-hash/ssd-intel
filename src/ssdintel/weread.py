@@ -151,12 +151,54 @@ def resolve_account(session: requests.Session, name: str) -> dict | None:
 # --------------------------------------------------------------------------
 # 文章列表
 # --------------------------------------------------------------------------
-def _fix_token(original_id: str) -> str:
+def _fix_token(token: str) -> str:
     """微信读书把文章 token 里的 _ 写成了 ~，换回来才是真链。
 
     不换的话 mp.weixin.qq.com 会报"参数错误"（WeRSS 的注释称实测 149 篇全部命中）。
     """
-    return (original_id or "").replace("~", "_")
+    return (token or "").replace("~", "_")
+
+
+def _token_from_review(review_id: str, book_id: str = "") -> str:
+    """从 reviewId 里取真正的文章 token。
+
+    reviewId 形如 ``MP_WXS_3095382082_CgTzcUPf0E9NlYhdBqVLiw``，末段才是
+    mp.weixin.qq.com 的短链 token；``mpInfo.originalId`` 是微信读书自己包了一层
+    （``WR1`` 开头、76 位），拿它拼出来的链**一律「参数错误」**——2026-11-22 实测。
+    """
+    rid = (review_id or "").strip()
+    if not rid:
+        return ""
+    prefix = f"{book_id}_" if book_id else ""
+    if prefix and rid.startswith(prefix):
+        rid = rid[len(prefix):]
+    elif "_" in rid:
+        rid = rid.split("_")[-1]
+    # 拆分依赖原始的 '_'，~ → _ 的还原必须放在拆分之后
+    return _fix_token(rid)
+
+
+def parse_articles(payload: dict) -> list[dict]:
+    out: list[dict] = []
+    for group in payload.get("reviews") or []:
+        group_time = group.get("createTime") or 0
+        for sub in group.get("subReviews") or []:
+            review = sub.get("review") or {}
+            info = review.get("mpInfo") or {}
+            title = (info.get("title") or "").strip()
+            token = _token_from_review(review.get("reviewId") or "") \
+                or _fix_token(info.get("originalId") or "")
+            if not title or not token:
+                continue
+            out.append({
+                "title": title,
+                "url": f"https://mp.weixin.qq.com/s/{token}",
+                "summary": (info.get("content") or review.get("content") or "").strip(),
+                "published": _ts(info.get("time") or review.get("createTime") or group_time),
+                "read_num": info.get("readNum") or 0,
+                "like_num": info.get("likeNum") or 0,
+            })
+    return out
 
 
 def _ts(value) -> str:
@@ -173,28 +215,6 @@ def _ts(value) -> str:
         return datetime.fromtimestamp(n, tz=timezone.utc).isoformat(timespec="seconds")
     except (ValueError, OSError, OverflowError):
         return ""
-
-
-def parse_articles(payload: dict) -> list[dict]:
-    out: list[dict] = []
-    for group in payload.get("reviews") or []:
-        group_time = group.get("createTime") or 0
-        for sub in group.get("subReviews") or []:
-            review = sub.get("review") or {}
-            info = review.get("mpInfo") or {}
-            title = (info.get("title") or "").strip()
-            oid = info.get("originalId") or ""
-            if not title or not oid:
-                continue
-            out.append({
-                "title": title,
-                "url": f"https://mp.weixin.qq.com/s/{_fix_token(oid)}",
-                "summary": (info.get("content") or review.get("content") or "").strip(),
-                "published": _ts(info.get("time") or review.get("createTime") or group_time),
-                "read_num": info.get("readNum") or 0,
-                "like_num": info.get("likeNum") or 0,
-            })
-    return out
 
 
 def fetch_articles(session: requests.Session, book_id: str, pages: int = 1,

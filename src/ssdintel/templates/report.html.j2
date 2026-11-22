@@ -22,7 +22,7 @@
           <a class="src" href="{{ p.url }}" target="_blank" rel="noopener noreferrer"
              title="打开原文"><span class="lbl">{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
           {% else %}
-          <span class="nosrc">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
+          <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
           {% endif %}
           {% for c in p.cats %}<span class="tag">{{ c }}</span>{% endfor %}
           <button class="fav" data-url="{{ p.url }}" data-title="{{ p.text }}"

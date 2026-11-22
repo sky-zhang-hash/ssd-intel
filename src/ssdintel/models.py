@@ -108,6 +108,15 @@ class Store:
         self.conn.commit()
         return added
 
+    def drop_blank_urls(self) -> int:
+        """清掉占位行（原文链接拿不到时先留内容、URL 置空）。
+
+        下次成功抓到公众号文章后，这些行会被带真链的新行替代。
+        """
+        cur = self.conn.execute("DELETE FROM items WHERE COALESCE(url,'') = ''")
+        self.conn.commit()
+        return cur.rowcount
+
     def has_title_key(self, key: str) -> bool:
         cur = self.conn.execute("SELECT 1 FROM items WHERE title_key = ? LIMIT 1", (key,))
         return cur.fetchone() is not None

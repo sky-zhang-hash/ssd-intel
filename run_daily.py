@@ -168,6 +168,10 @@ def main() -> int:
     deduped = fetch.resolve_items(deduped, session=session)
 
     added = store.upsert_items(deduped)
+    if wx_items:  # 这轮真抓到公众号文章了，说明占位行（url 空）可以退休
+        cleaned = store.drop_blank_urls()
+        if cleaned:
+            print(f"  清掉 {cleaned} 条没有原文链接的占位行")
     store.log_health(rss_health + wx_health)
     print(f"  新增入库 {added} 条")
 
