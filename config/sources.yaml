@@ -1,0 +1,129 @@
+# ==============================================================
+# SSD 情报日报 · 通用公开源（RSS / Atom）
+#
+# weight: 信源权重 0-1，参与排序。代表「信息密度」而非「可信度」。
+# enabled: false 可临时停用，不影响其它源。
+# 公众号不在这里 —— 见 wechat_accounts.yaml
+#
+# 下面每一条都是 2026-11-22 实测过的（python scripts/probe_feed.py）。
+# 改完跑一次：python scripts/verify_sources.py
+# ==============================================================
+
+sources:
+  # ---------------- 英文 · 存储垂直（全部实测可用） ----------------
+  - name: TechPowerUp
+    url: https://www.techpowerup.com/rss/news
+    type: rss
+    lang: en
+    weight: 0.70
+    enabled: true
+    note: 新品/主控/颗粒更新最快，量大，靠打分过滤
+
+  - name: Tom's Hardware
+    url: https://www.tomshardware.com/feeds/all
+    type: rss
+    lang: en
+    weight: 0.60
+    enabled: true
+    note: 消费级 SSD 评测与规格，量很大
+
+  - name: StorageReview
+    url: https://www.storagereview.com/feed
+    type: rss
+    lang: en
+    weight: 0.75
+    enabled: true
+    note: 企业级 SSD 深度评测，产品参数准
+
+  - name: ServeTheHome
+    url: https://www.servethehome.com/feed/
+    type: rss
+    lang: en
+    weight: 0.80
+    enabled: true
+    note: 企业级 SSD、AI 服务器存储配置
+
+  # ---------------- 中文 · 产业媒体 ----------------
+  - name: 全球半导体观察
+    url: https://www.dramx.com/rss.xml
+    type: rss
+    lang: zh
+    weight: 0.85
+    enabled: true
+    note: DRAM/NAND 产业与产能，存储上游消息多
+
+  - name: 超能网
+    url: https://www.expreview.com/rss.php
+    type: rss
+    lang: zh
+    weight: 0.55
+    enabled: true
+    note: 消费硬件为主，量极大（50+条/天），靠打分过滤
+
+  # ---------------- 已实测不可用（保留记录，别重复踩） ----------------
+  - name: Blocks & Files
+    url: https://www.blocksandfiles.com/feed/
+    type: rss
+    lang: en
+    weight: 0.95
+    enabled: false
+    note: 有反爬（Are we human? PoW 挑战），requests 拿不到，需无头浏览器
+
+  - name: The Register (Storage)
+    url: https://www.theregister.com/storage/headlines.atom
+    type: rss
+    lang: en
+    weight: 0.70
+    enabled: false
+    note: 同上，反爬挑战
+
+  - name: 闪存市场
+    url: https://www.chinaflashmarket.com/news
+    type: rss
+    lang: zh
+    weight: 0.90
+    enabled: false
+    note: 无官方 RSS（/rss /news/rss 均 404），改走公众号（见 wechat_accounts.yaml）
+
+  - name: 集微网
+    url: https://www.ijiwei.com/rss
+    type: rss
+    lang: zh
+    weight: 0.70
+    enabled: false
+    note: 域名是 ijiwei.com 不是 jiwei.com；无 RSS，返回 HTML 列表页，改走公众号
+
+  # ---------------- 主控厂 / 原厂 newsroom（无 RSS，待做 HTML 抓取） ----------------
+  # 需求 3 要求覆盖主控厂商一手信息。目前靠公众号关键词兜（search_queries 里有慧荣/群联/联芸等）。
+  # 下一步可给这几家单独写 newsroom 列表页解析。
+  - name: Phison 群联电子
+    url: https://www.phison.com/en/news
+    type: html
+    lang: en
+    weight: 0.90
+    enabled: false
+    note: 无 RSS（403 /rss/news.xml），需解析 newsroom 列表页
+
+  - name: Silicon Motion 慧荣
+    url: https://www.siliconmotion.com/news
+    type: html
+    lang: en
+    weight: 0.90
+    enabled: false
+    note: 无 RSS，需解析 newsroom 列表页
+
+  - name: 长江存储
+    url: https://www.ymtc.com/cn/newslist.aspx
+    type: html
+    lang: zh
+    weight: 0.90
+    enabled: false
+    note: 无 RSS，需解析新闻列表
+
+  - name: 江波龙
+    url: https://www.longsys.com/news/
+    type: html
+    lang: zh
+    weight: 0.85
+    enabled: false
+    note: 无 RSS，需解析新闻列表

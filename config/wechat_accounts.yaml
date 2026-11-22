@@ -1,0 +1,148 @@
+# ==============================================================
+# SSD 情报日报 · 微信公众号清单
+#
+# ⚠️ 实测结论（2026-11-22，见 scripts/measure_wechat.py）：
+#   搜索接口本身可用（14 个词稳定拿 130+ 条），但**时效性不达标** ——
+#   68 条结果里 7 天内的只有 1 条（1.5%），30 天以上的占 95.6%。
+#   原因是搜狗按相关度排序，时间排序参数 tsn=1 实测失效（返回落地页），
+#   ft/et 时间过滤参数也被忽略。所以搜狗这一路只能当「背景检索」，
+#   撑不起每日新闻。真要做每日公众号，必须上 WeRSS（见 README L2）。
+#
+# 现状（已实测）：
+#   · 搜狗微信「按账号列文章」不可用 —— 查 SSDFans 返回
+#     「暂无相关的官方认证订阅号」，未认证的服务号/个人号搜不到。
+#   · 「按关键词搜文章」可用，结果里带公众号名和发布时间
+#     （公众号名在 span.all-time-y2，时间在 timeConvert('...')）。
+#   · 文章真链藏在 /link?url=... 后面，请求十几条就触发 IP 级反爬，
+#     且持续一段时间，所以只克制还原少量。
+#
+# 三级策略（见 src/ssdintel/fetch.py 的 collect_wechat / resolve_items）：
+#   L1 关键词轮询（免费、今天就能跑、但只适合做背景）
+#   L2 自建 WeRSS / WeWe RSS（需微信读书扫码，覆盖全、有真链和全文）
+#   L3 手动补录（100% 可靠，每天 2 分钟）
+#
+# 已排除的替代方案（都实测过，别再试）：
+#   · wechat2rss 公开服务：395 个号，但一个存储号都没有（偏安全/开发）
+#   · Google News RSS：本机连不上（ConnectTimeout）
+#   · Bing 网页 RSS：可以拿结果，但 filters 时间过滤在 RSS 模式下被忽略
+#   · 百度新闻：返回 2.6KB 跳转页，无结果
+#
+# tier 只是分级标注，不强制；keywords 是这个号的重点方向，
+# 用于 L1 阶段构造搜索词和 L3 阶段做匹配。
+# ==============================================================
+
+accounts:
+  # ---------- T1 · SSD 垂直技术号（信息密度最高） ----------
+  - name: SSDFans
+    tier: 1
+    keywords: [SSD, 主控, 固件, 企业级, 测评, FTL]
+
+  - name: 闪德资讯
+    tier: 1
+    keywords: [NAND, SSD, 主控, 颗粒, 存储]
+
+  - name: 全球SSD
+    tier: 1
+    keywords: [SSD, 主控, 颗粒, 新品]
+
+  - name: HOMOLAB存储狂热
+    tier: 1
+    keywords: [SSD, 测评, 主控, 颗粒, 拆解]
+
+  - name: 王知鱼
+    tier: 1
+    keywords: [存储, SSD, 主控, 行业]
+
+  - name: 存储随笔
+    tier: 1
+    keywords: [存储, SSD, NAND, 架构]
+
+  - name: SGDLSHSV
+    tier: 1
+    keywords: [SSD, 存储]
+
+  - name: 磊的收发室
+    tier: 1
+    keywords: [存储, SSD, 主控]
+
+  - name: 固态硬盘吧
+    tier: 1
+    keywords: [SSD, 固态硬盘, 主控, 颗粒, 测评]
+
+  - name: 斯托瑞吉
+    tier: 1
+    keywords: [存储, SSD]
+
+  - name: MicroComputer
+    tier: 1
+    keywords: [SSD, 存储, 主控, 硬件]
+
+  - name: 芯通社
+    tier: 1
+    keywords: [芯片, 存储, 主控]
+
+  # ---------- T2 · 产业媒体 ----------
+  - name: 闪存市场
+    tier: 2
+    keywords: [NAND, DRAM, 现货, 合约价, 供需]
+
+  - name: 集微网
+    tier: 2
+    keywords: [半导体, 存储, 芯片]
+
+  - name: 芯智讯
+    tier: 2
+    keywords: [芯片, 存储, 主控]
+
+  - name: 全球半导体观察
+    tier: 2
+    keywords: [半导体, 存储, 三星, 美光, 铠侠]
+
+  - name: 半导体行业联盟
+    tier: 2
+    keywords: [半导体, 封测, 存储]
+
+  # ---------- T3 · 厂商官方 ----------
+  - name: 慧荣科技
+    tier: 3
+    keywords: [主控, SM2508, 企业级, 消费级]
+
+  - name: 群联电子
+    tier: 3
+    keywords: [主控, E26, E31, 企业级]
+
+  - name: 联芸科技
+    tier: 3
+    keywords: [主控, MAP1602, 国产]
+
+  - name: 长江存储
+    tier: 3
+    keywords: [Xtacking, NAND, 颗粒, 致钛]
+
+  - name: 江波龙
+    tier: 3
+    keywords: [模组, SSD, 品牌, 企业级]
+
+# ---------- L1 关键词轮询用的搜索词 ----------
+# 搜狗微信搜索这些词，再按「账号名 + 关键词」做匹配入库。
+# 数量控制在 12-16 个，太多会被反爬拦（每个词之间会随机停 6-15 秒）。
+#
+# 分两组：产品/技术向 + 主控厂定向（需求 3：必须覆盖主控厂商一手信息）
+search_queries:
+  # 产品与技术
+  - SSD 主控
+  - PCIe 5.0 SSD
+  - QLC NAND
+  - 企业级 SSD
+  - SSD 封装
+  - 固态硬盘 新品
+  - AI 服务器 存储
+  # 颗粒与原厂
+  - 长江存储
+  - 致钛
+  - 铠侠 BiCS
+  # 主控厂定向
+  - 慧荣 主控
+  - 群联 主控
+  - 联芸 主控
+  - 英韧 InnoGrit

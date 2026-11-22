@@ -1,0 +1,16 @@
+{
+  "name": "SSD 情报日报",
+  "short_name": "SSD 日报",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fbfbf9",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

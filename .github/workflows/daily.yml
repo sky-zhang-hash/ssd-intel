@@ -1,0 +1,68 @@
+name: SSD 情报日报
+
+# 说明：这个文件放在 ssd-intel/ 里，等于假设**你把 ssd-intel 目录本身当作仓库根**。
+# 如果你是把整个 default-workspace 当仓库推上去的，所有路径前面要加 ssd-intel/。
+
+on:
+  schedule:
+    # UTC 00:10 = 北京时间 08:10，每天早上 8 点出报
+    - cron: "10 0 * * *"
+  workflow_dispatch: {}   # 也可以手动点一下立刻跑
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: 装依赖
+        run: pip install -r requirements.txt
+
+      # 把上一天的数据库和归档页带过来，跨源去重才有依据
+      - name: 恢复历史
+        uses: actions/cache@v4
+        with:
+          path: |
+            data
+            web/d
+          key: ssdintel-state-${{ github.run_id }}
+          restore-keys: ssdintel-state-
+
+      - name: 生成日报
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # 公众号走微信读书：把 Cookie 存进仓库 Secrets 的 WEREAD_COOKIE 即可。
+          # 没配也能跑，只是没有公众号那部分。
+          WEREAD_COOKIE: ${{ secrets.WEREAD_COOKIE }}
+        run: python run_daily.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
