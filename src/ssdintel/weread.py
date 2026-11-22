@@ -292,3 +292,34 @@ def collect(book_ids: dict[str, str], cookie: str, pages: int = 1,
         time.sleep(random.uniform(delay * 0.8, delay * 1.5))
 
     return items, health
+
+def cover_link(session: requests.Session, book_id: str) -> tuple[str, str]:
+    """每个号最新一篇：(标题, 原文链接)。
+
+    `/api/mp/cover` 不校验登录态，文章列表被限流时它还能用——所以留作兜底：
+    至少能把每号最新一篇的链接补上。
+    """
+    payload = _get(session, "/api/mp/cover", {"bookId": book_id}, timeout=20, retries=1)
+    title = str(payload.get("title") or "").strip()
+    token = _token_from_review(str(payload.get("reviewId") or ""), book_id)
+    if token.startswith("WR1") or len(token) > 40:
+        token = ""
+    return title, (f"https://mp.weixin.qq.com/s/{token}" if token else "")
+
+
+def cover_links(book_ids: dict[str, str], cookie: str, delay: float = 1.2) -> dict[str, str]:
+    """{归一化标题: 原文链接}，给 `Store.fill_missing_urls` 用。"""
+    from .models import _norm_title  # 局部导入，避免循环
+
+    session = new_session(cookie)
+    out: dict[str, str] = {}
+    for name, book_id in book_ids.items():
+        try:
+            title, url = cover_link(session, book_id)
+        except WereadError as e:
+            print(f"  [wx]  cover {name} 失败 {e}")
+            continue
+        if title and url:
+            out[_norm_title(title)] = url
+        time.sleep(delay)
+    return out

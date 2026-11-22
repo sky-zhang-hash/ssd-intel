@@ -175,6 +175,17 @@ def main() -> int:
         cleaned = store.drop_blank_urls()
         if cleaned:
             print(f"  清掉 {cleaned} 条没有原文链接的占位行")
+    else:
+        # 文章列表被限流时，/api/mp/cover 还能用：把每个号最新一篇的链接补上，
+        # 库里的条目就不用干等着。今晚（-2014）就是靠这条把链接找回来的。
+        if mode == "weread" and cookie and book_ids:
+            try:
+                by_title = weread.cover_links(book_ids, cookie)
+                filled = store.fill_missing_urls(by_title)
+                if filled:
+                    print(f"  用 cover 兜底补回 {filled} 条公众号原文链接")
+            except Exception as e:  # 兜底失败不影响主流程
+                print(f"  [wx]  cover 兜底失败：{e}")
     store.log_health(rss_health + wx_health)
     print(f"  新增入库 {added} 条")
 

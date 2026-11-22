@@ -129,6 +129,27 @@ class Store:
         self.conn.commit()
         return cur.rowcount
 
+    def fill_missing_urls(self, by_title: dict[str, str]) -> int:
+        """给「有内容但没链接」的条目补上原文链接。
+
+        `by_title` 的键是 `_norm_title` 归一化后的标题。文章列表接口被限流时，
+        `/api/mp/cover` 仍然可用，能拿到每个号最新一篇的 token——用它把库里
+        对应的那几条补上，剩下的等下次抓取再说。
+        """
+        if not by_title:
+            return 0
+        rows = self.conn.execute(
+            "SELECT uid, title FROM items WHERE COALESCE(url,'') = ''").fetchall()
+        filled = 0
+        for uid, title in rows:
+            url = by_title.get(_norm_title(title))
+            if not url:
+                continue
+            self.conn.execute("UPDATE items SET url = ? WHERE uid = ?", (url, uid))
+            filled += 1
+        self.conn.commit()
+        return filled
+
     def has_title_key(self, key: str) -> bool:
         cur = self.conn.execute("SELECT 1 FROM items WHERE title_key = ? LIMIT 1", (key,))
         return cur.fetchone() is not None
