@@ -61,7 +61,8 @@ def main() -> int:
                     help="公众号来源：weread=微信读书（全量，推荐）/ "
                          "sogou=关键词搜索（旧路径，时效不佳）/ auto=有 Cookie 就用 weread")
     ap.add_argument("--no-llm", action="store_true", help="跳过 LLM，出原始清单")
-    ap.add_argument("--hours", type=int, default=36, help="汇总最近多少小时（默认 36）")
+    ap.add_argument("--hours", type=int, default=168,
+                    help="汇总最近多少小时（默认 168 = 近一周）")
     ap.add_argument("--pages", type=int, default=1, help="每个搜索词翻几页")
     ap.add_argument("--max-age", type=int, default=10,
                     help="丢弃发布超过多少天的条目（默认 10；0=不过滤）")
@@ -142,6 +143,8 @@ def main() -> int:
     print("\n== 生成日报 ==")
     api_key = None if args.no_llm else os.environ.get("DEEPSEEK_API_KEY")
     payload = report_mod.build(fresh, date=date, api_key=api_key)
+    days = max(1, round(args.hours / 24))
+    payload["window"] = f"近 {days} 天" if days >= 2 else ""
 
     stats = {
         "items": len(fresh),

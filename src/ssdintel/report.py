@@ -59,6 +59,7 @@ SYSTEM_PROMPT = """你是资深 SSD / 存储行业分析师，为一位关注「
 - 正文、标题、watch 里**绝对不要出现「素材」「编号」「第 N 条」这类内部引用**。读者看不到编号，只有你手里有。直接说事情本身。
 - **同一件事被多家报道时合并成一条**，ref 填信息最全的那条，text 里可写「多家报道」；不要把同一件事拆成两三条分别复述。
 - 每节 3-5 条，全篇不超过 20 条。宁可不写，不要拿低价值素材凑数。
+- 素材可能覆盖最近几天（最多一周）：写每条事情的**最新进展**，不要按日期写流水账，也不要因为两天前报道过就整条丢掉；同一事件的早期报道与后续进展合成一条。
 - text 60-90 字，先事实、后影响，不要写"综上所述"。
 
 输出必须是 JSON，结构：
@@ -110,7 +111,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
         ],
         "temperature": 0.3,
         "response_format": {"type": "json_object"},
-        "max_tokens": 3000,
+        "max_tokens": 4000,
     }
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 

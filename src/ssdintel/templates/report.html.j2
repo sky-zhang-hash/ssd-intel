@@ -3,7 +3,7 @@
 {% block body %}
   <header>
     <div class="kicker">
-      <span>SSD 情报日报 · {{ r.date }}</span>
+      <span>SSD 情报日报 · {{ r.date }}{% if r.window %} · {{ r.window }}{% endif %}</span>
       <span class="badge">{{ 'AI 摘要' if r.mode == 'llm' else '原始清单' }}</span>
     </div>
     <h1>{{ r.headline }}</h1>
