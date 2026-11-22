@@ -186,8 +186,8 @@ def parse_articles(payload: dict) -> list[dict]:
             review = sub.get("review") or {}
             info = review.get("mpInfo") or {}
             title = (info.get("title") or "").strip()
-            token = _token_from_review(review.get("reviewId") or "") \
-                or _fix_token(info.get("originalId") or "")
+            # 只用 reviewId 里的 token；originalId（WR1 开头 76 位）拼出来是死链，不用
+            token = _token_from_review(review.get("reviewId") or "")
             if not title or not token:
                 continue
             out.append({
