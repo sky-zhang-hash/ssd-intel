@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SSD 情报日报</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SSD 日报">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<style>
+  :root{
+    --bg:#fbfbf9; --card:#fff; --fg:#191b1f; --muted:#525a66;
+    --line:#e7e4de; --accent:#0f766e; --warn:#b45309; --warn-bg:#fdf6e7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#111316; --card:#181b1f; --fg:#e8e9ea; --muted:#9098a3;
+           --line:#272b31; --accent:#5ec9bd; --warn:#e0a458; --warn-bg:#241d10; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:400 16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",
+         "Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 20px 72px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  header{padding:28px 0 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+          display:flex;justify-content:space-between;align-items:center}
+  .badge{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted);
+         letter-spacing:0;text-transform:none}
+  h1{font-size:22px;line-height:1.5;margin:10px 0 0;font-weight:650;letter-spacing:-.01em}
+  h2{font-size:13px;letter-spacing:.1em;color:var(--accent);margin:34px 0 12px;font-weight:650}
+  .point{padding:14px 0;border-bottom:1px solid var(--line)}
+  .point:last-child{border-bottom:none}
+  .pt-text{margin:0;font-size:16px}
+  .impact{margin:8px 0 0;font-size:14px;color:var(--muted);
+          padding-left:11px;border-left:2px solid var(--accent)}
+  .meta{margin:10px 0 0;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;
+        gap:8px;align-items:center}
+  /* 来源 + 发布时间 + ↗ 合成一个链接：读者点它到原网页。
+     宽度占满一行，标签和 ☆ 落到第二行，避免在窄屏上挤成一团。 */
+  .meta .src,.meta .nosrc{flex-basis:100%}
+  .meta .src{color:var(--accent);text-decoration:none;border:0;
+             display:flex;align-items:baseline;gap:5px;
+             padding:8px 0 7px;min-height:32px;font-variant-numeric:tabular-nums}
+  /* 下划线只画在文字下面，不要横贯整行（那样看着像分隔线） */
+  .meta .src .lbl{display:inline-flex;align-items:baseline;gap:5px;
+                  border-bottom:1px solid var(--accent)}
+  .meta .src .when{color:var(--muted)}
+  .meta .src .ext{font-size:12px;line-height:1}
+  .meta .src:active{opacity:.55}
+  .meta .nosrc{display:inline-block;padding:6px 0 4px}
+  .meta .fav{margin-left:auto}
+  .tag{font-size:12px;padding:1px 7px;border-radius:4px;background:var(--line);color:var(--muted)}
+  /* 「全部」页：纯清单，标题本身就是原文链接 */
+  .pt-text a.title{color:var(--ink);text-decoration:none;display:inline-block;padding:3px 0}
+  .pt-text a.title:active{opacity:.6}
+  h2 .cnt{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+  .note p{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 4px}
+  .watch{background:var(--warn-bg);border-radius:10px;padding:14px 16px;margin-top:34px}
+  .watch h3{margin:0 0 8px;font-size:13px;color:var(--warn);letter-spacing:.06em}
+  .watch li{font-size:14px;margin:6px 0}
+  .watch ul{margin:0;padding-left:18px}
+  .price{margin-top:26px;font-size:13px;color:var(--muted);
+         padding:12px 14px;background:var(--card);border-radius:10px;border:1px solid var(--line)}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+         font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--muted)}
+  /* 归档 / 收藏两屏的列表行 */
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+       padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+  .row:last-child{border-bottom:none}
+  .row .day{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);flex:none}
+  .row .head{font-size:15px;line-height:1.55}
+  .row:active .head{color:var(--accent)}
+
+  :root{ --nav-h:56px; --safe:env(safe-area-inset-bottom,0px); }
+  body{ padding-bottom:calc(var(--nav-h) + var(--safe) + 28px) }
+  .nav{ position:fixed; left:0; right:0; bottom:0; z-index:50;
+        display:flex; background:var(--card); border-top:1px solid var(--line);
+        padding-bottom:var(--safe); }
+  .nav a{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+          padding:9px 0 8px; text-decoration:none; color:var(--muted);
+          font-size:12px; letter-spacing:.02em; -webkit-tap-highlight-color:transparent }
+  .nav a.on{ color:var(--accent) }
+  .nav svg{ width:22px; height:22px; stroke:currentColor; fill:none;
+            stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
+  .nav a.on svg{ fill:color-mix(in srgb, var(--accent) 14%, transparent) }
+  .fav{ background:none; border:0; padding:0; margin-left:2px; cursor:pointer;
+        color:var(--muted); font-size:16px; line-height:1;
+        min-width:30px; min-height:30px; display:inline-flex;
+        align-items:center; justify-content:center;
+        -webkit-tap-highlight-color:transparent }
+  .fav[aria-pressed="true"]{ color:var(--accent) }
+  .empty{ color:var(--muted); font-size:14px; padding:28px 0 }
+
+  @media (prefers-color-scheme: dark){
+    .nav{ background:var(--card) }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">
+      <span>SSD 情报日报 · 全部素材 · 近 7 天</span>
+      <span class="badge">33 条</span>
+    </div>
+    <h1>这一周的所有原始条目</h1>
+  </header>
+
+  <section class="note">
+    <p>只做了两道筛选：跟 SSD 有关、时间在窗口内。没有摘要、没有排序偏好，按日期倒序，点标题或来源名到原文。</p>
+  </section>
+
+  <section>
+    <h2>11月22日 周日<span class="cnt">4 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR1Cst0Qc6fV4lF3lfEzh07dChmDBy37C6kY2NfCZj6cLFFE28mB2m0bmGoGFlx2Ua978CVU2c4" target="_blank" rel="noopener noreferrer">【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR1Cst0Qc6fV4lF3lfEzh07dChmDBy37C6kY2NfCZj6cLFFE28mB2m0bmGoGFlx2Ua978CVU2c4" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">全球半导体观察<span class="when">今天 12:44</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR1Cst0Qc6fV4lF3lfEzh07dChmDBy37C6kY2NfCZj6cLFFE28mB2m0bmGoGFlx2Ua978CVU2c4" data-title="【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工"
+                data-source="全球半导体观察" data-time="今天 12:44"
+                data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" target="_blank" rel="noopener noreferrer">Phison Previews an SSD That Runs AI Frameworks on Its Own NPU</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">今天 09:23</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" data-title="Phison Previews an SSD That Runs AI Frameworks on Its Own NPU"
+                data-source="TechPowerUp" data-time="今天 09:23"
+                data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI8Mv3fo6Vd8fEGzhATJDfuCBQ1ctCQQFgwEy472EAlC7Ov8gt" target="_blank" rel="noopener noreferrer">NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI8Mv3fo6Vd8fEGzhATJDfuCBQ1ctCQQFgwEy472EAlC7Ov8gt" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">今天 07:31</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI8Mv3fo6Vd8fEGzhATJDfuCBQ1ctCQQFgwEy472EAlC7Ov8gt" data-title="NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%"
+                data-source="闪德资讯" data-time="今天 07:31"
+                data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" target="_blank" rel="noopener noreferrer">Max Out Your Gen 4 Slot: Predator GM7 NVMe SSD (Up to 7400 MB/s)</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">今天 06:27</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" data-title="Max Out Your Gen 4 Slot: Predator GM7 NVMe SSD (Up to 7400 MB/s)"
+                data-source="TechPowerUp" data-time="今天 06:27"
+                data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月21日 周六<span class="cnt">5 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer">美光新加坡HBM先进封装厂已接收首批设备：为2027年量产做好准备</a></p>
+      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">昨天 22:00</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光新加坡HBM先进封装厂已接收首批设备：为2027年量产做好准备"
+                data-source="超能网" data-time="昨天 22:00"
+                data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le22B3TgAyn7NDEXdA1LEzO0Kt68qF5P4c0FpY1PTDu69r3CIp" target="_blank" rel="noopener noreferrer">群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le22B3TgAyn7NDEXdA1LEzO0Kt68qF5P4c0FpY1PTDu69r3CIp" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">昨天 09:48</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le22B3TgAyn7NDEXdA1LEzO0Kt68qF5P4c0FpY1PTDu69r3CIp" data-title="群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计"
+                data-source="斯托瑞吉" data-time="昨天 09:48"
+                data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" target="_blank" rel="noopener noreferrer">NVIDIA&#39;s SSD Write Bug Gets Patched in GeForce Hotfix 621.35 Driver</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">昨天 07:50</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span>        <button class="fav" data-url="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" data-title="NVIDIA&#39;s SSD Write Bug Gets Patched in GeForce Hotfix 621.35 Driver"
+                data-source="TechPowerUp" data-time="昨天 07:50"
+                data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI0D33bR7bJ0Xj0gaCZT5FIEXi7Gj2PO920GmZBJHFAW15B0bO" target="_blank" rel="noopener noreferrer">长鑫DDR4内存不同颗粒性能差距不小，渠道商别大意了</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI0D33bR7bJ0Xj0gaCZT5FIEXi7Gj2PO920GmZBJHFAW15B0bO" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">昨天 07:31</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI0D33bR7bJ0Xj0gaCZT5FIEXi7Gj2PO920GmZBJHFAW15B0bO" data-title="长鑫DDR4内存不同颗粒性能差距不小，渠道商别大意了"
+                data-source="闪德资讯" data-time="昨天 07:31"
+                data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer">慧荣科技首次公开展示SM8466：旗下首款PCIe 6.0 SSD主控，面向数据中心应用</a></p>
+      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">昨天 00:39</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣科技首次公开展示SM8466：旗下首款PCIe 6.0 SSD主控，面向数据中心应用"
+                data-source="超能网" data-time="昨天 00:39"
+                data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月20日 周五<span class="cnt">7 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.tomshardware.com/pc-components/ssds/phison-details-ssd-with-a-built-in-npu-and-64gb-of-memory-that-supports-pytorch-and-llama-cpp-running-on-the-drive-second-design-merges-fast-pslc-cache-and-qlc-capacity-behind-one-controller" target="_blank" rel="noopener noreferrer">Phison details SSD with a built-in NPU and 64GB of memory that supports AI frameworks on the drive</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.tomshardware.com/pc-components/ssds/phison-details-ssd-with-a-built-in-npu-and-64gb-of-memory-that-supports-pytorch-and-llama-cpp-running-on-the-drive-second-design-merges-fast-pslc-cache-and-qlc-capacity-behind-one-controller" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">Tom&#39;s Hardware<span class="when">11-20 22:00</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://www.tomshardware.com/pc-components/ssds/phison-details-ssd-with-a-built-in-npu-and-64gb-of-memory-that-supports-pytorch-and-llama-cpp-running-on-the-drive-second-design-merges-fast-pslc-cache-and-qlc-capacity-behind-one-controller" data-title="Phison details SSD with a built-in NPU and 64GB of memory that supports AI frameworks on the drive"
+                data-source="Tom&#39;s Hardware" data-time="11-20 22:00"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="http://www.expreview.com/109607.html" target="_blank" rel="noopener noreferrer">美光释放存储市场供给信号：2027年供需形势将比今年更紧张</a></p>
+      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109607.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">11-20 20:19</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109607.html" data-title="美光释放存储市场供给信号：2027年供需形势将比今年更紧张"
+                data-source="超能网" data-time="11-20 20:19"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le6DHDQz6x42U11xe7dhETVFb41qXCz67Y4AXq91dAeU6t82oJ" target="_blank" rel="noopener noreferrer">慧荣科技展示 SM8466 PCIe 6.0 SSD 主控，预计 2028 年前出货</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le6DHDQz6x42U11xe7dhETVFb41qXCz67Y4AXq91dAeU6t82oJ" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-20 19:48</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2le6DHDQz6x42U11xe7dhETVFb41qXCz67Y4AXq91dAeU6t82oJ" data-title="慧荣科技展示 SM8466 PCIe 6.0 SSD 主控，预计 2028 年前出货"
+                data-source="斯托瑞吉" data-time="11-20 19:48"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.tomshardware.com/pc-components/ssds/score-a-huge-49-percent-saving-on-a-2tb-samsung-9100-pro-ssd-while-you-can-now-17-5-cents-per-gb-ultra-fast-gen-5-drive-is-the-perfect-pc-storage-upgrade-down-to-usd349-99" target="_blank" rel="noopener noreferrer">Score a huge 49% saving on a 2TB Samsung 9100 Pro SSD while you can</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.tomshardware.com/pc-components/ssds/score-a-huge-49-percent-saving-on-a-2tb-samsung-9100-pro-ssd-while-you-can-now-17-5-cents-per-gb-ultra-fast-gen-5-drive-is-the-perfect-pc-storage-upgrade-down-to-usd349-99" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">Tom&#39;s Hardware<span class="when">11-20 19:04</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span>        <button class="fav" data-url="https://www.tomshardware.com/pc-components/ssds/score-a-huge-49-percent-saving-on-a-2tb-samsung-9100-pro-ssd-while-you-can-now-17-5-cents-per-gb-ultra-fast-gen-5-drive-is-the-perfect-pc-storage-upgrade-down-to-usd349-99" data-title="Score a huge 49% saving on a 2TB Samsung 9100 Pro SSD while you can"
+                data-source="Tom&#39;s Hardware" data-time="11-20 19:04"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDXpAa82H57Qh0C70zyDMl00m0221wc0A09iR6DoFzN3hdCcp" target="_blank" rel="noopener noreferrer">SSD、内存价格持续走弱，存储周期触顶了吗？ | 闪德周评</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDXpAa82H57Qh0C70zyDMl00m0221wc0A09iR6DoFzN3hdCcp" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-20 10:00</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDXpAa82H57Qh0C70zyDMl00m0221wc0A09iR6DoFzN3hdCcp" data-title="SSD、内存价格持续走弱，存储周期触顶了吗？ | 闪德周评"
+                data-source="闪德资讯" data-time="11-20 10:00"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR1CBF8vAG3oFbL8KHDTQ1RJ8NfD23An584B6fS4Mx6asAOk9uo1ui6v1Ev15ED66eFgj6735VQ" target="_blank" rel="noopener noreferrer">美光新加坡HBM先进封装厂首部机台搬入，预计2027年初产出</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR1CBF8vAG3oFbL8KHDTQ1RJ8NfD23An584B6fS4Mx6asAOk9uo1ui6v1Ev15ED66eFgj6735VQ" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">芯智讯<span class="when">11-20 09:35</span><span class="ext">↗</span></span></a>
+<span class="tag">封装</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR1CBF8vAG3oFbL8KHDTQ1RJ8NfD23An584B6fS4Mx6asAOk9uo1ui6v1Ev15ED66eFgj6735VQ" data-title="美光新加坡HBM先进封装厂首部机台搬入，预计2027年初产出"
+                data-source="芯智讯" data-time="11-20 09:35"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" target="_blank" rel="noopener noreferrer">NAND Spot Prices Slide 20% in Weeks as Consumer Demand Dries Up</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">11-20 04:06</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span>        <button class="fav" data-url="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" data-title="NAND Spot Prices Slide 20% in Weeks as Consumer Demand Dries Up"
+                data-source="TechPowerUp" data-time="11-20 04:06"
+                data-date="2026-11-20" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月19日 周四<span class="cnt">2 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzICZT6yM4b14k57gT9o3ECmAdrD2z59d8gaEZJB946GRFFBEJV" target="_blank" rel="noopener noreferrer">算力芯片短缺拖累eSSD出货；PCIe 6.0主控亮相；3D堆叠提速AI；苹果签约五年锁定DRAM产能</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzICZT6yM4b14k57gT9o3ECmAdrD2z59d8gaEZJB946GRFFBEJV" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-19 10:00</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzICZT6yM4b14k57gT9o3ECmAdrD2z59d8gaEZJB946GRFFBEJV" data-title="算力芯片短缺拖累eSSD出货；PCIe 6.0主控亮相；3D堆叠提速AI；苹果签约五年锁定DRAM产能"
+                data-source="闪德资讯" data-time="11-19 10:00"
+                data-date="2026-11-19" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" target="_blank" rel="noopener noreferrer">Microchip Flashtec NVMe 4016 Controller Features 16 NAND Channels and Over 14 GB/s</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">StorageReview<span class="when">11-19 03:10</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" data-title="Microchip Flashtec NVMe 4016 Controller Features 16 NAND Channels and Over 14 GB/s"
+                data-source="StorageReview" data-time="11-19 03:10"
+                data-date="2026-11-19" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月18日 周三<span class="cnt">3 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR16tw3VhCni0vT8EL3UoBfB3Qf0HX3r18Hw0uY78v279AA840mCRw2rp1Jl9eoDFhDgzCdk6oC" target="_blank" rel="noopener noreferrer">3D NAND结构也能做CiM计算？</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR16tw3VhCni0vT8EL3UoBfB3Qf0HX3r18Hw0uY78v279AA840mCRw2rp1Jl9eoDFhDgzCdk6oC" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">SGDLSHSV<span class="when">11-18 23:16</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR16tw3VhCni0vT8EL3UoBfB3Qf0HX3r18Hw0uY78v279AA840mCRw2rp1Jl9eoDFhDgzCdk6oC" data-title="3D NAND结构也能做CiM计算？"
+                data-source="SGDLSHSV" data-time="11-18 23:16"
+                data-date="2026-11-18" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" target="_blank" rel="noopener noreferrer">SSSTC PQ2 Brings KIOXIA BiCS FLASH 8 QLC to Industrial M.2 SSDs at Up to 7,000MB/s</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">StorageReview<span class="when">11-18 21:27</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" data-title="SSSTC PQ2 Brings KIOXIA BiCS FLASH 8 QLC to Industrial M.2 SSDs at Up to 7,000MB/s"
+                data-source="StorageReview" data-time="11-18 21:27"
+                data-date="2026-11-18" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.storagereview.com/news/qnap-es1686adc-3u-16-bay-sas-u3-nvme-dual-controller-zfs-array" target="_blank" rel="noopener noreferrer">QNAP ES1686Adc Opens All 16 SAS Bays to Dual-Port U.3 NVMe in a 3U Active-Active Array</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.storagereview.com/news/qnap-es1686adc-3u-16-bay-sas-u3-nvme-dual-controller-zfs-array" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">StorageReview<span class="when">11-18 20:39</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/qnap-es1686adc-3u-16-bay-sas-u3-nvme-dual-controller-zfs-array" data-title="QNAP ES1686Adc Opens All 16 SAS Bays to Dual-Port U.3 NVMe in a 3U Active-Active Array"
+                data-source="StorageReview" data-time="11-18 20:39"
+                data-date="2026-11-18" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月17日 周二<span class="cnt">5 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR114j1X1DqmEtS38i37KFbL5ln3iv6Bl8uI97iCcT7hoEjUEVeF4X6bQFnqE306drDa00Il0AH" target="_blank" rel="noopener noreferrer">稳态波动仅0.77%、低延迟、高耐久！PE522 PCIe 5.0 SSD深度测试</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR114j1X1DqmEtS38i37KFbL5ln3iv6Bl8uI97iCcT7hoEjUEVeF4X6bQFnqE306drDa00Il0AH" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">MicroComputer<span class="when">11-17 21:50</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR114j1X1DqmEtS38i37KFbL5ln3iv6Bl8uI97iCcT7hoEjUEVeF4X6bQFnqE306drDa00Il0AH" data-title="稳态波动仅0.77%、低延迟、高耐久！PE522 PCIe 5.0 SSD深度测试"
+                data-source="MicroComputer" data-time="11-17 21:50"
+                data-date="2026-11-17" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca8LO9WRFRjDeCBeZC2NDLR2SM3YTGzJ4pICwwCUA36R1uVCZJ" target="_blank" rel="noopener noreferrer">弱需求下个别存储厂商竞价较为激进，本周eMMC、部分行业SSD、LPDDR4X现货价格承压下行</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca8LO9WRFRjDeCBeZC2NDLR2SM3YTGzJ4pICwwCUA36R1uVCZJ" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">中国闪存市场<span class="when">11-17 18:25</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca8LO9WRFRjDeCBeZC2NDLR2SM3YTGzJ4pICwwCUA36R1uVCZJ" data-title="弱需求下个别存储厂商竞价较为激进，本周eMMC、部分行业SSD、LPDDR4X现货价格承压下行"
+                data-source="中国闪存市场" data-time="11-17 18:25"
+                data-date="2026-11-17" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIFarFuT7VT4gVA7D97l7BNGVT2wQB9A0gHETQ7FG44EBR18I4" target="_blank" rel="noopener noreferrer">NAND现货大跌超20%；游戏大厂拿下14亿闪存订单；压力山大，存储涨价鲸吞汽车利润</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIFarFuT7VT4gVA7D97l7BNGVT2wQB9A0gHETQ7FG44EBR18I4" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-17 09:30</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIFarFuT7VT4gVA7D97l7BNGVT2wQB9A0gHETQ7FG44EBR18I4" data-title="NAND现货大跌超20%；游戏大厂拿下14亿闪存订单；压力山大，存储涨价鲸吞汽车利润"
+                data-source="闪德资讯" data-time="11-17 09:30"
+                data-date="2026-11-17" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM11m4bzAfT6w7FOF55w74D9ED4Bo0Gx4xj1gj5t35TdDJo8fr" target="_blank" rel="noopener noreferrer">1002174：控股子公司签超14亿元闪存颗粒采购订单</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM11m4bzAfT6w7FOF55w74D9ED4Bo0Gx4xj1gj5t35TdDJo8fr" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">集微网<span class="when">11-17 07:15</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM11m4bzAfT6w7FOF55w74D9ED4Bo0Gx4xj1gj5t35TdDJo8fr" data-title="1002174：控股子公司签超14亿元闪存颗粒采购订单"
+                data-source="集微网" data-time="11-17 07:15"
+                data-date="2026-11-17" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sMCj2F9BBJB8Xp05T154EMT0URCnR9z9G7qCTn3Mx5Rl7wL9EY" target="_blank" rel="noopener noreferrer">上海存储芯片公司，筹划香港上市</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sMCj2F9BBJB8Xp05T154EMT0URCnR9z9G7qCTn3Mx5Rl7wL9EY" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">集微网<span class="when">11-17 07:15</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sMCj2F9BBJB8Xp05T154EMT0URCnR9z9G7qCTn3Mx5Rl7wL9EY" data-title="上海存储芯片公司，筹划香港上市"
+                data-source="集微网" data-time="11-17 07:15"
+                data-date="2026-11-17" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月16日 周一<span class="cnt">3 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR10IdBteDGQ8do5JVFDzGpa0cV6PlFMd5XxAvB3CB1iGCUL1hp89BD9T0Nn4yGFcC3meDa7GFx" target="_blank" rel="noopener noreferrer">SSD主控厂商，易主</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR10IdBteDGQ8do5JVFDzGpa0cV6PlFMd5XxAvB3CB1iGCUL1hp89BD9T0Nn4yGFcC3meDa7GFx" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">全球SSD<span class="when">11-16 15:31</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR10IdBteDGQ8do5JVFDzGpa0cV6PlFMd5XxAvB3CB1iGCUL1hp89BD9T0Nn4yGFcC3meDa7GFx" data-title="SSD主控厂商，易主"
+                data-source="全球SSD" data-time="11-16 15:31"
+                data-date="2026-11-16" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDWz0wj10cCxK8fCGpo5nlGNcBBm3HF7NEDWm6mb4ZJ9eE8zH" target="_blank" rel="noopener noreferrer">显卡巨头Q4供货恐大减50%；DRAM原厂：Q4服务器需求依旧强劲；又一品牌官宣涨价；PC均价涨至7759元</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDWz0wj10cCxK8fCGpo5nlGNcBBm3HF7NEDWm6mb4ZJ9eE8zH" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-16 10:01</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzIDWz0wj10cCxK8fCGpo5nlGNcBBm3HF7NEDWm6mb4ZJ9eE8zH" data-title="显卡巨头Q4供货恐大减50%；DRAM原厂：Q4服务器需求依旧强劲；又一品牌官宣涨价；PC均价涨至7759元"
+                data-source="闪德资讯" data-time="11-16 10:01"
+                data-date="2026-11-16" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM0M2Bpv0lZB6iDfa42ADjQ74NEeH6hoDTf22KDmDBAlCw40S8" target="_blank" rel="noopener noreferrer">002174：子公司超14亿采购闪存颗粒</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM0M2Bpv0lZB6iDfa42ADjQ74NEeH6hoDTf22KDmDBAlCw40S8" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">集微网<span class="when">11-16 07:12</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR14ao5h9DXc4tEAyvAfa73h4sM0M2Bpv0lZB6iDfa42ADjQ74NEeH6hoDTf22KDmDBAlCw40S8" data-title="002174：子公司超14亿采购闪存颗粒"
+                data-source="集微网" data-time="11-16 07:12"
+                data-date="2026-11-16" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月15日 周日<span class="cnt">1 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2leDOsEwOBybAogABw1eUAUO1Ur3jq1ygAXIC8W0Ci2dODl0CUm" target="_blank" rel="noopener noreferrer">Samsung V10 BV-NAND：突破 400 层，拓展 AI 存储的边界</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2leDOsEwOBybAogABw1eUAUO1Ur3jq1ygAXIC8W0Ci2dODl0CUm" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-15 09:00</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR17AgF2HAyc45D0nE7HXGeh2leDOsEwOBybAogABw1eUAUO1Ur3jq1ygAXIC8W0Ci2dODl0CUm" data-title="Samsung V10 BV-NAND：突破 400 层，拓展 AI 存储的边界"
+                data-source="斯托瑞吉" data-time="11-15 09:00"
+                data-date="2026-11-15" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
+    <h2>11月13日 周五<span class="cnt">3 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca0xiEvr1oJ7Cv7cw0eL3uE3oA3oaBOA9kG0E4B6o5eT17W4DB" target="_blank" rel="noopener noreferrer">应用材料：先进DRAM正成为AI设备周期中的最强增量；中芯国际：2027年代工产能预计紧张；苹果更新以旧换新价格</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca0xiEvr1oJ7Cv7cw0eL3uE3oA3oaBOA9kG0E4B6o5eT17W4DB" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">中国闪存市场<span class="when">11-13 18:29</span><span class="ext">↗</span></span></a>
+<span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR19TB6L2CUKACo5F65hf3KO1Ca0xiEvr1oJ7Cv7cw0eL3uE3oA3oaBOA9kG0E4B6o5eT17W4DB" data-title="应用材料：先进DRAM正成为AI设备周期中的最强增量；中芯国际：2027年代工产能预计紧张；苹果更新以旧换新价格"
+                data-source="中国闪存市场" data-time="11-13 18:29"
+                data-date="2026-11-13" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR1ErME8A8MtASrBYR6mjDFY9AT9T5EIC8zXEE7BpzDwP4ph56i3jwFmRAb5CuH3z35T3COeGuO" target="_blank" rel="noopener noreferrer">会员资讯｜锐盟压电风扇MagicCool™，赋能高速SSD 满血性能</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR1ErME8A8MtASrBYR6mjDFY9AT9T5EIC8zXEE7BpzDwP4ph56i3jwFmRAb5CuH3z35T3COeGuO" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪存市场<span class="when">11-13 17:17</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR1ErME8A8MtASrBYR6mjDFY9AT9T5EIC8zXEE7BpzDwP4ph56i3jwFmRAb5CuH3z35T3COeGuO" data-title="会员资讯｜锐盟压电风扇MagicCool™，赋能高速SSD 满血性能"
+                data-source="闪存市场" data-time="11-13 17:17"
+                data-date="2026-11-13" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI6vS1FPDn12285tJ6430dTBZ24K82MZC0fFHD0ukGtU5a7FFn" target="_blank" rel="noopener noreferrer">从LPDDR到HBM，昂科存储测试设备布局覆盖多元应用场景</a></p>
+      <p class="meta">
+        <a class="src" href="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI6vS1FPDn12285tJ6430dTBZ24K82MZC0fFHD0ukGtU5a7FFn" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-13 09:30</span><span class="ext">↗</span></span></a>
+<span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/WR111U0bj2A95lGElvE0pDzFGzI6vS1FPDn12285tJ6430dTBZ24K82MZC0fFHD0ukGtU5a7FFn" data-title="从LPDDR到HBM，昂科存储测试设备布局覆盖多元应用场景"
+                data-source="闪德资讯" data-time="11-13 09:30"
+                data-date="2026-11-13" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+
+
+  <footer class="foot">
+    <span>33 条素材 / 14 个源</span>
+    <span>2026-11-22 21:20 生成</span>
+  </footer>
+</div>
+<nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./all.html" class="on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>全部</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
+
+<script>
+(function(){
+  var KEY = 'ssd.fav.v1';
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+  }
+  function save(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch(e){}
+  }
+  function mark(btn, on){
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? '★' : '☆';
+    btn.title = on ? '取消收藏' : '收藏';
+  }
+  function markAll(){
+    var saved = load().map(function(x){ return x.url; });
+    document.querySelectorAll('.fav').forEach(function(b){
+      mark(b, saved.indexOf(b.dataset.url || '') >= 0);
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('.fav') : null;
+    if (!btn) return;
+    e.preventDefault();
+    var url = btn.dataset.url || '';
+    if (!url) return;
+    var list = load();
+    var i = -1;
+    for (var k = 0; k < list.length; k++) if (list[k].url === url) { i = k; break; }
+    if (i >= 0) list.splice(i, 1);
+    else list.unshift({
+      url: url,
+      title: btn.dataset.title || '',
+      source: btn.dataset.source || '',
+      date: btn.dataset.date || '',
+      time: btn.dataset.time || ''
+    });
+    save(list);
+    mark(btn, i < 0);
+    // 在收藏页取消收藏时，把那条直接摘掉
+    if (i >= 0) {
+      var row = btn.closest('.point');
+      if (row && document.querySelector('#fav-list')) {
+        row.parentNode.removeChild(row);
+        if (!document.querySelector('#fav-list .point')) renderFav();
+      }
+    }
+  });
+
+  function esc(s){
+    return String(s || '').replace(/[<>&"]/g, function(c){
+      return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];
+    });
+  }
+
+  function renderFav(){
+    var list = document.querySelector('#fav-list');
+    if (!list) return;
+    var items = load();
+    if (!items.length){
+      list.innerHTML = '<p class="empty">还没有收藏。在今日日报里点条目右侧的 ☆ 就能存到这里。</p>';
+      return;
+    }
+    list.innerHTML = items.map(function(x){
+      var when = x.time || x.date || '';
+      return '<div class="point"><p class="pt-text">'
+        + '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">'
+        + esc(x.title || x.url) + '</a></p>'
+        + '<p class="meta"><a class="src" href="' + esc(x.url) + '" target="_blank" rel="noopener">'
+        + '<span class="lbl">' + esc(x.source) + (when ? '<span class="when">' + esc(when)
+        + '</span>' : '') + '<span class="ext">↗</span></span></a>'
+        + '<button class="fav" data-url="' + esc(x.url) + '" data-title="'
+        + esc(x.title) + '" data-source="' + esc(x.source) + '" data-date="'
+        + esc(x.date) + '" data-time="' + esc(x.time) + '"'
+        + ' aria-pressed="true" title="取消收藏">★</button></p></div>';
+    }).join('');
+    markAll();
+  }
+
+  markAll();
+  renderFav();
+})();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker
+      .register('./sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>

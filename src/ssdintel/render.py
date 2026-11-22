@@ -50,8 +50,9 @@ def _env() -> Environment:
 
 
 def render(report: dict, out_dir: str | Path, stats: dict | None = None,
-           archive: bool = True, reports: list[dict] | None = None) -> Path:
-    """生成三屏 PWA：今日（index）/ 归档 / 收藏，外加子目录里的历史页。"""
+           archive: bool = True, reports: list[dict] | None = None,
+           groups: list[dict] | None = None) -> Path:
+    """生成 PWA：今日 / 全部 / 归档 / 收藏，外加子目录里的历史页。"""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     env = _env()
@@ -72,6 +73,16 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     index.write_text(page(
         "report.html.j2", "today", "./",
         r=report, stats=stats or {},
+    ), encoding="utf-8")
+
+    # 全部：这一周未经摘要的原始条目，按日期分组
+    rows_all = list(groups or [])
+    total = sum(len(g["rows"]) for g in rows_all)
+    sources = len({it["source"] for g in rows_all for it in g["rows"]})
+    (out / "all.html").write_text(page(
+        "all.html.j2", "all", "./",
+        groups=rows_all, total=total, sources=sources,
+        window=report.get("window") or "",
     ), encoding="utf-8")
 
     # 历史页（放在 d/ 下，根路径要回退一级）
@@ -110,7 +121,7 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     # PWA：service worker 做外壳缓存——断网也能看到最近一次打开的那屏
     (out / "sw.js").write_text(
         "const C='ssd-intel-v2';"
-        "const SHELL=['./index.html','./archive.html','./fav.html','./manifest.webmanifest'];"
+        "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./manifest.webmanifest'];"
         "self.addEventListener('install',e=>e.waitUntil("
         "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"
         "self.addEventListener('activate',e=>e.waitUntil("

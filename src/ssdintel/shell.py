@@ -43,12 +43,14 @@ ICON_ARCHIVE = ('<svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/>'
                 '<path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg>')
 ICON_FAV = ('<svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7'
             '-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg>')
+ICON_ALL = ('<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>')
 
 
 def nav_html(active: str, root: str = "./") -> str:
-    """active ∈ {today, archive, fav}；root 用于子目录页面的相对路径。"""
+    """active ∈ {today, all, archive, fav}；root 用于子目录页面的相对路径。"""
     items = (
         ("today", "今日", root + "index.html", ICON_TODAY),
+        ("all", "全部", root + "all.html", ICON_ALL),
         ("archive", "归档", root + "archive.html", ICON_ARCHIVE),
         ("fav", "收藏", root + "fav.html", ICON_FAV),
     )

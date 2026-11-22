@@ -52,6 +52,42 @@ def load_env(path: Path) -> None:
         os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
+WEEKDAY = "一二三四五六日"
+
+
+def local_day(iso: str) -> tuple[str, str]:
+    """(排序键, 显示标签)：("2026-11-22", "11月22日 周六")。"""
+    if not iso:
+        return "", "日期未知"
+    try:
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone()
+    except ValueError:
+        return iso[:10], iso[:10]
+    return dt.strftime("%Y-%m-%d"), f"{dt.month}月{dt.day}日 周{WEEKDAY[dt.weekday()]}"
+
+
+def group_by_day(items, date_str: str) -> list[dict]:
+    """「全部」页用：按本地日期分组，组内按时间倒序。"""
+    buckets: dict[tuple[str, str], list] = {}
+    for it in items:
+        buckets.setdefault(local_day(it.published), []).append(it)
+    groups = []
+    for key, label in sorted(buckets, key=lambda k: k[0], reverse=True):
+        rows = sorted(buckets[(key, label)], key=lambda x: x.published or "", reverse=True)
+        groups.append({
+            "date": key or label,
+            "label": label,
+            "rows": [{
+                "title": it.title,
+                "url": it.url,
+                "source": it.source,
+                "time": report_mod.local_time(it.published, date_str),
+                "cats": list(it.categories or []),
+            } for it in rows],
+        })
+    return groups
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="SSD 情报日报")
     ap.add_argument("--no-wechat", action="store_true",
@@ -152,7 +188,8 @@ def main() -> int:
         "raw": len(raw),
     }
     index = render.render(payload, ROOT / "web", stats=stats,
-                          reports=store.list_reports())
+                          reports=store.list_reports(),
+                          groups=group_by_day(fresh, date))
     store.save_report(date, payload, index.read_text(encoding="utf-8"))
 
     store.purge_old(args.keep_days)

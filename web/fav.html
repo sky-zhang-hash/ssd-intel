@@ -58,6 +58,11 @@
   .meta .nosrc{display:inline-block;padding:6px 0 4px}
   .meta .fav{margin-left:auto}
   .tag{font-size:12px;padding:1px 7px;border-radius:4px;background:var(--line);color:var(--muted)}
+  /* 「全部」页：纯清单，标题本身就是原文链接 */
+  .pt-text a.title{color:var(--ink);text-decoration:none;display:inline-block;padding:3px 0}
+  .pt-text a.title:active{opacity:.6}
+  h2 .cnt{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+  .note p{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 4px}
   .watch{background:var(--warn-bg);border-radius:10px;padding:14px 16px;margin-top:34px}
   .watch h3{margin:0 0 8px;font-size:13px;color:var(--warn);letter-spacing:.06em}
   .watch li{font-size:14px;margin:6px 0}
@@ -116,7 +121,7 @@
   <footer>
     <span>收藏只存在本机浏览器里，换设备或清缓存会丢</span>
   </footer></div>
-<nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html" class="on"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
+<nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./all.html"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>全部</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html" class="on"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
 
 <script>
 (function(){

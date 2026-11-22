@@ -1,0 +1,42 @@
+{% extends "base.html.j2" %}
+{% block body %}
+  <header>
+    <div class="kicker">
+      <span>SSD 情报日报 · 全部素材{% if window %} · {{ window }}{% endif %}</span>
+      <span class="badge">{{ total }} 条</span>
+    </div>
+    <h1>这一周的所有原始条目</h1>
+  </header>
+
+  <section class="note">
+    <p>只做了两道筛选：跟 SSD 有关、时间在窗口内。没有摘要、没有排序偏好，按日期倒序，点标题或来源名到原文。</p>
+  </section>
+
+  {% for g in groups %}
+  <section>
+    <h2>{{ g.label }}<span class="cnt">{{ g.rows|length }} 条</span></h2>
+    {% for it in g.rows %}
+    <article class="point">
+      <p class="pt-text"><a class="title" href="{{ it.url }}" target="_blank" rel="noopener noreferrer">{{ it.title }}</a></p>
+      <p class="meta">
+        <a class="src" href="{{ it.url }}" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">{{ it.source }}{% if it.time %}<span class="when">{{ it.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
+        {% for c in it.cats %}<span class="tag">{{ c }}</span>{% endfor %}
+        <button class="fav" data-url="{{ it.url }}" data-title="{{ it.title }}"
+                data-source="{{ it.source }}" data-time="{{ it.time }}"
+                data-date="{{ g.date }}" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  {% if not groups %}
+  <p class="empty">这一周还没有素材。</p>
+  {% endif %}
+
+  <footer class="foot">
+    <span>{{ total }} 条素材 / {{ sources }} 个源</span>
+    <span>{{ generated }} 生成</span>
+  </footer>
+{% endblock %}
