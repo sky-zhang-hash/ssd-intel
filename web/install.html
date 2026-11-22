@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-22 23:17">
+<meta name="built" content="2026-11-22 23:23">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -310,8 +310,9 @@
   document.addEventListener('touchend', end, {passive:true});
   document.addEventListener('touchcancel', end, {passive:true});
 
-  // 电脑上没有下拉手势，放一个等价的文字链接（手机上不显示）
-  if (!('ontouchstart' in window)) {
+  // 除了下拉手势，再放一个等价的文字链接：手机上也留着（下拉不好发现），
+  // 电脑上就是唯一入口。
+  {
     var wrap = document.querySelector('.wrap');
     if (wrap) {
       var p = document.createElement('p');

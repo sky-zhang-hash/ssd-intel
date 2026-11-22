@@ -248,8 +248,9 @@ PULL_JS = """
   document.addEventListener('touchend', end, {passive:true});
   document.addEventListener('touchcancel', end, {passive:true});
 
-  // 电脑上没有下拉手势，放一个等价的文字链接（手机上不显示）
-  if (!('ontouchstart' in window)) {
+  // 除了下拉手势，再放一个等价的文字链接：手机上也留着（下拉不好发现），
+  // 电脑上就是唯一入口。
+  {
     var wrap = document.querySelector('.wrap');
     if (wrap) {
       var p = document.createElement('p');
