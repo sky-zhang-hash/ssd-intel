@@ -129,19 +129,32 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     for name, data in icons.all_icons().items():
         (out / name).write_bytes(data)
 
-    # PWA：service worker 做外壳缓存——断网也能看到最近一次打开的那屏
+    # PWA：service worker
+    #  HTML 走"网络优先"——页面内容每天变，缓存只做断网兜底；
+    #  图标 / manifest 这类静态资源走"缓存优先 + 后台更新"。
     (out / "sw.js").write_text(
-        "const C='ssd-intel-v2';"
+        "const C='ssd-intel-v3';"
         "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./install.html','./manifest.webmanifest'];"
         "self.addEventListener('install',e=>e.waitUntil("
         "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"
         "self.addEventListener('activate',e=>e.waitUntil("
-        "caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))));"
+        "caches.keys()"
+        ".then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))"
+        ".then(()=>self.clients.claim())));"
+        "function put(req,resp){const cp=resp.clone();caches.open(C).then(c=>c.put(req,cp));}"
         "self.addEventListener('fetch',e=>{"
-        "if(e.request.method!=='GET')return;"
-        "e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{"
-        "const cp=resp.clone();caches.open(C).then(c=>c.put(e.request,cp));return resp;"
-        "}).catch(()=>caches.match('./index.html'))))});",
+        "const req=e.request;"
+        "if(req.method!=='GET')return;"
+        "const isDoc=req.mode==='navigate'||(req.headers.get('accept')||'').includes('text/html');"
+        "if(isDoc){"
+        "e.respondWith(fetch(req,{cache:'no-store'})"
+        ".then(r=>{put(req,r);return r;})"
+        ".catch(()=>caches.match(req).then(r=>r||caches.match('./index.html'))));"
+        "return;}"
+        "e.respondWith(caches.match(req).then(r=>{"
+        "const net=fetch(req).then(resp=>{put(req,resp);return resp;}).catch(()=>r);"
+        "return r||net;}));"
+        "});",
         encoding="utf-8",
     )
 

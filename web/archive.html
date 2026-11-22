@@ -253,8 +253,24 @@
 
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker
-      .register('./sw.js').catch(() => {}));
+    window.addEventListener('load', () => {
+      // updateViaCache:'none' —— 别让浏览器拿缓存里的 sw.js，否则旧缓存策略会一直压着新版本
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+        .then(reg => {
+          // 从后台切回来时主动查一次更新（PWA 常常挂在后台好几天）
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') reg.update().catch(() => {});
+          });
+        })
+        .catch(() => {});
+      // 新版本接管后自动重载一次：否则用户看到的还是旧缓存那屏
+      let swapped = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (swapped) return;
+        swapped = true;
+        location.reload();
+      });
+    });
   }
 </script>
 </body>
