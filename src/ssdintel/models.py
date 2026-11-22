@@ -108,6 +108,18 @@ class Store:
         self.conn.commit()
         return added
 
+    def blank_bad_wechat_urls(self) -> int:
+        """把 `originalId` 拼出来的坏链（/s/WR1...）清空，幂等。
+
+        微信读书的 `mpInfo.originalId` 不是真 token，拼出来的链打开是「参数错误」；
+        真正的 token 在 `reviewId` 末段（见 `weread._token_from_review`）。
+        清空后条目仍然展示，只是没有 ↗ 链接，等 Cookie 有效时抓取会补上真链。
+        """
+        cur = self.conn.execute(
+            "UPDATE items SET url = '' WHERE url LIKE '%mp.weixin.qq.com/s/WR%'")
+        self.conn.commit()
+        return cur.rowcount
+
     def drop_blank_urls(self) -> int:
         """清掉占位行（原文链接拿不到时先留内容、URL 置空）。
 

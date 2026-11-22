@@ -167,6 +167,9 @@ def main() -> int:
     # 只还原要上日报的那几条真链，别每条都打一次搜狗
     deduped = fetch.resolve_items(deduped, session=session)
 
+    # 老版本用 originalId 拼的公众号链接一律「参数错误」，先清空（幂等）
+    if store.blank_bad_wechat_urls():
+        print("  清掉了早先拼错的公众号链接")
     added = store.upsert_items(deduped)
     if wx_items:  # 这轮真抓到公众号文章了，说明占位行（url 空）可以退休
         cleaned = store.drop_blank_urls()
