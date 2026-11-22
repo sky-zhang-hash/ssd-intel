@@ -301,10 +301,13 @@ python scripts\verify_sources.py
 
 ## 部署：GitHub Actions + Pages
 
-已放好 `.github/workflows/daily.yml`：每天北京时间 08:10 跑，把 `web/` 发到 GitHub Pages。
+**已经上线**：https://sky-zhang-hash.github.io/ssd-intel/ （仓库 `sky-zhang-hash/ssd-intel`，
+每天北京时间 08:10 自动跑；三个 secret 里的两个已配好）。
 
-四步：
-1. 把 `ssd-intel/` 目录本身当仓库根 `git init` 推上去（workflow 里的路径是按这个假设写的；如果你的仓库根是上一层，所有路径前要加 `ssd-intel/`）
+工作流在 `.github/workflows/daily.yml`，把 `web/` 发到 GitHub Pages。
+
+四步（换机器重建时用）：
+1. 把 `ssd-intel/` 目录本身当仓库根推上去（workflow 里的路径是按这个假设写的；如果你的仓库根是上一层，所有路径前要加 `ssd-intel/`）
 2. 仓库 Settings → Secrets and variables → Actions，加两个 secret：
    - `DEEPSEEK_API_KEY` —— 摘要用
    - `WEREAD_COOKIE` —— 公众号用（就是本地 `.env` 里那串，直接粘）
@@ -323,9 +326,10 @@ python scripts\verify_sources.py
 
 - **采集只能用 Python**：本机 `curl.exe` 报 `schannel: AcquireCredentialsHandle failed (SEC_E_NO_CREDENTIALS)`，`Invoke-WebRequest` 报「基础连接已经关闭」，是 schannel 凭证损坏，不是网络问题。用它们调试会得出错误结论。
 - 搜狗反爬是 IP 级的，会持续一段时间。频率再降也没用，只能接受「真链只还原一部分」。
-- **本机推不了 GitHub**：`git` 走 https 也挂在同一个 schannel 问题上，`gh-proxy` 镜像现在回 403。所以"推仓库"这一步得你手动做（`api.github.com` 是通的，必要时我可以用它代劳）。
+- **本机推不了 GitHub**：`git` 走 https 也挂在同一个 schannel 问题上，`gh-proxy` 镜像现在回 403。改走 `tools/push_ssd_intel.py`（Git Data API，`api.github.com` 是通的）——推一版 43 个文件约 15 秒。
 - 微信读书只给标题 + 摘要（几十到一两百字），拿不到全文。对"只看结论"的用法够了。
-- **公众号覆盖 = `config/wechat_bookids.yaml` 里解析出几个号**（现在 4 个）。没解析 bookId 的号不会被采集，`resolve_bookids.py --list` 能看到 `missing` 列表。
+- **公众号覆盖 = `config/wechat_bookids.yaml` 里解析出几个号**（现在 23 个，含额外的「中国闪存市场」）。没解析 bookId 的号不会被采集，`resolve_bookids.py --list` 能看到 `missing` 列表。
+- 微信读书有频率上限：一晚反复调试会撞 `-2014 请求过于频繁`，代码会退避重试（30/60/120 秒）后本轮收工、已采到的照常入库，第二天自愈。
 - 微信读书 Cookie 会过期（`wr_rt` 一般几个月）。失效时日志会直接说「Cookie 失效或配额用完」，换一串即可。
 - 去重按归一化标题算，同一事件不同措辞的两篇稿子会都留下。
 - LLM 输出偶尔带原稿记者的判断口吻，模板里已统一转成「影响：」前缀。
