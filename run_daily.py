@@ -15,7 +15,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -55,12 +55,15 @@ def load_env(path: Path) -> None:
 WEEKDAY = "一二三四五六日"
 
 
+CST = timezone(timedelta(hours=8))
+
+
 def local_day(iso: str) -> tuple[str, str]:
     """(排序键, 显示标签)：("2026-11-22", "11月22日 周六")。"""
     if not iso:
         return "", "日期未知"
     try:
-        dt = datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone()
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(CST)
     except ValueError:
         return iso[:10], iso[:10]
     return dt.strftime("%Y-%m-%d"), f"{dt.month}月{dt.day}日 周{WEEKDAY[dt.weekday()]}"
@@ -106,7 +109,7 @@ def main() -> int:
     ap.add_argument("--date", default=None, help="覆盖日报日期 YYYY-MM-DD")
     args = ap.parse_args()
 
-    date = args.date or datetime.now().strftime("%Y-%m-%d")
+    date = args.date or datetime.now(CST).strftime("%Y-%m-%d")
     load_env(ROOT / ".env")
     cfg_dir = ROOT / "config"
     sources = load_yaml(cfg_dir / "sources.yaml").get("sources", [])

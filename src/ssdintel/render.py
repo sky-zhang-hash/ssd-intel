@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -14,6 +14,14 @@ TPL_DIR = Path(__file__).resolve().parent / "templates"
 
 # 说明页里要给人看的地址；页面内部一律用相对路径，只有这里写死
 SITE_URL = "https://sky-zhang-hash.github.io/ssd-intel/"
+
+# 页脚和「最后更新」一律按北京时间显示；GitHub Actions 的机器是 UTC，
+# 直接用 datetime.now() 会让读者看到 8 小时前的时刻。
+CST = timezone(timedelta(hours=8))
+
+
+def now_cst() -> datetime:
+    return datetime.now(CST)
 
 ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 <rect width="512" height="512" rx="112" fill="#2457F5"/>
@@ -65,8 +73,8 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     base_ctx = {
         "nav_css": shell.NAV_CSS,
         "fav_js": shell.FAV_JS,
-        "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "built_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "generated": now_cst().strftime("%Y-%m-%d %H:%M"),
+        "built_at": now_cst().strftime("%Y-%m-%d %H:%M"),
         "pull_css": shell.PULL_CSS,
         "pull_js": shell.PULL_JS,
     }
