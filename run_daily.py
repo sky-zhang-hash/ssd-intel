@@ -201,6 +201,12 @@ def main() -> int:
 
     # ---------------- 汇总 ----------------
     fresh = store.recent(hours=args.hours)
+    # 没有原文链接的条目不进日报：读者点不动的东西不如不给。
+    # （公众号链接靠 Cookie 抓，失效期间冒出来的占位行会被这里挡掉。）
+    with_link = [it for it in fresh if it.url]
+    if len(with_link) < len(fresh):
+        print(f"  跳过 {len(fresh) - len(with_link)} 条没有原文链接的旧条目")
+    fresh = with_link
     print(f"  最近 {args.hours}h 共 {len(fresh)} 条可汇总")
 
     # ---------------- 生成 ----------------
