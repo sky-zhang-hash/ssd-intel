@@ -323,3 +323,25 @@ def cover_links(book_ids: dict[str, str], cookie: str, delay: float = 1.2) -> di
             out[_norm_title(title)] = url
         time.sleep(delay)
     return out
+
+def cover_items(book_ids: dict[str, str], cookie: str = "", delay: float = 1.2) -> list:
+    """Cookie 失效时的退路：每个号取最新一篇，直接当今天的公众号条目。
+
+    只有标题和链接（`/api/mp/cover` 不给发布时间和摘要），但总比整个板块空着强；
+    下次 Cookie 有效时会用带时间的完整条目替代。
+    """
+    from .models import Item  # 局部导入，避免循环
+
+    session = new_session(cookie) if cookie else new_session("")
+    out = []
+    for name, book_id in book_ids.items():
+        try:
+            title, url = cover_link(session, book_id)
+        except WereadError as e:
+            print(f"  [wx]  cover {name} 失败 {e}")
+            continue
+        if title and url:
+            out.append(Item(source=name, source_type="wechat", title=title,
+                            url=url, summary="", weight=0.62))
+        time.sleep(delay)
+    return out

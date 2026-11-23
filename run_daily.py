@@ -179,14 +179,21 @@ def main() -> int:
         if cleaned:
             print(f"  清掉 {cleaned} 条没有原文链接的占位行")
     else:
-        # 文章列表被限流时，/api/mp/cover 还能用：把每个号最新一篇的链接补上，
-        # 库里的条目就不用干等着。今晚（-2014）就是靠这条把链接找回来的。
-        if mode == "weread" and cookie and book_ids:
+        # 文章列表拿不到（限流或 Cookie 失效）时，/api/mp/cover 不需要登录还能用：
+        # 每个号取最新一篇，既补链接、也直接当今天的公众号条目，免得整个板块空着。
+        if mode == "weread" and book_ids:
             try:
                 by_title = weread.cover_links(book_ids, cookie)
                 filled = store.fill_missing_urls(by_title)
                 if filled:
                     print(f"  用 cover 兜底补回 {filled} 条公众号原文链接")
+                wx_items = weread.cover_items(book_ids, cookie)
+                if wx_items:
+                    print(f"  用 cover 兜底取到 {len(wx_items)} 个号的最新一篇")
+                    scored = score.apply(raw + wx_items, rules)
+                    fresh_scored = score.filter_fresh(scored, args.max_age)
+                    deduped = score.dedupe(fresh_scored)
+                    added = store.upsert_items(deduped)
             except Exception as e:  # 兜底失败不影响主流程
                 print(f"  [wx]  cover 兜底失败：{e}")
     store.log_health(rss_health + wx_health)

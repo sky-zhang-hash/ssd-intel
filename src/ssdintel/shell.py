@@ -210,7 +210,11 @@ PULL_JS = """
         var after = m ? m[1] : '';
         if (after && after !== before) {
           show('有新版本，正在更新…');
-          setTimeout(function(){ location.reload(); }, 350);
+          // 不用 location.reload()：iOS 主屏模式偶尔会停在白屏。
+          // 带一个时间戳参数重新导航，缓存也一起绕过。
+          var u = location.href.split('#')[0];
+          u = u + (u.indexOf('?') < 0 ? '?' : '&') + 'v=' + Date.now();
+          setTimeout(function(){ location.replace(u); }, 350);
           return 'reload';
         }
         show('已经是最新（' + (after || before) + ' 生成）');
