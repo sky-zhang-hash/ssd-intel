@@ -167,6 +167,16 @@ PULL_CSS = """
   #pull.on{transform:translateY(0);opacity:1}
   #pull span{background:var(--card);border:1px solid var(--line);
              box-shadow:var(--shadow);border-radius:999px;padding:6px 14px}
+  /* 下拉手势在某些浏览器/主屏模式下不一定生效，做一个看得见的按钮 */
+  #refresh-btn{position:fixed;right:14px;
+               bottom:calc(var(--nav-h,56px) + var(--safe,0px) + 14px);
+               z-index:55;width:46px;height:46px;border-radius:50%;
+               border:1px solid var(--line);background:var(--card);
+               color:var(--accent);font-size:19px;line-height:1;
+               box-shadow:0 2px 8px rgba(15,23,42,.16);
+               display:flex;align-items:center;justify-content:center;
+               cursor:pointer;-webkit-tap-highlight-color:transparent}
+  #refresh-btn:active{transform:scale(.94)}
 """
 
 PULL_JS = """
@@ -254,20 +264,25 @@ PULL_JS = """
   document.addEventListener('touchend', end, {passive:true});
   document.addEventListener('touchcancel', end, {passive:true});
 
-  // 除了下拉手势，再放一个等价的文字链接：手机上也留着（下拉不好发现），
-  // 电脑上就是唯一入口。
-  {
-    var wrap = document.querySelector('.wrap');
-    if (wrap) {
-      var p = document.createElement('p');
-      p.className = 'footlink';
-      var a = document.createElement('a');
-      a.href = '#';
-      a.textContent = '刷新内容';
-      a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
-      p.appendChild(a);
-      wrap.appendChild(p);
-    }
+  // 看得见的入口：右下角圆形按钮 + 页脚文字链接，都走同一个 check()
+  var btn = document.createElement('button');
+  btn.id = 'refresh-btn';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', '刷新内容');
+  btn.textContent = '\u21bb';
+  btn.addEventListener('click', check);
+  document.body.appendChild(btn);
+
+  var wrap = document.querySelector('.wrap');
+  if (wrap) {
+    var p = document.createElement('p');
+    p.className = 'footlink';
+    var a = document.createElement('a');
+    a.href = '#';
+    a.textContent = '刷新内容';
+    a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
+    p.appendChild(a);
+    wrap.appendChild(p);
   }
 })();
 </script>

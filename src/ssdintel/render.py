@@ -17,6 +17,8 @@ SITE_URL = "https://sky-zhang-hash.github.io/ssd-intel/"
 
 # 页脚和「最后更新」一律按北京时间显示；GitHub Actions 的机器是 UTC，
 # 直接用 datetime.now() 会让读者看到 8 小时前的时刻。
+BUILD_VER = "v5"
+
 CST = timezone(timedelta(hours=8))
 
 
@@ -75,6 +77,7 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
         "fav_js": shell.FAV_JS,
         "generated": now_cst().strftime("%Y-%m-%d %H:%M"),
         "built_at": now_cst().strftime("%Y-%m-%d %H:%M"),
+        "build_ver": BUILD_VER,
         "pull_css": shell.PULL_CSS,
         "pull_js": shell.PULL_JS,
     }
@@ -144,7 +147,7 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     #  HTML 走"网络优先"——页面内容每天变，缓存只做断网兜底；
     #  图标 / manifest 这类静态资源走"缓存优先 + 后台更新"。
     (out / "sw.js").write_text(
-        "const C='ssd-intel-v4';"
+        "const C='ssd-intel-v5';"
         "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./install.html','./manifest.webmanifest'];"
         "self.addEventListener('install',e=>e.waitUntil("
         "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"
