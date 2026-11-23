@@ -158,6 +158,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
                 "url": src.url,
                 "time": local_time(src.published, date),
                 "cats": src.categories,
+                "pub": src.published or "",
             })
         if points:
             sections.append({"title": sec.get("title", "动态"), "points": points})
@@ -174,6 +175,20 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
         "price_note": clean(data.get("price_note")),
         "mode": "llm",
     }
+
+
+def order_by_time(sections: list[dict]) -> list[dict]:
+    """最新的放最上面：条目按发布时间倒序，板块按各自最新一条的时间倒序。"""
+    for sec in sections:
+        sec["points"].sort(key=lambda p: p.get("pub") or "", reverse=True)
+    sections.sort(
+        key=lambda s: max((p.get("pub") or "" for p in s["points"]), default=""),
+        reverse=True,
+    )
+    for sec in sections:
+        for p in sec["points"]:
+            p.pop("pub", None)
+    return sections
 
 
 SECTION_TITLES = {
@@ -196,8 +211,9 @@ def digest_report(items: list[Item], date: str, per_section: int = 6) -> dict:
         points = [
             {"text": it.title, "impact": "", "source": it.source,
              "url": it.url, "time": local_time(it.published, date),
-             "cats": it.categories}
-            for it in group_items[:per_section]
+             "cats": it.categories, "pub": it.published or ""}
+            for it in sorted(group_items, key=lambda x: x.published or "",
+                             reverse=True)[:per_section]
         ]
         if points:
             sections.append({"title": SECTION_TITLES.get(label, label), "points": points})
@@ -227,4 +243,5 @@ def build(items: list[Item], date: str | None = None, api_key: str | None = None
     if report is None:
         print("  [report] 使用降级摘要（未配置 DEEPSEEK_API_KEY 或调用失败）")
         report = digest_report(items, date)
+    report["sections"] = order_by_time(report.get("sections") or [])
     return report
