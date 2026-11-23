@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>归档 · SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-23 23:19">
+<meta name="built" content="2026-11-23 23:31">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -63,7 +63,10 @@
      display:flex;align-items:center;gap:7px}
   h2::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-2);flex:none}
   h2 .cnt{font-size:var(--t-xs);font-weight:400;color:var(--muted);margin-left:2px}
-  .point{padding:13px 0;border-bottom:1px solid var(--line)}
+  .point{padding:14px 0;border-bottom:1px solid var(--line)}
+  /* 每条单独成卡时不用分隔线 */
+  section.item{padding:14px 15px 6px;margin:12px 0}
+  section.item .point{padding:0;border-bottom:none}
   .point:last-child{border-bottom:none}
   .pt-text{margin:0;font-size:var(--t-md);line-height:1.78}
   .impact{margin:9px 0 0;font-size:16px;line-height:1.7;color:var(--muted);
@@ -196,7 +199,7 @@
   </header>
 
     <a class="row" href="d/2026-11-23.html">
-      <span class="head">慧荣首秀PCIe 6.0主控、群联把NPU塞进SSD，企业级盘开始自己算AI</span>
+      <span class="head">慧荣首发PCIe 6.0主控，群联把NPU塞进SSD，美光HBM封装厂进设备</span>
       <span class="day">2026-11-23</span>
     </a>
     <a class="row" href="d/2026-11-22.html">

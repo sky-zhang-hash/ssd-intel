@@ -254,5 +254,13 @@ def build(items: list[Item], date: str | None = None, api_key: str | None = None
     if report is None:
         print("  [report] 使用降级摘要（未配置 DEEPSEEK_API_KEY 或调用失败）")
         report = digest_report(items, date)
-    report["sections"] = order_by_time(report.get("sections") or [])
+    sections = report.get("sections") or []
+    # 读者要的是一条时间流：拍平所有板块，按发布时间从新到旧。
+    # 必须在 order_by_time 之前取（它会 pop 掉 pub）。
+    flat = [dict(p) for sec in sections for p in sec["points"]]
+    flat.sort(key=lambda p: p.get("pub") or "", reverse=True)
+    for p in flat:
+        p.pop("pub", None)
+    report["flat"] = flat
+    report["sections"] = order_by_time(sections)
     return report

@@ -10,31 +10,26 @@
     {% if r.lead %}<p class="lead">{{ r.lead }}</p>{% endif %}
   </header>
 
-  {% if r.sections %}
-    {% for sec in r.sections %}
-    <section>
-      <h2>{{ sec.title }}</h2>
-      {% for p in sec.points %}
-      <article class="point">
-        <p class="pt-text">{{ p.text }}</p>
-        {% if p.impact %}<p class="impact">{{ p.impact }}</p>{% endif %}
-        <p class="meta">
-          {% if p.url %}
-          <a class="src" href="{{ p.url }}" target="_blank" rel="noopener noreferrer"
-             title="打开原文"><span class="lbl">{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
-          {% else %}
-          <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
-          {% endif %}
-          {% for c in p.cats %}<span class="tag">{{ c }}</span>{% endfor %}
-          <button class="fav" data-url="{{ p.url }}" data-title="{{ p.text }}"
-                  data-source="{{ p.source }}" data-date="{{ r.date }}"
-                  data-time="{{ p.time }}"
-                  aria-pressed="false" title="收藏">☆</button>
-        </p>
-      </article>
-      {% endfor %}
-    </section>
-    {% endfor %}
+  {% if r.flat %}
+  {% for p in r.flat %}
+    <section class="item"><article class="point">
+      <p class="pt-text">{{ p.text }}</p>
+      {% if p.impact %}<p class="impact">{{ p.impact }}</p>{% endif %}
+      <p class="meta">
+        {% if p.url %}
+        <a class="src" href="{{ p.url }}" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
+        {% else %}
+        <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
+        {% endif %}
+        {% for c in p.cats %}<span class="tag">{{ c }}</span>{% endfor %}
+        <button class="fav" data-url="{{ p.url }}" data-title="{{ p.text }}"
+                data-source="{{ p.source }}" data-date="{{ r.date }}"
+                data-time="{{ p.time }}"
+                aria-pressed="false" title="收藏">☆</button>
+      </p>
+    </article></section>
+  {% endfor %}
   {% else %}
     <p class="empty">今天没有抓到达标的条目。可能是源都失败了，或者确实没有产品侧动态。</p>
   {% endif %}
