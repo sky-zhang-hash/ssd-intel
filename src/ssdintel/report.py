@@ -55,22 +55,31 @@ SYSTEM_PROMPT = """你是资深 SSD / 存储行业分析师，为一位关注「
 3. 弱化价格：价格只作为一句背景，不要单独成节，不要展开分析涨跌。
 4. 只写有信息增量的事，不要复述常识，不要写「随着…的发展」这类空话。
 
+读者的要求是「内容要够厚」，所以每一条都要写透，不要只写一句结论：
+
+text（140-190 字）按「事实 → 机理 → 影响」三层写，但不要出现「事实层/机理上/影响层」这类结构词，直接叙述：
+- 事实层：谁做了什么，带上素材里的具体信息——型号、容量、层数、通道数、速率、客户名、金额、时间点、良率/产能这类可核对的细节，尽量保留原文数字。不要写「近日」「某厂商」这种模糊说法。
+- 机理层：这件事为什么成立、技术上意味着什么（例如「PCIe 6.0 需要 PAM4，信号完整性余量更小」）。
+- 影响层：对 SSD 产品线、主控选型、颗粒分配、供应链节奏的具体影响。
+impact（25-45 字）：一句更锋利的判断或风险提示，可以写不确定性，不要重复 text 里的话。
+
 写作红线（违反就是废稿）：
-- 正文、标题、watch 里**绝对不要出现「素材」「编号」「第 N 条」这类内部引用**。读者看不到编号，只有你手里有。直接说事情本身。
+- 正文、标题、watch、lead 里**绝对不要出现「素材」「编号」「第 N 条」这类内部引用**。读者看不到编号，只有你手里有。直接说事情本身。
 - **同一件事被多家报道时合并成一条**，ref 填信息最全的那条，text 里可写「多家报道」；不要把同一件事拆成两三条分别复述。
-- 每节 3-5 条，全篇不超过 20 条。宁可不写，不要拿低价值素材凑数。
+- 每节 3-6 条，全篇不超过 24 条。宁可不写，不要拿低价值素材凑数。
 - 素材可能覆盖最近几天（最多一周）：写每条事情的**最新进展**，不要按日期写流水账，也不要因为两天前报道过就整条丢掉；同一事件的早期报道与后续进展合成一条。
-- text 60-90 字，先事实、后影响，不要写"综上所述"。
+- 数字必须来自素材，不许自己推算或编造；素材没给具体数字时，就写定性判断，不要填空。
 
 输出必须是 JSON，结构：
 {
-  "headline": "一句话点出今天最重要的一件事（不超过 40 字）",
+  "headline": "一句话点出这一期最重要的一件事（不超过 40 字）",
+  "lead": "开头导语，70-110 字：这一周/这几天的主线是什么，哪两三条线索在同时推进，读者该把注意力放在哪。要具体，不要空泛总结。",
   "sections": [
     {"title": "板块名", "points": [
-        {"ref": 素材编号整数, "text": "这条的事实 + 对产品的影响，60-90 字", "impact": "可选：对产品/供应链的具体影响"}
+        {"ref": 素材编号整数, "text": "事实+机理+影响，140-190 字", "impact": "25-45 字的一句判断"}
     ]}
   ],
-  "watch": ["值得关注但尚未证实的信号，1-3 条，没有就空数组；同样不要提编号"],
+  "watch": ["观察项：发生了什么 + 接下来盯哪个指标/证据，每条 30-50 字，2-4 条，没有就空数组；不要提编号"],
   "price_note": "价格背景一句话，没有就空字符串"
 }
 
@@ -82,7 +91,7 @@ SYSTEM_PROMPT = """你是资深 SSD / 存储行业分析师，为一位关注「
 def _material_list(items: list[Item], limit: int = 120) -> str:
     rows = []
     for i, it in enumerate(items[:limit], 1):
-        summ = re.sub(r"\s+", " ", it.summary or "")[:180]
+        summ = re.sub(r"\s+", " ", it.summary or "")[:260]
         cats = ",".join(it.categories) or "其他"
         rows.append(f"[{i}] ({it.source} | {cats}) {it.title} —— {summ}")
     return "\n".join(rows)
@@ -111,7 +120,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
         ],
         "temperature": 0.3,
         "response_format": {"type": "json_object"},
-        "max_tokens": 4000,
+        "max_tokens": 8000,
     }
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
@@ -170,6 +179,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
     return {
         "date": date,
         "headline": clean(data.get("headline")),
+        "lead": clean(data.get("lead")),
         "sections": sections,
         "watch": [clean(w) for w in (data.get("watch") or []) if clean(w)],
         "price_note": clean(data.get("price_note")),
@@ -232,6 +242,7 @@ def digest_report(items: list[Item], date: str, per_section: int = 6) -> dict:
         "headline": sections[0]["points"][0]["text"] if sections else "今日无重要动态",
         "sections": sections,
         "watch": [],
+        "lead": "",
         "price_note": price_note,
         "mode": "digest",
     }

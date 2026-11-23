@@ -7,6 +7,7 @@
       <span class="badge">{{ 'AI 摘要' if r.mode == 'llm' else '原始清单' }}</span>
     </div>
     <h1>{{ r.headline }}</h1>
+    {% if r.lead %}<p class="lead">{{ r.lead }}</p>{% endif %}
   </header>
 
   {% if r.sections %}
