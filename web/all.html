@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-22 23:23">
+<meta name="built" content="2026-11-23 22:21">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -154,10 +154,12 @@
 
   #pull{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none;
         display:flex;justify-content:center;align-items:flex-end;
-        height:56px;transform:translateY(-56px);opacity:0;
+        height:calc(56px + env(safe-area-inset-top,0px));
+        padding-top:env(safe-area-inset-top,0px);
+        transform:translateY(calc(-56px - env(safe-area-inset-top,0px)));opacity:0;
         transition:transform .18s ease, opacity .18s ease;
         font-size:14px;color:var(--muted)}
-  #pull.on{transform:translateY(0)}
+  #pull.on{transform:translateY(0);opacity:1}
   #pull span{background:var(--card);border:1px solid var(--line);
              box-shadow:var(--shadow);border-radius:999px;padding:6px 14px}
 
@@ -176,7 +178,7 @@
   <header>
     <div class="kicker">
       <span>SSD 情报日报 · 全部素材 · 近 7 天</span>
-      <span class="badge">33 条</span>
+      <span class="badge">36 条</span>
     </div>
     <h1>这一周的所有原始条目</h1>
   </header>
@@ -186,14 +188,47 @@
   </section>
 
   <section>
+    <h2>11月23日 周一<span class="cnt">3 条</span></h2>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="http://www.expreview.com/109656.html" target="_blank" rel="noopener noreferrer">群联电子推出全新Pascari Space：太空专用SSD储存解决方案</a></p>
+      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109656.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">今天 23:01</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="http://www.expreview.com/109656.html" data-title="群联电子推出全新Pascari Space：太空专用SSD储存解决方案"
+                data-source="超能网" data-time="今天 23:01"
+                data-date="2026-11-23" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="http://www.expreview.com/109651.html" target="_blank" rel="noopener noreferrer">特斯拉AI4成本翻倍：全球DRAM与NAND闪存短缺推高制造成本</a></p>
+      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109651.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">今天 21:59</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109651.html" data-title="特斯拉AI4成本翻倍：全球DRAM与NAND闪存短缺推高制造成本"
+                data-source="超能网" data-time="今天 21:59"
+                data-date="2026-11-23" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+    <article class="point">
+      <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355102/nvidias-ssd-writing-bug-needs-another-hotfix-as-issue-returns" target="_blank" rel="noopener noreferrer">NVIDIA&#39;s SSD Writing Bug Needs Another Hotfix as Issue Returns</a></p>
+      <p class="meta">
+        <a class="src" href="https://www.techpowerup.com/355102/nvidias-ssd-writing-bug-needs-another-hotfix-as-issue-returns" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">今天 17:07</span><span class="ext">↗</span></span></a>
+<span class="tag">产品</span>        <button class="fav" data-url="https://www.techpowerup.com/355102/nvidias-ssd-writing-bug-needs-another-hotfix-as-issue-returns" data-title="NVIDIA&#39;s SSD Writing Bug Needs Another Hotfix as Issue Returns"
+                data-source="TechPowerUp" data-time="今天 17:07"
+                data-date="2026-11-23" aria-pressed="false" aria-label="收藏">☆</button>
+      </p>
+    </article>
+  </section>
+  <section>
     <h2>11月22日 周日<span class="cnt">4 条</span></h2>
     <article class="point">
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" target="_blank" rel="noopener noreferrer">【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">全球半导体观察<span class="when">今天 12:44</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">全球半导体观察<span class="when">昨天 12:44</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" data-title="【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工"
-                data-source="全球半导体观察" data-time="今天 12:44"
+                data-source="全球半导体观察" data-time="昨天 12:44"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -201,9 +236,9 @@
       <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" target="_blank" rel="noopener noreferrer">Phison Previews an SSD That Runs AI Frameworks on Its Own NPU</a></p>
       <p class="meta">
         <a class="src" href="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">TechPowerUp<span class="when">今天 09:23</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">昨天 09:23</span><span class="ext">↗</span></span></a>
 <span class="tag">主控</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://www.techpowerup.com/355089/phison-previews-an-ssd-that-runs-ai-frameworks-on-its-own-npu" data-title="Phison Previews an SSD That Runs AI Frameworks on Its Own NPU"
-                data-source="TechPowerUp" data-time="今天 09:23"
+                data-source="TechPowerUp" data-time="昨天 09:23"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -211,9 +246,9 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" target="_blank" rel="noopener noreferrer">NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">闪德资讯<span class="when">今天 07:31</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">昨天 07:31</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" data-title="NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%"
-                data-source="闪德资讯" data-time="今天 07:31"
+                data-source="闪德资讯" data-time="昨天 07:31"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -221,9 +256,9 @@
       <p class="pt-text"><a class="title" href="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" target="_blank" rel="noopener noreferrer">Max Out Your Gen 4 Slot: Predator GM7 NVMe SSD (Up to 7400 MB/s)</a></p>
       <p class="meta">
         <a class="src" href="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">TechPowerUp<span class="when">今天 06:27</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">昨天 06:27</span><span class="ext">↗</span></span></a>
 <span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.techpowerup.com/354313/max-out-your-gen-4-slot-predator-gm7-nvme-ssd-up-to-7400-mb-s" data-title="Max Out Your Gen 4 Slot: Predator GM7 NVMe SSD (Up to 7400 MB/s)"
-                data-source="TechPowerUp" data-time="今天 06:27"
+                data-source="TechPowerUp" data-time="昨天 06:27"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -234,9 +269,9 @@
       <p class="pt-text"><a class="title" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer">美光新加坡HBM先进封装厂已接收首批设备：为2027年量产做好准备</a></p>
       <p class="meta">
         <a class="src" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">超能网<span class="when">昨天 22:00</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">超能网<span class="when">11-21 22:00</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光新加坡HBM先进封装厂已接收首批设备：为2027年量产做好准备"
-                data-source="超能网" data-time="昨天 22:00"
+                data-source="超能网" data-time="11-21 22:00"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -244,9 +279,9 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer">群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">昨天 09:48</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-21 09:48</span><span class="ext">↗</span></span></a>
 <span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计"
-                data-source="斯托瑞吉" data-time="昨天 09:48"
+                data-source="斯托瑞吉" data-time="11-21 09:48"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -254,9 +289,9 @@
       <p class="pt-text"><a class="title" href="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" target="_blank" rel="noopener noreferrer">NVIDIA&#39;s SSD Write Bug Gets Patched in GeForce Hotfix 621.35 Driver</a></p>
       <p class="meta">
         <a class="src" href="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">TechPowerUp<span class="when">昨天 07:50</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">TechPowerUp<span class="when">11-21 07:50</span><span class="ext">↗</span></span></a>
 <span class="tag">产品</span>        <button class="fav" data-url="https://www.techpowerup.com/355072/nvidias-ssd-write-bug-gets-patched-in-geforce-hotfix-621-35-driver" data-title="NVIDIA&#39;s SSD Write Bug Gets Patched in GeForce Hotfix 621.35 Driver"
-                data-source="TechPowerUp" data-time="昨天 07:50"
+                data-source="TechPowerUp" data-time="11-21 07:50"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -264,9 +299,9 @@
       <p class="pt-text"><a class="title" href="" target="_blank" rel="noopener noreferrer">长鑫DDR4内存不同颗粒性能差距不小，渠道商别大意了</a></p>
       <p class="meta">
         <a class="src" href="" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">闪德资讯<span class="when">昨天 07:31</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-21 07:31</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span>        <button class="fav" data-url="" data-title="长鑫DDR4内存不同颗粒性能差距不小，渠道商别大意了"
-                data-source="闪德资讯" data-time="昨天 07:31"
+                data-source="闪德资讯" data-time="11-21 07:31"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -274,9 +309,9 @@
       <p class="pt-text"><a class="title" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer">慧荣科技首次公开展示SM8466：旗下首款PCIe 6.0 SSD主控，面向数据中心应用</a></p>
       <p class="meta">
         <a class="src" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">超能网<span class="when">昨天 00:39</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">超能网<span class="when">11-21 00:39</span><span class="ext">↗</span></span></a>
 <span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣科技首次公开展示SM8466：旗下首款PCIe 6.0 SSD主控，面向数据中心应用"
-                data-source="超能网" data-time="昨天 00:39"
+                data-source="超能网" data-time="11-21 00:39"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
       </p>
     </article>
@@ -545,8 +580,8 @@
 
 
   <footer class="foot">
-    <span>33 条素材 / 14 个源</span>
-    <span>2026-11-22 23:23 生成</span>
+    <span>36 条素材 / 14 个源</span>
+    <span>2026-11-23 22:21 生成</span>
   </footer>
 </div>
 <nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./all.html" class="on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>全部</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>
@@ -640,7 +675,7 @@
       p.className = 'footlink';
       var a = document.createElement('a');
       a.href = '#';
-      a.textContent = '检查更新';
+      a.textContent = '刷新内容';
       a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
       p.appendChild(a);
       wrap.appendChild(p);

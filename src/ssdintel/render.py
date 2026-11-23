@@ -144,7 +144,7 @@ def render(report: dict, out_dir: str | Path, stats: dict | None = None,
     #  HTML 走"网络优先"——页面内容每天变，缓存只做断网兜底；
     #  图标 / manifest 这类静态资源走"缓存优先 + 后台更新"。
     (out / "sw.js").write_text(
-        "const C='ssd-intel-v3';"
+        "const C='ssd-intel-v4';"
         "const SHELL=['./index.html','./all.html','./archive.html','./fav.html','./install.html','./manifest.webmanifest'];"
         "self.addEventListener('install',e=>e.waitUntil("
         "caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));"

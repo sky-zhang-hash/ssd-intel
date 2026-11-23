@@ -159,10 +159,12 @@ FAV_JS = """
 PULL_CSS = """
   #pull{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none;
         display:flex;justify-content:center;align-items:flex-end;
-        height:56px;transform:translateY(-56px);opacity:0;
+        height:calc(56px + env(safe-area-inset-top,0px));
+        padding-top:env(safe-area-inset-top,0px);
+        transform:translateY(calc(-56px - env(safe-area-inset-top,0px)));opacity:0;
         transition:transform .18s ease, opacity .18s ease;
         font-size:14px;color:var(--muted)}
-  #pull.on{transform:translateY(0)}
+  #pull.on{transform:translateY(0);opacity:1}
   #pull span{background:var(--card);border:1px solid var(--line);
              box-shadow:var(--shadow);border-radius:999px;padding:6px 14px}
 """
@@ -257,7 +259,7 @@ PULL_JS = """
       p.className = 'footlink';
       var a = document.createElement('a');
       a.href = '#';
-      a.textContent = '检查更新';
+      a.textContent = '刷新内容';
       a.addEventListener('click', function(ev){ ev.preventDefault(); check(); });
       p.appendChild(a);
       wrap.appendChild(p);
