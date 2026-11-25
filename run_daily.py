@@ -219,7 +219,14 @@ def main() -> int:
                  if not h.get("ok") and ("2012" in str(h.get("error", ""))
                                         or "Cookie" in str(h.get("error", "")))]
     if auth_down:
-        payload["warn"] = "微信读书授权已过期：今天的 23 个公众号都没抓到，页面里只有 RSS 源的内容。重新复制一次 Cookie 就能恢复。"
+        if wx_items:
+            payload["warn"] = (f"微信读书登录态已过期：公众号列表抓不到，"
+                               f"今天只拿到 {len(wx_items)} 个号的最新一篇（封面兜底）。"
+                               f"续期一次就恢复全量。")
+        else:
+            payload["warn"] = ("微信读书授权已过期：公众号文章一条都没抓到，"
+                               "页面里只有 RSS 源的内容。续期一次 Cookie 就能恢复"
+                               "（见 README 的「方案 A / B」）。")
 
     # 各源最近更新时间（谁停更了一眼可见）
     payload["sources"] = store.source_status()

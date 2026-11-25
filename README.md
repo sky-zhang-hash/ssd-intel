@@ -325,6 +325,19 @@ python scripts\verify_sources.py
 
 ---
 
+## 公众号的两条长期路线
+
+公众号没有公开接口，唯一能拿到「文章列表」的通道是微信读书的登录态，而这个登录态会过期。两条路二选一（也可以都留着）：
+
+| 方案 | 做法 | 谁维护 | 失效后 |
+|---|---|---|---|
+| **A 自建续期守护** | `collector/` 里一个小容器，扫码一次，之后每 12 小时自动抓新 Cookie 并写回仓库 secret | 一台常开的机器（NAS/旧笔记本） | 几个月一次，重新扫码 |
+| **B 手动续** | 浏览器里复制一次 Cookie，粘进 GitHub Secrets | 你，1-2 分钟 | 一两天到一周一次 |
+
+不管走哪条，**cookie 失效时都不会空页**：程序会降级到不需要登录的 `/api/mp/cover`，把每个号最新一篇的标题和真实链接补进来（页面上那条红字会说明今天用的是兜底）。这条兜底就是方案 C，代码里始终开着的。
+
+详细步骤见 `collector/README.md`。
+
 ## 已知限制
 
 - **采集只能用 Python**：本机 `curl.exe` 报 `schannel: AcquireCredentialsHandle failed (SEC_E_NO_CREDENTIALS)`，`Invoke-WebRequest` 报「基础连接已经关闭」，是 schannel 凭证损坏，不是网络问题。用它们调试会得出错误结论。

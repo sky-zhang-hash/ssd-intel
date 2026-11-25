@@ -8,3 +8,7 @@ __pycache__/
 # 解析出来的公众号 bookId 只跟你自己的微信读书账号有关，但内容不算敏感。
 # 真要提交也行，不想提交就留着这一行。
 # config/wechat_bookids.yaml
+
+# 自建续期守护：登录态与 token 都在本地，不入库
+collector/data/
+collector/.env

@@ -1,0 +1,24 @@
+# 微信读书 Cookie 守护
+#
+# 用法：
+#   cp .env.example .env      # 填 GITHUB_TOKEN / GITHUB_REPO
+#   docker compose build
+#   docker compose run --rm keeper login     # 首次扫码（二维码在 ./data/qr.png）
+#   docker compose up -d                     # 之后常驻，自动续期
+#
+# 只在同一个局域网/家里那台常开机器上跑就行，不需要公网 IP。
+services:
+  keeper:
+    build: .
+    container_name: ssd-weread-keeper
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      KEEPER_DATA: /data
+      INTERVAL_HOURS: "12"
+      BOOK_ID: "MP_WXS_3095382082"
+      SECRET_NAME: "WEREAD_COOKIE"
+    volumes:
+      - ./data:/data
+    # 扫码模式会写 ./data/qr.png，data 目录是持久化的，登录态不会因为容器重建丢
+    shm_size: "1gb"
