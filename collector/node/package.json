@@ -1,0 +1,16 @@
+{
+  "name": "ssd-intel-weread-keeper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "微信读书 Cookie 守护：扫码一次，自动续期并写回 GitHub secret",
+  "scripts": {
+    "login": "node keeper.mjs login",
+    "once": "node keeper.mjs once",
+    "daemon": "node keeper.mjs daemon"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0",
+    "libsodium-wrappers": "^0.7.15"
+  }
+}

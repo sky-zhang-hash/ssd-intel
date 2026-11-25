@@ -12,3 +12,6 @@ __pycache__/
 # 自建续期守护：登录态与 token 都在本地，不入库
 collector/data/
 collector/.env
+collector/node/node_modules/
+collector/node/.env
+collector/node/package-lock.json
