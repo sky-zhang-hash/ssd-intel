@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>归档 · SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-23 23:31">
+<meta name="built" content="2026-11-25 22:38">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -92,6 +92,17 @@
   /* 「全部」页：纯清单，标题本身就是原文链接 */
   .lead{margin:14px 0 0;font-size:14.5px;line-height:1.78;color:var(--muted);
         border-left:3px solid var(--accent-2);padding:2px 0 2px 11px}
+  .warn{margin:14px 0 0;padding:11px 13px;border-radius:var(--radius);
+        background:rgba(214,88,58,.09);color:#A33C24;font-size:14px;line-height:1.65;
+        border:1px solid rgba(214,88,58,.25)}
+  .srcs{margin-top:14px}
+  .srclist{list-style:none;margin:6px 0 0;padding:0}
+  .srclist li{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+              border-bottom:1px solid var(--line);font-size:13.5px}
+  .srclist li:last-child{border-bottom:none}
+  .srclist .sname{flex:1;color:var(--ink)}
+  .srclist .sday{color:var(--muted);font-variant-numeric:tabular-nums}
+  .srclist .scount{color:var(--muted);min-width:48px;text-align:right}
   /* 安装说明页 */
   .steps{margin:8px 0 10px;padding-left:22px}
   .steps li{margin:6px 0;line-height:1.7}
@@ -199,7 +210,7 @@
   </header>
 
     <a class="row" href="d/2026-11-23.html">
-      <span class="head">慧荣首发PCIe 6.0主控，群联把NPU塞进SSD，美光HBM封装厂进设备</span>
+      <span class="head">慧荣首秀PCIe 6.0主控，群联把NPU塞进SSD，企业级盘开始自己算AI</span>
       <span class="day">2026-11-23</span>
     </a>
     <a class="row" href="d/2026-11-22.html">

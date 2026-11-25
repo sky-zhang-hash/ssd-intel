@@ -150,6 +150,15 @@ class Store:
         self.conn.commit()
         return filled
 
+
+    def source_status(self, days: int = 21) -> list[dict]:
+        """每个来源最近一次发布时间 + 条目数，用来看谁停更了。"""
+        rows = self.conn.execute(
+            """SELECT source, MAX(published) AS last, COUNT(*) AS n
+               FROM items WHERE COALESCE(published,'') <> ''
+               GROUP BY source ORDER BY last DESC""").fetchall()
+        return [{"source": s, "last": last, "count": n} for s, last, n in rows]
+
     def has_title_key(self, key: str) -> bool:
         cur = self.conn.execute("SELECT 1 FROM items WHERE title_key = ? LIMIT 1", (key,))
         return cur.fetchone() is not None

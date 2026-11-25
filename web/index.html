@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SSD 情报日报 · 2026-11-23</title>
+<title>SSD 情报日报 · 2026-11-25</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-23 23:31">
+<meta name="built" content="2026-11-25 22:38">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -92,6 +92,17 @@
   /* 「全部」页：纯清单，标题本身就是原文链接 */
   .lead{margin:14px 0 0;font-size:14.5px;line-height:1.78;color:var(--muted);
         border-left:3px solid var(--accent-2);padding:2px 0 2px 11px}
+  .warn{margin:14px 0 0;padding:11px 13px;border-radius:var(--radius);
+        background:rgba(214,88,58,.09);color:#A33C24;font-size:14px;line-height:1.65;
+        border:1px solid rgba(214,88,58,.25)}
+  .srcs{margin-top:14px}
+  .srclist{list-style:none;margin:6px 0 0;padding:0}
+  .srclist li{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+              border-bottom:1px solid var(--line);font-size:13.5px}
+  .srclist li:last-child{border-bottom:none}
+  .srclist .sname{flex:1;color:var(--ink)}
+  .srclist .sday{color:var(--muted);font-variant-numeric:tabular-nums}
+  .srclist .scount{color:var(--muted);min-width:48px;text-align:right}
   /* 安装说明页 */
   .steps{margin:8px 0 10px;padding-left:22px}
   .steps li{margin:6px 0;line-height:1.7}
@@ -192,133 +203,169 @@
 <div class="wrap">
   <header>
     <div class="kicker">
-      <span>SSD 情报日报 · 2026-11-23 · 近 7 天</span>
+      <span>SSD 情报日报 · 2026-11-25 · 近 7 天</span>
       <span class="badge">AI 摘要</span>
     </div>
-    <h1>慧荣首秀PCIe 6.0主控，群联把NPU塞进SSD，企业级盘开始自己算AI</h1>
-<p class="lead">这一期主线集中在主控侧的两次越界：慧荣SM8466把PCIe 6.0 x4做到28GB/s、7M IOPS，为2027年末的数据中心换代定调；群联则在盘内加NPU与64GB内存，让SSD直接跑PyTorch和vLLM。颗粒端美光新加坡HBM封装厂进设备、2027年量产，同时释放2027年供需更紧的信号，NAND现货却在跌，两条线正在分叉。</p>  </header>
+    <h1>慧荣首发 PCIe 6.0 主控，群联把 NPU 塞进 SSD</h1>
+<p class="lead">这一期主线是主控侧的代际跳跃与算力下沉：慧荣 SM8466 把 PCIe 6.0、16 通道、28GB/s 带到数据中心，群联则在盘内集成 NPU 与 64GB 内存直接跑 vLLM。颗粒端三星西安 X2 转向 V9、美光新加坡 HBM 封装厂进设备，都在为 2027 年的 AI 存储需求排产。</p>  </header>
+
 
     <section class="item"><article class="point">
-      <p class="pt-text">群联推出Pascari Space太空专用SSD解决方案，正式拓展商业太空与轨道基础设施存储市场，产品基于其26年NAND存储技术与经太空任务验证的存储技术，结合IMAGIN+定制化NAND方案与ASIC设计服务，针对不同太空任务定制。太空场景的核心约束是单粒子翻转与总电离剂量，需要主控级ECC、擦写策略与冗余设计，这与消费级/企业级固件是两套逻辑。对产品线的意义是群联把定制ASIC与固件能力变现到高毛利利基市场，而非在标准企业级盘上打价格战。</p>
-<p class="impact">太空SSD量小但门槛高，能否形成可复制的订单流取决于航天客户认证周期。</p>      <p class="meta">
+      <p class="pt-text">据 TrendForce，英伟达 B300 订单交货周期在 26 至 40 周，GB300 为 14 至 26 周，RTX PRO 系列超过 26 周，过去两个季度下达的新订单多数要到 2027 年二季度或三季度才履行；游戏显卡四季度供应量再减 20% 至 30%。AI 芯片交付拉长意味着配套的企业级 eSSD 采购节奏被同步推后，数据中心存储的招标窗口与 GPU 到货绑定。对 SSD 供应链的影响是 eSSD 订单能见度延长但提货时点后移，模组厂需在颗粒长约与库存周转之间重新平衡，消费级则因显卡搭售需求走弱而承压。</p>
+<p class="impact">eSSD 需求不是消失而是排队，2027 上半年的提货集中度会考验模组厂现金流。</p>      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109724.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">11-26 01:15</span><span class="ext">↗</span></span></a>
+<span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109724.html" data-title="据 TrendForce，英伟达 B300 订单交货周期在 26 至 40 周，GB300 为 14 至 26 周，RTX PRO 系列超过 26 周，过去两个季度下达的新订单多数要到 2027 年二季度或三季度才履行；游戏显卡四季度供应量再减 20% 至 30%。AI 芯片交付拉长意味着配套的企业级 eSSD 采购节奏被同步推后，数据中心存储的招标窗口与 GPU 到货绑定。对 SSD 供应链的影响是 eSSD 订单能见度延长但提货时点后移，模组厂需在颗粒长约与库存周转之间重新平衡，消费级则因显卡搭售需求走弱而承压。"
+                data-source="超能网" data-date="2026-11-25"
+                data-time="11-26 01:15"
+                aria-pressed="false" title="收藏">☆</button>
+      </p>
+    </article></section>
+    <section class="item"><article class="point">
+      <p class="pt-text">据 TrendForce，三星 HBM4 基础裸片采用 4nm 工艺、由自家晶圆代工生产，对应产线自去年末起满负荷运转，但仍面临基础裸片产能不足，预计 2027 年需求翻倍至每月约 3 万片晶圆；目前仅在华城和平泽两厂区生产，只有部分产线可调用，消息称三星计划扩大基础裸片产线。基础裸片是 HBM 的逻辑层，用 4nm 代工意味着 HBM 产能受制于先进逻辑而非存储工艺，这是 HBM 供给刚性的根源。对 SSD 的间接影响是 DRAM 与逻辑产能被 HBM 吸走，常规 DRAM 供给更紧，AI PC 与 eSSD 的 DRAM 缓存成本随之抬升。</p>
+<p class="impact">基础裸片扩产周期长于存储阵列，三星 HBM4 放量节奏可能拖到 2027 下半年。</p>      <p class="meta">
+        <a class="src" href="http://www.expreview.com/109720.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">超能网<span class="when">今天 23:58</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="http://www.expreview.com/109720.html" data-title="据 TrendForce，三星 HBM4 基础裸片采用 4nm 工艺、由自家晶圆代工生产，对应产线自去年末起满负荷运转，但仍面临基础裸片产能不足，预计 2027 年需求翻倍至每月约 3 万片晶圆；目前仅在华城和平泽两厂区生产，只有部分产线可调用，消息称三星计划扩大基础裸片产线。基础裸片是 HBM 的逻辑层，用 4nm 代工意味着 HBM 产能受制于先进逻辑而非存储工艺，这是 HBM 供给刚性的根源。对 SSD 的间接影响是 DRAM 与逻辑产能被 HBM 吸走，常规 DRAM 供给更紧，AI PC 与 eSSD 的 DRAM 缓存成本随之抬升。"
+                data-source="超能网" data-date="2026-11-25"
+                data-time="今天 23:58"
+                aria-pressed="false" title="收藏">☆</button>
+      </p>
+    </article></section>
+    <section class="item"><article class="point">
+      <p class="pt-text">《首尔经济日报》11 月 23 日披露，三星计划改造西安第二工厂（X2），加码第九代垂直 NAND（V9）产能，面向 AI 数据中心市场；同期三星存储长约订单持续饱满。V9 是三星切入 300 层以上代际的关键产品，堆叠层数提升后单 die 容量与阵列效率上升，但刻蚀与键合步骤增加，对产线改造要求高。把海外产线转向 V9 而非继续扩产旧代际，说明三星在把产能结构往企业级 eSSD 所需的高层数 TLC 倾斜，消费级颗粒的供给弹性相应收窄，模组厂的颗粒分配将更依赖长约。</p>
+<p class="impact">西安改造期的产能空窗可能加剧 2027 上半年 NAND 结构性紧张，消费级最先被挤压。</p>      <p class="meta">
+        <a class="src" href="/WeeklyResearch/Post/8/41497.html" target="_blank" rel="noopener noreferrer"
+           title="打开原文"><span class="lbl">全球半导体观察<span class="when">昨天 17:41</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="/WeeklyResearch/Post/8/41497.html" data-title="《首尔经济日报》11 月 23 日披露，三星计划改造西安第二工厂（X2），加码第九代垂直 NAND（V9）产能，面向 AI 数据中心市场；同期三星存储长约订单持续饱满。V9 是三星切入 300 层以上代际的关键产品，堆叠层数提升后单 die 容量与阵列效率上升，但刻蚀与键合步骤增加，对产线改造要求高。把海外产线转向 V9 而非继续扩产旧代际，说明三星在把产能结构往企业级 eSSD 所需的高层数 TLC 倾斜，消费级颗粒的供给弹性相应收窄，模组厂的颗粒分配将更依赖长约。"
+                data-source="全球半导体观察" data-date="2026-11-25"
+                data-time="昨天 17:41"
+                aria-pressed="false" title="收藏">☆</button>
+      </p>
+    </article></section>
+    <section class="item"><article class="point">
+      <p class="pt-text">群联推出 Pascari Space 太空专用 SSD 解决方案，基于其超过 26 年 NAND 存储技术与经太空任务验证的积累，结合 IMAGIN+ 定制化 NAND 存储与 ASIC 设计服务，针对不同太空任务量身打造，此前相关技术已用于 NASA 火星探测车。太空场景的核心约束是单粒子翻转与宽温，需要定制固件做纠错与冗余，这恰好是 ASIC 定制服务的用武之地。对产品线的影响是群联把消费级与企业级的通用主控能力延伸到高毛利利基市场，也说明 NAND 原厂之外，主控厂正用定制化服务争夺非标准场景。</p>
+<p class="impact">利基市场量小但壁垒高，真正价值在于把抗辐射固件经验反哺车规与工业级产品线。</p>      <p class="meta">
         <a class="src" href="http://www.expreview.com/109656.html" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">超能网<span class="when">今天 23:01</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="http://www.expreview.com/109656.html" data-title="群联推出Pascari Space太空专用SSD解决方案，正式拓展商业太空与轨道基础设施存储市场，产品基于其26年NAND存储技术与经太空任务验证的存储技术，结合IMAGIN+定制化NAND方案与ASIC设计服务，针对不同太空任务定制。太空场景的核心约束是单粒子翻转与总电离剂量，需要主控级ECC、擦写策略与冗余设计，这与消费级/企业级固件是两套逻辑。对产品线的意义是群联把定制ASIC与固件能力变现到高毛利利基市场，而非在标准企业级盘上打价格战。"
-                data-source="超能网" data-date="2026-11-23"
-                data-time="今天 23:01"
+           title="打开原文"><span class="lbl">超能网<span class="when">11-23 23:01</span><span class="ext">↗</span></span></a>
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="http://www.expreview.com/109656.html" data-title="群联推出 Pascari Space 太空专用 SSD 解决方案，基于其超过 26 年 NAND 存储技术与经太空任务验证的积累，结合 IMAGIN+ 定制化 NAND 存储与 ASIC 设计服务，针对不同太空任务量身打造，此前相关技术已用于 NASA 火星探测车。太空场景的核心约束是单粒子翻转与宽温，需要定制固件做纠错与冗余，这恰好是 ASIC 定制服务的用武之地。对产品线的影响是群联把消费级与企业级的通用主控能力延伸到高毛利利基市场，也说明 NAND 原厂之外，主控厂正用定制化服务争夺非标准场景。"
+                data-source="超能网" data-date="2026-11-25"
+                data-time="11-23 23:01"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">马斯克在讨论FSD v15.0.1算力需求时表示，全球DRAM与NAND闪存短缺正在推高硬件制造成本，导致特斯拉AI4芯片成本翻了一倍，AI4是其当前全系车型依赖的推理系统。他没有给出具体成本，也未说明是否传导到整车售价或FSD订阅。机理上，车载推理系统需要DRAM做模型权重与激活缓存、NAND做模型与日志存储，存储涨价直接抬升每台车的BOM；AI4成本翻倍说明存储在其物料结构中占比已不可忽视。对SSD/存储产品线的影响是，车规存储的需求刚性上升，车规eMMC/UFS与NVMe的长期供货协议会更早锁定。</p>
-<p class="impact">车企开始公开抱怨存储成本，说明短缺已从数据中心外溢到边缘终端。</p>      <p class="meta">
+      <p class="pt-text">马斯克在社交媒体讨论 FSD v15.0.1 算力需求时表示，全球 DRAM 与 NAND 闪存短缺正在推高硬件制造成本，导致特斯拉 AI4 芯片成本翻了一倍，AI4 是当前全系车型依赖的推理系统；他未给出具体成本，也未说明是否传导至整车售价或 FSD 订阅。车载推理系统对存储的依赖在于模型权重与影子模式数据缓存，AI4 成本翻倍说明车规存储的采购溢价已经显性化。对 SSD 产品线的影响是车规 eMMC/UFS 与 NVMe 的配额竞争加剧，模组厂在车规认证周期长的前提下更难拿到稳定颗粒。</p>
+<p class="impact">车企成本压力会倒逼存储方案降规或改架构，车规存储的溢价空间可能见顶。</p>      <p class="meta">
         <a class="src" href="http://www.expreview.com/109651.html" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">超能网<span class="when">今天 21:59</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109651.html" data-title="马斯克在讨论FSD v15.0.1算力需求时表示，全球DRAM与NAND闪存短缺正在推高硬件制造成本，导致特斯拉AI4芯片成本翻了一倍，AI4是其当前全系车型依赖的推理系统。他没有给出具体成本，也未说明是否传导到整车售价或FSD订阅。机理上，车载推理系统需要DRAM做模型权重与激活缓存、NAND做模型与日志存储，存储涨价直接抬升每台车的BOM；AI4成本翻倍说明存储在其物料结构中占比已不可忽视。对SSD/存储产品线的影响是，车规存储的需求刚性上升，车规eMMC/UFS与NVMe的长期供货协议会更早锁定。"
-                data-source="超能网" data-date="2026-11-23"
-                data-time="今天 21:59"
+           title="打开原文"><span class="lbl">超能网<span class="when">11-23 21:59</span><span class="ext">↗</span></span></a>
+<span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109651.html" data-title="马斯克在社交媒体讨论 FSD v15.0.1 算力需求时表示，全球 DRAM 与 NAND 闪存短缺正在推高硬件制造成本，导致特斯拉 AI4 芯片成本翻了一倍，AI4 是当前全系车型依赖的推理系统；他未给出具体成本，也未说明是否传导至整车售价或 FSD 订阅。车载推理系统对存储的依赖在于模型权重与影子模式数据缓存，AI4 成本翻倍说明车规存储的采购溢价已经显性化。对 SSD 产品线的影响是车规 eMMC/UFS 与 NVMe 的配额竞争加剧，模组厂在车规认证周期长的前提下更难拿到稳定颗粒。"
+                data-source="超能网" data-date="2026-11-25"
+                data-time="11-23 21:59"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">美光2025年1月宣布在新加坡毗邻现有工厂兴建HBM先进封装厂，投资70亿美元，计划2026年运营、2027年大幅扩产；最新进展是新建工厂已接收首批生产设备，预计2027年初开始量产，初期创造约1400个岗位，扩建后达3000个，涵盖封装技术开发、组装与测试。HBM封装产能直接决定AI加速卡的出货节奏，而先进封装与DRAM晶圆产能共享资源，HBM每扩一份产，标准DRAM与用于SSD的DRAM缓存供给就被挤一份。对SSD供应链的影响是，企业级eSSD的DRAM缓存成本与可得性在2027年前难缓解。</p>
-<p class="impact">设备搬入到量产还有一年多，2027年初这个节点能否守住决定AI卡与eSSD的DRAM分配。</p>      <p class="meta">
+      <p class="pt-text">美光 2025 年 1 月宣布在新加坡现有工厂旁兴建 HBM 先进封装厂，投资 70 亿美元，计划 2026 年开始运营、2027 年起大幅扩大先进封装总产能；最新进展是新厂已接收首批生产设备，预计 2027 年初量产，初期创造约 1,400 个岗位，扩建后达 3,000 个，涵盖封装技术开发、组装与测试。HBM 的堆叠与 TSV 封装是产能瓶颈所在，提前一年进设备意味着美光在为 2027 年的 HBM4 需求锁定封装产能。对存储供给的影响是先进封装与 DRAM 晶圆产能同步吃紧，挤占效应会传导到常规 DRAM 与 NAND 的资本分配。</p>
+<p class="impact">封装产能落地节奏决定美光 HBM 份额，2027 年初量产若延后，缺口会被 SK 海力士吃掉。</p>      <p class="meta">
         <a class="src" href="http://www.expreview.com/109633.html" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">超能网<span class="when">11-21 22:00</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光2025年1月宣布在新加坡毗邻现有工厂兴建HBM先进封装厂，投资70亿美元，计划2026年运营、2027年大幅扩产；最新进展是新建工厂已接收首批生产设备，预计2027年初开始量产，初期创造约1400个岗位，扩建后达3000个，涵盖封装技术开发、组装与测试。HBM封装产能直接决定AI加速卡的出货节奏，而先进封装与DRAM晶圆产能共享资源，HBM每扩一份产，标准DRAM与用于SSD的DRAM缓存供给就被挤一份。对SSD供应链的影响是，企业级eSSD的DRAM缓存成本与可得性在2027年前难缓解。"
-                data-source="超能网" data-date="2026-11-23"
+<span class="tag">颗粒</span><span class="tag">封装</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109633.html" data-title="美光 2025 年 1 月宣布在新加坡现有工厂旁兴建 HBM 先进封装厂，投资 70 亿美元，计划 2026 年开始运营、2027 年起大幅扩大先进封装总产能；最新进展是新厂已接收首批生产设备，预计 2027 年初量产，初期创造约 1,400 个岗位，扩建后达 3,000 个，涵盖封装技术开发、组装与测试。HBM 的堆叠与 TSV 封装是产能瓶颈所在，提前一年进设备意味着美光在为 2027 年的 HBM4 需求锁定封装产能。对存储供给的影响是先进封装与 DRAM 晶圆产能同步吃紧，挤占效应会传导到常规 DRAM 与 NAND 的资本分配。"
+                data-source="超能网" data-date="2026-11-25"
                 data-time="11-21 22:00"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">群联在SC26详细介绍两款企业级SSD设计：一款内置NPU并搭载64GB、130GB/s带宽的内存，支持在盘内直接运行PyTorch、vLLM、OpenVINO和llama.cpp；另一款在单一控制器之后把高速pSLC缓存与大容量QLC融合。把NPU与内存放到盘上，等于把部分推理与数据预处理从主机CPU/GPU卸载到存储侧，减少KV Cache与向量数据在PCIe链路上的往返；pSLC+QLC混合则用一小块高耐久区承接写放大，把大容量成本压到QLC水平。对主控选型的影响是，企业级盘开始按「算力+缓存分层」定义SKU，而非单纯堆容量与顺序带宽。</p>
-<p class="impact">盘内NPU的软件生态与客户接受度未验证，短期更像展示肌肉而非量产订单。</p>      <p class="meta">
+      <p class="pt-text">群联在 SC26 详细介绍两款企业级 SSD 设计：一款内置 NPU 并搭载 64GB、130GB/s 带宽的内存，支持在盘内直接运行 PyTorch、vLLM、OpenVINO 和 llama.cpp；另一款在单一控制器之后把高速 pSLC 缓存与大容量 QLC 融合。把推理框架下沉到盘内，本质是用靠近数据的算力削减 Host 与 SSD 之间的 PCIe 往返和 KV Cache 搬运，130GB/s 的内存带宽足以支撑小模型或向量检索的本地推理。影响在于企业级产品定义开始分化：一类继续拼顺序带宽，一类转向「存储+近数据计算」，后者对主控的片上 SRAM、内存接口和固件生态提出全新要求。</p>
+<p class="impact">盘内推理的瓶颈是模型规模与固件生态，短期更像 KV Cache 卸载的变体而非通用算力。</p>      <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-21 09:48</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联在SC26详细介绍两款企业级SSD设计：一款内置NPU并搭载64GB、130GB/s带宽的内存，支持在盘内直接运行PyTorch、vLLM、OpenVINO和llama.cpp；另一款在单一控制器之后把高速pSLC缓存与大容量QLC融合。把NPU与内存放到盘上，等于把部分推理与数据预处理从主机CPU/GPU卸载到存储侧，减少KV Cache与向量数据在PCIe链路上的往返；pSLC+QLC混合则用一小块高耐久区承接写放大，把大容量成本压到QLC水平。对主控选型的影响是，企业级盘开始按「算力+缓存分层」定义SKU，而非单纯堆容量与顺序带宽。"
-                data-source="斯托瑞吉" data-date="2026-11-23"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联在 SC26 详细介绍两款企业级 SSD 设计：一款内置 NPU 并搭载 64GB、130GB/s 带宽的内存，支持在盘内直接运行 PyTorch、vLLM、OpenVINO 和 llama.cpp；另一款在单一控制器之后把高速 pSLC 缓存与大容量 QLC 融合。把推理框架下沉到盘内，本质是用靠近数据的算力削减 Host 与 SSD 之间的 PCIe 往返和 KV Cache 搬运，130GB/s 的内存带宽足以支撑小模型或向量检索的本地推理。影响在于企业级产品定义开始分化：一类继续拼顺序带宽，一类转向「存储+近数据计算」，后者对主控的片上 SRAM、内存接口和固件生态提出全新要求。"
+                data-source="斯托瑞吉" data-date="2026-11-25"
                 data-time="11-21 09:48"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">慧荣科技在SC26首次公开展示数据中心级SM8466，这是其高端MonTitan系列最新一代，也是首款PCIe 6.0 SSD主控，最终版本近期完成流片，搭载该主控的SSD预计2027年末至2028年初上市。规格为PCIe 6.0 x4、16通道、顺序28GB/s、4K随机7M IOPS，符合NVMe 2.0与OCP NVMe 2.5，搭配新一代3D NAND。PCIe 6.0改用PAM4信号，单通道误码率上升，主控必须内置更强的FEC与均衡，16通道又意味着单盘要挂更多Die、功耗与散热预算被压缩。对产品线的直接影响是：企业级eSSD的换代窗口被推到2027年末，2026—2027年PCIe 5.0仍是出货主力，主控厂需同时维护两代平台。</p>
-<p class="impact">PCIe 6.0主控流片到量产还有两年，客户导入节奏与固件成熟度是最大变量。</p>      <p class="meta">
+      <p class="pt-text">慧荣科技在 SC26 首次公开展示数据中心级 SM8466，这是其高端 MonTitan 系列最新一代，最终版本近期完成流片，搭载该主控的 SSD 预计 2027 年末至 2028 年初上市。规格为 PCIe 6.0 x4、符合 NVMe 2.0 与 OCP NVMe 2.5，16 通道设计，顺序传输最高 28GB/s，4K 随机最高 7M IOPS。PCIe 6.0 采用 PAM4 信号，单位时间符号率翻倍但信噪比余量收窄，主控的 SerDes 与均衡设计难度显著高于 Gen5，16 通道同时还要压住功耗与散热。对产品线而言，这意味着企业级 eSSD 的带宽瓶颈从介质转向接口，主控厂需提前与 NAND 厂锁定高 IOPS 颗粒配对。</p>
+<p class="impact">流片到量产还有两年，客户导入窗口在 2027 上半年，错过就要等下一代平台。</p>      <p class="meta">
         <a class="src" href="http://www.expreview.com/109619.html" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">超能网<span class="when">11-21 00:39</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣科技在SC26首次公开展示数据中心级SM8466，这是其高端MonTitan系列最新一代，也是首款PCIe 6.0 SSD主控，最终版本近期完成流片，搭载该主控的SSD预计2027年末至2028年初上市。规格为PCIe 6.0 x4、16通道、顺序28GB/s、4K随机7M IOPS，符合NVMe 2.0与OCP NVMe 2.5，搭配新一代3D NAND。PCIe 6.0改用PAM4信号，单通道误码率上升，主控必须内置更强的FEC与均衡，16通道又意味着单盘要挂更多Die、功耗与散热预算被压缩。对产品线的直接影响是：企业级eSSD的换代窗口被推到2027年末，2026—2027年PCIe 5.0仍是出货主力，主控厂需同时维护两代平台。"
-                data-source="超能网" data-date="2026-11-23"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span>        <button class="fav" data-url="http://www.expreview.com/109619.html" data-title="慧荣科技在 SC26 首次公开展示数据中心级 SM8466，这是其高端 MonTitan 系列最新一代，最终版本近期完成流片，搭载该主控的 SSD 预计 2027 年末至 2028 年初上市。规格为 PCIe 6.0 x4、符合 NVMe 2.0 与 OCP NVMe 2.5，16 通道设计，顺序传输最高 28GB/s，4K 随机最高 7M IOPS。PCIe 6.0 采用 PAM4 信号，单位时间符号率翻倍但信噪比余量收窄，主控的 SerDes 与均衡设计难度显著高于 Gen5，16 通道同时还要压住功耗与散热。对产品线而言，这意味着企业级 eSSD 的带宽瓶颈从介质转向接口，主控厂需提前与 NAND 厂锁定高 IOPS 颗粒配对。"
+                data-source="超能网" data-date="2026-11-25"
                 data-time="11-21 00:39"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">美光多位高管释放供给信号：总裁兼CTO Scott DeBoer称DRAM供需长期无法回归平衡，2027年比2026年更紧张；CEO Sanjay Mehrotra给出相似判断，并披露美光2027年预期产能的75%已被锁定。SK海力士持相同看法。机理上，HBM挤占DRAM晶圆与先进封装资源，原厂优先把产能分配给高毛利产品，标准DRAM与NAND的边际供给被压缩。对SSD的影响是，企业级eSSD的DRAM缓存与主控配套内存成本在2027年前锁定难度上升，OEM需要更早签长单，消费级模组则更多依赖现货波动。</p>
-<p class="impact">75%产能已被锁定意味着2027年现货议价空间很小，晚签的OEM要付溢价。</p>      <p class="meta">
+      <p class="pt-text">美光多位高管就存储供给释放信号：总裁兼 CTO Scott DeBoer 称 DRAM 供需长期无法回归平衡，2027 年比 2026 年更紧张；CEO Sanjay Mehrotra 披露美光 2027 年预期产能的 75% 已被锁定，SK 海力士持相同看法。产能高比例被长约锁定意味着现货市场可获得的颗粒进一步减少，模组厂与二线客户的议价空间被压缩。对 SSD 产品线的影响是 2027 年的颗粒分配将更早确定，主控与模组的产能规划必须跟着长约走，缺乏长约的中小模组厂面临断供风险。</p>
+<p class="impact">75% 产能锁定是硬约束，2027 年现货颗粒的稀缺程度可能超出市场预期。</p>      <p class="meta">
         <a class="src" href="http://www.expreview.com/109607.html" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">超能网<span class="when">11-20 20:19</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109607.html" data-title="美光多位高管释放供给信号：总裁兼CTO Scott DeBoer称DRAM供需长期无法回归平衡，2027年比2026年更紧张；CEO Sanjay Mehrotra给出相似判断，并披露美光2027年预期产能的75%已被锁定。SK海力士持相同看法。机理上，HBM挤占DRAM晶圆与先进封装资源，原厂优先把产能分配给高毛利产品，标准DRAM与NAND的边际供给被压缩。对SSD的影响是，企业级eSSD的DRAM缓存与主控配套内存成本在2027年前锁定难度上升，OEM需要更早签长单，消费级模组则更多依赖现货波动。"
-                data-source="超能网" data-date="2026-11-23"
+<span class="tag">颗粒</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="http://www.expreview.com/109607.html" data-title="美光多位高管就存储供给释放信号：总裁兼 CTO Scott DeBoer 称 DRAM 供需长期无法回归平衡，2027 年比 2026 年更紧张；CEO Sanjay Mehrotra 披露美光 2027 年预期产能的 75% 已被锁定，SK 海力士持相同看法。产能高比例被长约锁定意味着现货市场可获得的颗粒进一步减少，模组厂与二线客户的议价空间被压缩。对 SSD 产品线的影响是 2027 年的颗粒分配将更早确定，主控与模组的产能规划必须跟着长约走，缺乏长约的中小模组厂面临断供风险。"
+                data-source="超能网" data-date="2026-11-25"
                 data-time="11-20 20:19"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">NAND现货价格自10月下旬以来下跌约20%，TrendForce称这轮下跌仅用两周，消费需求走弱是主因。这与合约价、企业级eSSD的紧张形成明显分层：现货对应的是渠道与消费模组，合约对应的是云与企业级长单。机理上，消费端需求疲软让模组厂与渠道先降价去库存，而原厂把产能向企业级与HBM倾斜，进一步压缩消费级供给的边际弹性。对SSD产品线的影响是，消费级模组短期成本压力缓解，但企业级与高容量QLC的颗粒分配仍偏紧，不能把现货下跌外推为全线降价。</p>
-<p class="impact">现货跌20%只说明渠道在去库存，企业级合约价的方向要看原厂产能分配。</p>      <p class="meta">
+      <p class="pt-text">据《首尔经济日报》，NAND 现货价格自 10 月下半月以来下跌约 20%，TrendForce 称这轮下跌仅用两周，原因是消费端需求枯竭。现货价快速回落与合约价坚挺形成背离，说明渠道库存正在被动去化，而原厂把产能转向企业级与高层数产品。对 SSD 产品线的影响是消费级模组短期有低价颗粒可拿，但这是去库存而非供给宽松，一旦渠道出清，2027 年合约价仍由原厂主导，模组厂不宜按现货价做长期定价。</p>
+<p class="impact">现货跌价是去库存信号而非拐点，消费级 SSD 的降价窗口可能只有一两个季度。</p>      <p class="meta">
         <a class="src" href="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">TechPowerUp<span class="when">11-20 04:06</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span>        <button class="fav" data-url="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" data-title="NAND现货价格自10月下旬以来下跌约20%，TrendForce称这轮下跌仅用两周，消费需求走弱是主因。这与合约价、企业级eSSD的紧张形成明显分层：现货对应的是渠道与消费模组，合约对应的是云与企业级长单。机理上，消费端需求疲软让模组厂与渠道先降价去库存，而原厂把产能向企业级与HBM倾斜，进一步压缩消费级供给的边际弹性。对SSD产品线的影响是，消费级模组短期成本压力缓解，但企业级与高容量QLC的颗粒分配仍偏紧，不能把现货下跌外推为全线降价。"
-                data-source="TechPowerUp" data-date="2026-11-23"
+<span class="tag">颗粒</span>        <button class="fav" data-url="https://www.techpowerup.com/355039/nand-spot-prices-slide-20-in-weeks-as-consumer-demand-dries-up" data-title="据《首尔经济日报》，NAND 现货价格自 10 月下半月以来下跌约 20%，TrendForce 称这轮下跌仅用两周，原因是消费端需求枯竭。现货价快速回落与合约价坚挺形成背离，说明渠道库存正在被动去化，而原厂把产能转向企业级与高层数产品。对 SSD 产品线的影响是消费级模组短期有低价颗粒可拿，但这是去库存而非供给宽松，一旦渠道出清，2027 年合约价仍由原厂主导，模组厂不宜按现货价做长期定价。"
+                data-source="TechPowerUp" data-date="2026-11-25"
                 data-time="11-20 04:06"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">Microchip发布Flashtec NVMe 4016主控，第四代Flashtec设计，PCIe Gen 5 x4接口、16个可编程NAND通道，官方称吞吐超过14GB/s、随机性能超过300万IOPS量级。可编程通道数意味着同一颗主控能适配不同厂商的TLC/QLC颗粒与不同代际，降低OEM为换颗粒重开主控的成本。在企业级市场，这是对慧荣、群联高端方案的直接补位，尤其适合需要长生命周期供货与定制固件的云与OEM客户。对颗粒分配的影响是，16通道设计让单盘更容易吃满高堆叠Die，QLC大容量盘的通道利用率提升。</p>
-<p class="impact">可编程通道是差异化卖点，但Microchip在企业级SSD主控的生态份额仍需客户名单证明。</p>      <p class="meta">
+      <p class="pt-text">Microchip 发布第四代 Flashtec NVMe 4016 主控，PCIe Gen5 x4 接口、16 个可编程 NAND 通道，官方称吞吐超过 14GB/s、随机性能超过 3M IOPS 量级。可编程通道意味着同一颗主控能适配不同厂商的 ONFI 与 Toggle 颗粒，对需要多源采购的企业级客户是实打实的供应链弹性。在 PCIe 6.0 主控尚未量产的窗口期，Gen5 16 通道仍是 2026-2027 年企业级 SSD 的主力平台，Microchip 此举是守住数据中心design win 的防守动作，也给了二线模组厂绕开头部主控厂的选择。</p>
+<p class="impact">可编程通道降低颗粒绑定，但固件调优成本会转嫁给模组厂，量产节奏取决于客户验证。</p>      <p class="meta">
         <a class="src" href="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">StorageReview<span class="when">11-19 03:10</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" data-title="Microchip发布Flashtec NVMe 4016主控，第四代Flashtec设计，PCIe Gen 5 x4接口、16个可编程NAND通道，官方称吞吐超过14GB/s、随机性能超过300万IOPS量级。可编程通道数意味着同一颗主控能适配不同厂商的TLC/QLC颗粒与不同代际，降低OEM为换颗粒重开主控的成本。在企业级市场，这是对慧荣、群联高端方案的直接补位，尤其适合需要长生命周期供货与定制固件的云与OEM客户。对颗粒分配的影响是，16通道设计让单盘更容易吃满高堆叠Die，QLC大容量盘的通道利用率提升。"
-                data-source="StorageReview" data-date="2026-11-23"
+<span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/microchip-flashtec-nvme-4016-controller-features-16-nand-channels-and-over-14-gb-s" data-title="Microchip 发布第四代 Flashtec NVMe 4016 主控，PCIe Gen5 x4 接口、16 个可编程 NAND 通道，官方称吞吐超过 14GB/s、随机性能超过 3M IOPS 量级。可编程通道意味着同一颗主控能适配不同厂商的 ONFI 与 Toggle 颗粒，对需要多源采购的企业级客户是实打实的供应链弹性。在 PCIe 6.0 主控尚未量产的窗口期，Gen5 16 通道仍是 2026-2027 年企业级 SSD 的主力平台，Microchip 此举是守住数据中心design win 的防守动作，也给了二线模组厂绕开头部主控厂的选择。"
+                data-source="StorageReview" data-date="2026-11-25"
                 data-time="11-19 03:10"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
     <section class="item"><article class="point">
-      <p class="pt-text">铠侠子公司SSSTC发布PQ2系列，这是其首款工业级QLC SSD，采用PCIe Gen4 x4接口与铠侠BiCS FLASH第8代QLC，顺序读取最高7,000MB/s。工业级用QLC的关键在于耐久与宽温：QLC的P/E上限低，必须靠主控的SLC缓存策略、后台回收与磨损均衡把写入寿命拉到工业场景可接受的水平，同时保证-40至85度区间的数据保持。对颗粒分配的影响是，BiCS 8 QLC开始从消费级/读取密集型向工业M.2渗透，铠侠系在工业市场的QLC供给增加，可能挤压该细分市场的TLC低容量型号。</p>
-<p class="impact">工业QLC的耐久认证是门槛，7,000MB/s的顺序读对工业客户的实际价值有限。</p>      <p class="meta">
+      <p class="pt-text">铠侠子公司 SSSTC 发布 PQ2 系列，为其首款工业级 QLC SSD，采用 PCIe Gen4 x4 接口与铠侠 BiCS FLASH 第八代 QLC，顺序读取最高 7,000MB/s。QLC 进入工业级的前提是主控的 LDPC 纠错与 SLC 缓存策略足够成熟，第八代 BiCS 在堆叠层数与写入性能上的改进让 QLC 的耐久短板被部分抵消。对产品线的影响是工业与嵌入式市场开始接受 QLC 替代 TLC 以换取容量成本，SSSTC 借铠侠颗粒的垂直整合优势，在工规 M.2 这一利基市场对第三方模组厂形成压力。</p>
+<p class="impact">工业级 QLC 的验收关键是断电保护与长期耐久数据，客户导入会比消费级慢得多。</p>      <p class="meta">
         <a class="src" href="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" target="_blank" rel="noopener noreferrer"
            title="打开原文"><span class="lbl">StorageReview<span class="when">11-18 21:27</span><span class="ext">↗</span></span></a>
-<span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" data-title="铠侠子公司SSSTC发布PQ2系列，这是其首款工业级QLC SSD，采用PCIe Gen4 x4接口与铠侠BiCS FLASH第8代QLC，顺序读取最高7,000MB/s。工业级用QLC的关键在于耐久与宽温：QLC的P/E上限低，必须靠主控的SLC缓存策略、后台回收与磨损均衡把写入寿命拉到工业场景可接受的水平，同时保证-40至85度区间的数据保持。对颗粒分配的影响是，BiCS 8 QLC开始从消费级/读取密集型向工业M.2渗透，铠侠系在工业市场的QLC供给增加，可能挤压该细分市场的TLC低容量型号。"
-                data-source="StorageReview" data-date="2026-11-23"
+<span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/ssstc-pq2-industrial-qlc-ssd-bics-flash-8-pcie-gen4-m2-2280-2230" data-title="铠侠子公司 SSSTC 发布 PQ2 系列，为其首款工业级 QLC SSD，采用 PCIe Gen4 x4 接口与铠侠 BiCS FLASH 第八代 QLC，顺序读取最高 7,000MB/s。QLC 进入工业级的前提是主控的 LDPC 纠错与 SLC 缓存策略足够成熟，第八代 BiCS 在堆叠层数与写入性能上的改进让 QLC 的耐久短板被部分抵消。对产品线的影响是工业与嵌入式市场开始接受 QLC 替代 TLC 以换取容量成本，SSSTC 借铠侠颗粒的垂直整合优势，在工规 M.2 这一利基市场对第三方模组厂形成压力。"
+                data-source="StorageReview" data-date="2026-11-25"
                 data-time="11-18 21:27"
-                aria-pressed="false" title="收藏">☆</button>
-      </p>
-    </article></section>
-    <section class="item"><article class="point">
-      <p class="pt-text">QNAP推出ES1686Adc，3U、16盘位双控制器存储阵列，每个盘位同时接受SAS 12Gb/s硬盘或双端口U.3 NVMe SSD，两个主动-主动控制器运行基于ZFS的QES系统。双端口U.3 NVMe意味着单盘可被两个控制器同时访问，故障切换不依赖SAS Expander，这是企业级全闪阵列从SAS向NVMe迁移的关键接口选择。对SSD产品线的影响是，双端口U.3 NVMe的需求从超大规模客户向中小企业和边缘阵列下沉，主控与固件需要支持双端口与多路径，这会成为企业级SSD的标配能力而非选配。</p>
-<p class="impact">双端口U.3下沉到16盘位阵列，说明NVMe企业级盘的接口门槛正在降低。</p>      <p class="meta">
-        <a class="src" href="https://www.storagereview.com/news/qnap-es1686adc-3u-16-bay-sas-u3-nvme-dual-controller-zfs-array" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">StorageReview<span class="when">11-18 20:39</span><span class="ext">↗</span></span></a>
-<span class="tag">主控</span><span class="tag">产品</span>        <button class="fav" data-url="https://www.storagereview.com/news/qnap-es1686adc-3u-16-bay-sas-u3-nvme-dual-controller-zfs-array" data-title="QNAP推出ES1686Adc，3U、16盘位双控制器存储阵列，每个盘位同时接受SAS 12Gb/s硬盘或双端口U.3 NVMe SSD，两个主动-主动控制器运行基于ZFS的QES系统。双端口U.3 NVMe意味着单盘可被两个控制器同时访问，故障切换不依赖SAS Expander，这是企业级全闪阵列从SAS向NVMe迁移的关键接口选择。对SSD产品线的影响是，双端口U.3 NVMe的需求从超大规模客户向中小企业和边缘阵列下沉，主控与固件需要支持双端口与多路径，这会成为企业级SSD的标配能力而非选配。"
-                data-source="StorageReview" data-date="2026-11-23"
-                data-time="11-18 20:39"
                 aria-pressed="false" title="收藏">☆</button>
       </p>
     </article></section>
 
   <aside class="watch">
     <h3>值得留意</h3>
-    <ul><li>慧荣SM8466的客户导入名单与固件成熟度，盯2027年是否有云厂商公开design win</li><li>群联盘内NPU SSD是否从展示走向送样，盯是否有客户披露推理卸载的实测数据</li><li>美光新加坡HBM封装厂设备搬入后的量产爬坡，盯2027年初节点是否推迟</li><li>NAND现货跌势是否传导到合约价，盯原厂是否调整消费级与企业级的产能分配</li></ul>
+    <ul><li>慧荣 SM8466 的客户送样与 OCP 认证进度，决定 2027 年末 PCIe 6.0 eSSD 能否如期上市。</li><li>三星西安 X2 改造的停产窗口长度，直接影响 2027 上半年 V9 颗粒的供给节奏。</li><li>群联盘内 NPU SSD 是否有云厂商或服务器 OEM 公开背书，这是近数据计算落地的关键证据。</li><li>美光新加坡封装厂设备搬入到试产的间隔，可验证 2027 年初量产目标的可信度。</li></ul>
   </aside>
 
-  <div class="price">价格背景：NAND现货两周跌约20%，但DRAM与HBM继续看涨，企业级合约与消费现货走势分化。</div>
+  <div class="price">价格背景：NAND 现货两周跌约 20%，但合约价与原厂长约仍紧，价格信号分化。</div>
+
+  <section class="srcs">
+    <h2>数据源（最近更新）</h2>
+    <ul class="srclist">
+      <li><span class="sname">超能网</span><span class="sday">2026-11-25</span><span class="scount">7 条</span></li>
+      <li><span class="sname">Tom&#39;s Hardware</span><span class="sday">2026-11-25</span><span class="scount">4 条</span></li>
+      <li><span class="sname">TechPowerUp</span><span class="sday">2026-11-25</span><span class="scount">6 条</span></li>
+      <li><span class="sname">全球半导体观察</span><span class="sday">2026-11-24</span><span class="scount">3 条</span></li>
+      <li><span class="sname">闪德资讯</span><span class="sday">2026-11-21</span><span class="scount">1 条</span></li>
+      <li><span class="sname">斯托瑞吉</span><span class="sday">2026-11-21</span><span class="scount">1 条</span></li>
+      <li><span class="sname">StorageReview</span><span class="sday">2026-11-18</span><span class="scount">3 条</span></li>
+    </ul>
+  </section>
 
   <footer>
-    <span>21 条素材 / 9 个源</span>
-    <span>2026-11-23 23:31 生成 · v5</span>
+    <span>28 条素材 / 9 个源</span>
+    <span>2026-11-25 22:38 生成 · v5</span>
   </footer>
   <p class="footlink"><a href="./install.html">安装到手机，像 App 一样打开 →</a></p>
 </div>

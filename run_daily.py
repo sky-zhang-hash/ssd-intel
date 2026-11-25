@@ -213,6 +213,16 @@ def main() -> int:
     print("\n== 生成日报 ==")
     api_key = None if args.no_llm else os.environ.get("DEEPSEEK_API_KEY")
     payload = report_mod.build(fresh, date=date, api_key=api_key)
+
+    # 公众号授权失效时，页面顶部要明说，不要让人以为「这些源没新闻」
+    auth_down = [h for h in wx_health
+                 if not h.get("ok") and ("2012" in str(h.get("error", ""))
+                                        or "Cookie" in str(h.get("error", "")))]
+    if auth_down:
+        payload["warn"] = "微信读书授权已过期：今天的 23 个公众号都没抓到，页面里只有 RSS 源的内容。重新复制一次 Cookie 就能恢复。"
+
+    # 各源最近更新时间（谁停更了一眼可见）
+    payload["sources"] = store.source_status()
     days = max(1, round(args.hours / 24))
     payload["window"] = f"近 {days} 天" if days >= 2 else ""
 

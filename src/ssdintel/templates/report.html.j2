@@ -10,6 +10,10 @@
     {% if r.lead %}<p class="lead">{{ r.lead }}</p>{% endif %}
   </header>
 
+  {% if r.warn %}
+  <div class="warn">{{ r.warn }}</div>
+  {% endif %}
+
   {% if r.flat %}
   {% for p in r.flat %}
     <section class="item"><article class="point">
@@ -43,6 +47,17 @@
 
   {% if r.price_note %}
   <div class="price">价格背景：{{ r.price_note }}</div>
+  {% endif %}
+
+  {% if r.sources %}
+  <section class="srcs">
+    <h2>数据源（最近更新）</h2>
+    <ul class="srclist">
+      {% for s in r.sources[:14] %}
+      <li><span class="sname">{{ s.source }}</span><span class="sday">{{ s.last[:10] }}</span><span class="scount">{{ s.count }} 条</span></li>
+      {% endfor %}
+    </ul>
+  </section>
   {% endif %}
 
   <footer>
