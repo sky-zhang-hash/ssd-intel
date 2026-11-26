@@ -36,11 +36,11 @@ UA = (
 )
 
 # 这些错误码是账号级问题（Cookie 失效 / 参数不对），再重试也没意义
-FATAL_CODES = {-2010, -2012, -2041}
+FATAL_CODES = {-2010, -2012}
 
 # -2014「请求过于频繁」不是账号问题，是限流：等一会儿重试即可。
 # （一度把它当致命错误，结果一轮只拿到 500 多篇就整个停了；实测等 20-40 秒就能恢复）
-RATE_LIMIT_CODES = {-2014}
+RATE_LIMIT_CODES = {-2014, -2041}  # -2041 也是频控（实测：短时间连打即触发，几分钟到几十分钟自解）
 
 
 class WereadError(Exception):
@@ -82,15 +82,19 @@ def _check(payload: dict) -> None:
 
 def _get(session: requests.Session, path: str, params: dict, timeout: int = 25,
          retries: int = 3) -> dict:
-    """发请求；撞限流就退避重试，别整轮采集直接报废。"""
+    """发请求；网络抖动重试，但配额类限流（-2014/-2041）立刻上抛。
+
+    实测 -2041 是账号级频控，冷却要几分钟到几小时，短退避重试没意义，
+    反而把额度烧得更狠；由 collect() 决定这一轮直接收工。
+    """
     for attempt in range(retries):
         try:
             return _get_once(session, path, params, timeout)
         except WereadError as e:
-            if not e.rate_limit or attempt == retries - 1:
+            if e.rate_limit or not e.retriable or attempt == retries - 1:
                 raise
-            wait = 30 * (2 ** attempt)  # 30s / 60s / 120s
-            print(f"  [wx]  触发限流，等 {wait}s 重试（{attempt + 1}/{retries - 1}）")
+            wait = 3 * (2 ** attempt)  # 3s / 6s / 12s，只给真正的网络抖动
+            print(f"  [wx]  请求失败（{e.code}），{wait}s 后重试")
             time.sleep(wait)
     raise WereadError("unreachable", "重试耗尽")
 

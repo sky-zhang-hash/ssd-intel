@@ -83,3 +83,24 @@ Docker 版用容器内的 Chromium（`playwright install chromium`），不需�
 ## 没有常开机器怎么办
 
 走 B：手动续。`ssd-intel/README.md` 的「公众号」一节写了三步；只要**只在 GitHub 里用** Cookie（本地 `.env` 留空），寿命会比之前长一些。
+
+## 排错：验证时返回 -2041 / -2010
+
+| 错误码 | 含义 | 怎么办 |
+|---|---|---|
+| `-2010 用户不存在` | 浏览器里还没登录成功（扫码没完成或没点确认） | 重新 `login`，扫完在手机上点「确认登录」 |
+| `-2012 登录超时` | Cookie 过期 | 重新 `login` |
+| `-2041` | 该账号拿不到这个公众号（多数是**没在微信读书里关注这个号**，或是新账号无内容权限） | 用原来那个已关注 23 个号的账号登录；或在新账号的微信读书里逐个关注 |
+
+诊断用的东西：`data\cookie.txt`（最新抓到的 Cookie）、`data\keeper.log`。
+拿到 `cookie.txt` 后可以直接用 Python 打接口确认：
+
+```python
+import requests
+ck = open("data/cookie.txt").read().strip()
+h = {"Cookie": ck, "User-Agent": "Mozilla/5.0", "Origin": "https://weread.qq.com",
+     "Referer": "https://weread.qq.com/"}
+print(requests.get("https://weread.qq.com/web/shelf/sync", headers=h, timeout=20).text[:200])
+print(requests.get("https://weread.qq.com/web/mp/articles",
+                   params={"bookId": "MP_WXS_3095382082", "offset": 0}, headers=h, timeout=20).text[:200])
+```

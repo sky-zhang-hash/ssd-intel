@@ -96,14 +96,51 @@ async function verify(cookie) {
       { headers: { Cookie: cookie, 'User-Agent': UA, Accept: 'application/json, text/plain, */*',
                    Origin: 'https://weread.qq.com', Referer: 'https://weread.qq.com/' } },
     );
-    const data = await r.json();
+    const text = await r.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch { /* 非 JSON */ }
     const code = Number(data.errCode ?? data.errcode ?? 0);
     if (code === 0) return true;
-    log(`验证失败：errCode=${code} ${data.errMsg || ''}`);
+    log(`验证失败：errCode=${code} ${data.errMsg || ''} | 原始: ${text.slice(0, 120)}`);
   } catch (e) {
     log(`验证异常：${e.message}`);
   }
   return false;
+}
+
+// 便宜的存活检查：书架接口不消耗「文章列表」的配额。
+// 之前登录轮询每 4 秒打一次 /web/mp/articles，5 分钟打 70 多次，
+// 直接把这个账号打到 -2041（频控，几小时才解）。所以登录只认书架。
+async function alive(cookie) {
+  if (!cookie) return false;
+  try {
+    const r = await fetch('https://weread.qq.com/web/shelf/sync', {
+      headers: { Cookie: cookie, 'User-Agent': UA, Accept: 'application/json, text/plain, */*',
+                 Origin: 'https://weread.qq.com', Referer: 'https://weread.qq.com/' },
+    });
+    const d = JSON.parse(await r.text());
+    const code = Number(d.errCode ?? d.errcode ?? 0);
+    return code === 0;
+  } catch {
+    return false;
+  }
+}
+
+async function shelfInfo(cookie) {
+  try {
+    const r = await fetch('https://weread.qq.com/web/shelf/sync', {
+      headers: { Cookie: cookie, 'User-Agent': UA, Accept: 'application/json, text/plain, */*',
+                 Origin: 'https://weread.qq.com', Referer: 'https://weread.qq.com/' },
+    });
+    const t = await r.text();
+    const d = JSON.parse(t);
+    const code = Number(d.errCode ?? d.errcode ?? 0);
+    if (code !== 0) return `shelf errCode=${code} ${d.errMsg || ''}`;
+    const n = (d.books || []).filter((b) => String(b.bookId || '').startsWith('MP_WXS_')).length;
+    return `登录 OK，书架 ${d.bookCount ?? 0} 本，其中公众号 ${n} 个`;
+  } catch (e) {
+    return `shelf 请求失败：${e.message}`;
+  }
 }
 
 async function updateSecret(cookie) {
@@ -143,30 +180,65 @@ async function refreshOnce(headless = true) {
   if (!cookie) { log('没抓到 Cookie：登录态可能已失效，跑一次 node keeper.mjs login'); return false; }
   fs.mkdirSync(DATA, { recursive: true });
   fs.writeFileSync(COOKIE_FILE, cookie);
-  if (!(await verify(cookie))) {
-    log('Cookie 抓到了但接口不认（登录态过期），需要重新扫码：node keeper.mjs login');
+  const shelf = await shelfInfo(cookie);
+  log(`登录态自检：${shelf}`);
+  if (!(await alive(cookie))) {
+    log('Cookie 抓到了但书架接口不认（登录态过期），需要重新扫码：node keeper.mjs login');
     return false;
   }
   log(`Cookie 有效，长度 ${cookie.length}`);
+  if (!(await verify(cookie))) {
+    log('书架能读，但文章列表接口返回频控/异常（-2041 常见）；cookie 仍然写回，等配额恢复即可');
+  }
   await updateSecret(cookie);
   return true;
 }
 
 async function login() {
-  log('打开浏览器窗口，请用微信扫码登录（窗口关掉前不要退出）');
-  const ctx = await openContext(false);
+  log('打开浏览器窗口，请用微信扫码登录（这个窗口不要关）');
+  let ctx;
+  try {
+    ctx = await openContext(false);
+  } catch (e) {
+    log(`浏览器启动失败：${e.message.split('\n')[0]}`);
+    return false;
+  }
   const page = await ctx.newPage();
-  await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+  try {
+    await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+  } catch (e) {
+    log(`打开微信读书超时（${e.message.split('\n')[0]}），但窗口还在，可以手动刷新页面再扫码`);
+  }
   const deadline = Date.now() + 5 * 60 * 1000;
   let cookie = '';
+  let dumped = false;
   while (Date.now() < deadline) {
-    const cookies = await ctx.cookies('https://weread.qq.com').catch(() => []);
-    cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
-    if (cookie.includes('wr_skey=') && cookie.includes('wr_vid=') && (await verify(cookie))) break;
-    await page.waitForTimeout(4000);
+    try {
+      const cookies = await ctx.cookies('https://weread.qq.com');
+      cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+      if (cookie.includes('wr_skey=') && cookie.includes('wr_vid=')) {
+        fs.mkdirSync(DATA, { recursive: true });
+        fs.writeFileSync(COOKIE_FILE, cookie);
+        if (!dumped) {
+          dumped = true;
+          log(`已抓到登录态 Cookie（长度 ${cookie.length}），${await shelfInfo(cookie)}`);
+        }
+        // 用书架判断登录完成，避免把文章列表接口打到频控
+        if (await alive(cookie)) {
+          log('登录态已建立');
+          break;
+        }
+      }
+    } catch (e) {
+      log(`轮询出错（继续等）：${e.message.split('\n')[0]}`);
+    }
+    await page.waitForTimeout(4000).catch(() => {});
   }
-  await ctx.close();
-  if (!cookie || !(await verify(cookie))) { log('登录没成功（超时）'); return false; }
+  await ctx.close().catch(() => {});
+  if (!cookie || !(await alive(cookie))) {
+    log('登录没成功（等了 5 分钟）');
+    return false;
+  }
   fs.mkdirSync(DATA, { recursive: true });
   fs.writeFileSync(COOKIE_FILE, cookie);
   await updateSecret(cookie);
@@ -180,6 +252,14 @@ async function main() {
   const mode = process.argv[2] || 'daemon';
   if (mode === 'login') return (await login()) ? 0 : 1;
   if (mode === 'once') return (await refreshOnce(true)) ? 0 : 1;
+  if (mode === 'dump') {
+    const ck = await captureCookie(true);
+    if (!ck) { log('没抓到 Cookie'); return 1; }
+    fs.writeFileSync(COOKIE_FILE, ck);
+    log(`Cookie 已写入 ${COOKIE_FILE}（长度 ${ck.length}）`);
+    log(`书架自检：${await shelfInfo(ck)}`);
+    return 0;
+  }
   if (mode === 'daemon') {
     for (;;) {
       try { await refreshOnce(true); } catch (e) { log(`本轮异常：${e.message}`); }
@@ -191,4 +271,7 @@ async function main() {
   return 2;
 }
 
-main().then((c) => process.exit(c));
+main().then((c) => process.exit(c)).catch((e) => {
+  log(`致命错误：${e && e.stack ? e.stack : e}`);
+  process.exit(1);
+});
