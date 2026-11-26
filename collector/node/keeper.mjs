@@ -29,6 +29,7 @@ const LOG_FILE = path.join(DATA, 'keeper.log');
 const SECRET_NAME = process.env.SECRET_NAME || 'WEREAD_COOKIE';
 const BOOK_ID = process.env.BOOK_ID || 'MP_WXS_3095382082'; // 闪存市场
 const INTERVAL_HOURS = Number(process.env.INTERVAL_HOURS || 12);
+const WARM_MINUTES = Number(process.env.WARM_MINUTES || 15); // watch 模式的保活间隔
 const CHANNEL = process.env.BROWSER_CHANNEL || 'msedge'; // msedge / chrome
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -246,6 +247,44 @@ async function login() {
   return true;
 }
 
+// 常驻模式：浏览器不关，每隔 WARM_MINUTES 分钟回微信读书首页转一圈。
+// 目的只有一个——让服务端会话别闲到超时（实测 once/12h 的节奏撑不过一夜）。
+async function watch() {
+  let ctx;
+  try {
+    ctx = await openContext(true);
+  } catch (e) {
+    log(`[watch] 浏览器启动失败：${e.message.split('\n')[0]}`);
+    return false;
+  }
+  const page = await ctx.newPage();
+  let last = '';
+  for (;;) {
+    try {
+      await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 60000 })
+        .catch((e) => log(`[watch] 打开首页超时：${e.message.split('\n')[0]}`));
+      const cookies = await ctx.cookies('https://weread.qq.com').catch(() => []);
+      const cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+      const shelf = await shelfInfo(cookie);
+      log(`[watch] ${shelf}`);
+      if (cookie.includes('wr_skey=') && (await alive(cookie))) {
+        if (cookie !== last) {
+          fs.mkdirSync(DATA, { recursive: true });
+          fs.writeFileSync(COOKIE_FILE, cookie);
+          last = cookie;
+          await updateSecret(cookie);
+          log(`[watch] cookie 已更新（长度 ${cookie.length}）并写回 secret`);
+        }
+      } else {
+        log('[watch] 登录态失效，需要重新扫码：node keeper.mjs login');
+      }
+    } catch (e) {
+      log(`[watch] 本轮异常：${e.message}`);
+    }
+    await new Promise((r) => setTimeout(r, Math.max(5, WARM_MINUTES) * 60 * 1000));
+  }
+}
+
 async function main() {
   loadEnv();
   fs.mkdirSync(DATA, { recursive: true });
@@ -260,6 +299,7 @@ async function main() {
     log(`书架自检：${await shelfInfo(ck)}`);
     return 0;
   }
+  if (mode === 'watch') return (await watch()) ? 0 : 1;
   if (mode === 'daemon') {
     for (;;) {
       try { await refreshOnce(true); } catch (e) { log(`本轮异常：${e.message}`); }
@@ -267,7 +307,7 @@ async function main() {
       await new Promise((r) => setTimeout(r, INTERVAL_HOURS * 3600 * 1000));
     }
   }
-  console.log('用法：node keeper.mjs login | once | daemon');
+  console.log('用法：node keeper.mjs login | once | watch | daemon');
   return 2;
 }
 
