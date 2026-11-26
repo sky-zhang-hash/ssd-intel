@@ -21,7 +21,10 @@ if (-not $node) {
 Write-Host "node : $node"
 Write-Host "work : $nodeDir"
 
-$action = New-ScheduledTaskAction -Execute $node -Argument 'keeper.mjs once' -WorkingDirectory $nodeDir
+# 用 run-once.cmd 而不是直接 node：cmd 会把 node 启动失败也写进 data\keeper.log
+$cmdExe = Join-Path $env:SystemRoot 'System32\cmd.exe'
+$runner = Join-Path $here 'run-once.cmd'
+$action = New-ScheduledTaskAction -Execute $cmdExe -Argument ('/c "' + $runner + '"') -WorkingDirectory $here
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(2) `
     -RepetitionInterval (New-TimeSpan -Hours 12)
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries `
