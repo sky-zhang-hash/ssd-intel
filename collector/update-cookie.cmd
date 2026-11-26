@@ -1,10 +1,12 @@
 @echo off
-chcp 65001 >nul
 setlocal
 cd /d "%~dp0node"
-echo 打开浏览器窗口，用微信扫码登录（登录态会存进 data\profile）
+echo Opening browser to log in again (scan the QR code with WeChat, old account)...
 node keeper.mjs login
 echo.
-echo 日志：
-type "%~dp0data\keeper.log" 2>nul
+if errorlevel 1 (
+  echo [x] login failed, see ..\data\keeper.log
+) else (
+  echo [ok] cookie refreshed and written back to the GitHub secret
+)
 pause

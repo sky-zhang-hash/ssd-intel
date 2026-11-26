@@ -1,15 +1,9 @@
 @echo off
-chcp 65001 >nul
 setlocal
-echo 注册每 12 小时自动续期的计划任务（SSD-Weread-Keeper）
-schtasks /create /tn "SSD-Weread-Keeper" /tr "cmd /c cd /d \"%~dp0node\" && node keeper.mjs once" /sc hourly /mo 12 /f
-if errorlevel 1 (
-  echo.
-  echo [x] 注册失败。常见原因：没有权限。请右键本文件 → 「以管理员身份运行」再试。
-) else (
-  echo.
-  echo [ok] 已创建。验证：
-  schtasks /query /tn "SSD-Weread-Keeper" /fo LIST
-)
+cd /d "%~dp0"
+echo Registering scheduled task SSD-Weread-Keeper (every 12 hours)...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0register-task.ps1"
+set "RC=%ERRORLEVEL%"
 echo.
+if not "%RC%"=="0" echo [x] failed (exit %RC%). Right-click this file and choose "Run as administrator" and try again.
 pause
