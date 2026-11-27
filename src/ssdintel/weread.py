@@ -20,8 +20,9 @@ Cookie 从浏览器登录 weread.qq.com 后复制，整串丢进 .env 的 WEREAD
 from __future__ import annotations
 
 import random
+import re
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -328,6 +329,59 @@ def cover_links(book_ids: dict[str, str], cookie: str, delay: float = 1.2) -> di
         time.sleep(delay)
     return out
 
+_CTA_RE = re.compile(r'var\s+ct\s*=\s*"(\d{10})"')
+_PUB_RE = re.compile(r'id="publish_time"[^>]*>([^<]{6,40})<')
+_BODY_RE = re.compile(r'id="js_content".*?>(.*?)</div>', re.S)
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def article_text(session: requests.Session, review_id: str, timeout: int = 30) -> tuple[str, str]:
+    """一篇文章的 (正文纯文本, 发布时间 UTC ISO)。
+
+    用 `/web/mp/content?reviewId=`（不在被限流的 `/web/mp/articles` 上）：
+    实测能拿到整页 HTML，正文在 `#js_content`，时间在 `var ct` 或 `#publish_time`。
+    """
+    if not review_id:
+        return "", ""
+    try:
+        r = session.get(BASE + "/web/mp/content", params={"reviewId": review_id}, timeout=timeout)
+    except requests.RequestException as e:
+        print(f"  [wx]  正文拉取失败：{e}")
+        return "", ""
+    if r.status_code != 200:
+        return "", ""
+    html = r.text
+    published = ""
+    ts = _CTA_RE.search(html)
+    if ts:
+        published = _ts(int(ts.group(1)))
+    else:
+        pub = _PUB_RE.search(html)
+        if pub:
+            published = _ts(_ts_from_text(pub.group(1)))
+    body = ""
+    m = _BODY_RE.search(html)
+    if m:
+        body = _TAG_RE.sub("", m.group(1))
+        body = re.sub(r"&nbsp;", " ", body)
+        body = re.sub(r"\s+", " ", body).strip()
+    return body, published
+
+
+def _ts_from_text(text: str) -> int:
+    """把页面上的「2026-11-25 20:00」换成时间戳；认不出来就返回 0。"""
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})", text or "")
+    if not m:
+        return 0
+    from datetime import datetime, timezone as _tz
+    try:
+        dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)),
+                      int(m.group(4)), int(m.group(5)), tzinfo=_tz(timedelta(hours=8)))
+    except ValueError:
+        return 0
+    return int(dt.timestamp())
+
+
 def cover_items(book_ids: dict[str, str], cookie: str = "", delay: float = 1.2) -> list:
     """Cookie 失效时的退路：每个号取最新一篇，直接当今天的公众号条目。
 
@@ -340,12 +394,20 @@ def cover_items(book_ids: dict[str, str], cookie: str = "", delay: float = 1.2) 
     out = []
     for name, book_id in book_ids.items():
         try:
-            title, url = cover_link(session, book_id)
+            payload = _get(session, "/api/mp/cover", {"bookId": book_id}, timeout=20, retries=1)
         except WereadError as e:
             print(f"  [wx]  cover {name} 失败 {e}")
             continue
-        if title and url:
+        title = str(payload.get("title") or "").strip()
+        review_id = str(payload.get("reviewId") or "")
+        token = _token_from_review(review_id, book_id)
+        if token.startswith("WR1") or len(token) > 40:
+            token = ""
+        if title:
+            body, published = article_text(session, review_id)
             out.append(Item(source=name, source_type="wechat", title=title,
-                            url=url, summary="", weight=0.62))
+                            url=(f"https://mp.weixin.qq.com/s/{token}" if token else ""),
+                            summary=body[:1200], published=published, weight=0.68))
+            print(f"  [wx]  cover {name}: {title[:24]} 正文 {len(body)} 字")
         time.sleep(delay)
     return out
