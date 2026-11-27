@@ -6,6 +6,16 @@
 
 ---
 
+## 上线前三项自检（每次改动都要跑）
+
+```bash
+python scripts/audit_bookids.py        # 公众号名字 ↔ bookId 对不对得上（逐个向服务端核对）
+python scripts/audit_links.py --n 8    # 库里公众号链接是不是真能打开（>100KB 才算正常页）
+python scripts/audit_pages.py          # 转义 / 版本标记 / 刷新按钮 / SW 注册 / 相对路径
+```
+
+三条全绿才 push + dispatch。每一条都对应一次真实事故，细节写在 `AGENTS.md`。
+
 ## 快速开始
 
 ```powershell

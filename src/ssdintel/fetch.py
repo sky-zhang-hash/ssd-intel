@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 import requests
 from bs4 import BeautifulSoup
 
+from urllib.parse import urljoin
+
 from .feedparse import parse_feed
 from .models import Item
 
@@ -66,6 +68,11 @@ def fetch_rss(sources: list[dict], session: requests.Session | None = None,
             resp = session.get(src["url"], timeout=timeout, allow_redirects=True)
             resp.raise_for_status()
             entries, version = parse_feed(resp.content)
+            # 有的 feed（如 dramx）给的是站内相对路径，直接用会跳出我们的站点。
+            for e in entries:
+                link = (e.get("link") or "").strip()
+                if link.startswith("/"):
+                    e["link"] = urljoin(src["url"], link)
             got = 0
             for e in entries[:per_source]:
                 title = _strip_html(e["title"], 300)
