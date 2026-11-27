@@ -1,12 +1,12 @@
 note: 由 scripts/shelf_bookids.py 或 resolve_bookids.py 生成：微信读书的公众号 bookId
 accounts:
-- name: 闪存市场
+- name: 深圳市半导体行业协会
   book_id: MP_WXS_3095382082
 - name: SSDFans
   book_id: MP_WXS_3000385527
 - name: 慧荣科技
   book_id: MP_WXS_3298310508
-- name: 中国闪存市场
+- name: 闪存市场
   book_id: MP_WXS_2399993753
 - name: 王知鱼
   book_id: MP_WXS_3872691746

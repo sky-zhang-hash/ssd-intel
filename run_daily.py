@@ -220,13 +220,13 @@ def main() -> int:
                                         or "Cookie" in str(h.get("error", "")))]
     if auth_down:
         if wx_items:
-            payload["warn"] = (f"微信读书登录态已过期：公众号列表抓不到，"
-                               f"今天只拿到 {len(wx_items)} 个号的最新一篇（封面兜底）。"
-                               f"续期一次就恢复全量。")
+            payload["warn"] = (f"公众号文章列表被微信读书限流：本次走封面兜底，"
+                               f"只取到 {len(wx_items)} 个号的最新一篇"
+                               f"（链接和正文都能点，只是每个号只一篇）。"
+                               f"配额恢复后会自动回到全量。")
         else:
-            payload["warn"] = ("微信读书授权已过期：公众号文章一条都没抓到，"
-                               "页面里只有 RSS 源的内容。续期一次 Cookie 就能恢复"
-                               "（见 README 的「方案 A / B」）。")
+            payload["warn"] = ("微信读书登录态失效：公众号文章一条都没抓到，"
+                               "页面里只有 RSS 源的内容。双击 update-cookie.cmd 扫一次码即可恢复。")
 
     # 各源最近更新时间（谁停更了一眼可见）
     payload["sources"] = store.source_status()

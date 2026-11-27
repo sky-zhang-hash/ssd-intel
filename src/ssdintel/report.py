@@ -67,6 +67,9 @@ impact（25-45 字）：一句更锋利的判断或风险提示，可以写不�
 - 正文、标题、watch、lead 里**绝对不要出现「素材」「编号」「第 N 条」这类内部引用**。读者看不到编号，只有你手里有。直接说事情本身。
 - **同一件事被多家报道时合并成一条**，ref 填信息最全的那条，text 里可写「多家报道」；不要把同一件事拆成两三条分别复述。
 - 每节 3-6 条，全篇不超过 24 条。宁可不写，不要拿低价值素材凑数。
+- **公众号优先**：素材里带「公众号」标记的是国内一手信息（厂商动态、供应链消息），
+  外媒多是二手转载。如果公众号条目够，全篇至少一半的条目要来自公众号；
+  公众号和外媒讲同一件事时，以公众号的细节为准，ref 填公众号那条。
 - 素材可能覆盖最近几天（最多一周）：写每条事情的**最新进展**，不要按日期写流水账，也不要因为两天前报道过就整条丢掉；同一事件的早期报道与后续进展合成一条。
 - 数字必须来自素材，不许自己推算或编造；素材没给具体数字时，就写定性判断，不要填空。
 
@@ -93,7 +96,8 @@ def _material_list(items: list[Item], limit: int = 120) -> str:
     for i, it in enumerate(items[:limit], 1):
         summ = re.sub(r"\s+", " ", it.summary or "")[:260]
         cats = ",".join(it.categories) or "其他"
-        rows.append(f"[{i}] ({it.source} | {cats}) {it.title} —— {summ}")
+        kind = "公众号" if getattr(it, "source_type", "") == "wechat" else "网站"
+        rows.append(f"[{i}] ({it.source} · {kind} | {cats}) {it.title} —— {summ}")
     return "\n".join(rows)
 
 
