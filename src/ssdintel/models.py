@@ -103,6 +103,17 @@ class Store:
                     it.to_row(),
                 )
                 added += cur.rowcount
+                if cur.rowcount == 0:
+                    # 老行可能是「只有标题、没有正文」的时候入的库。
+                    # 这轮抓到了更长的摘要/正文就补上，别让它永远空着。
+                    try:
+                        cur.execute(
+                            "UPDATE items SET summary = ?, published = ?, url = ? "
+                            "WHERE uid = ? AND length(?) > length(COALESCE(summary, ''))",
+                            (it.summary, it.published, it.url, it.uid, it.summary),
+                        )
+                    except sqlite3.Error:
+                        pass
             except sqlite3.Error as e:  # 单条失败不影响整批
                 print(f"  [warn] 入库失败 {it.title[:30]}...: {e}")
         self.conn.commit()
