@@ -51,6 +51,17 @@ jobs:
           WEREAD_COOKIE: ${{ secrets.WEREAD_COOKIE }}
         run: python run_daily.py
 
+      # ↓ 这道闸门的意思是：页面生成得不对就不发布。
+      # 规则来自 AGENTS.md 第 0 章 / 第 7 章——转义残留、丢 SW 注册、根相对路径、
+      # 时间跑成 UTC、公众号链接打出「参数错误」页，这几类都曾经安静上线过。
+      - name: 闸门① 页面结构自检
+        run: python scripts/audit_pages.py
+
+      - name: 闸门② 公众号链接实测
+        # 没有公众号条目时自动跳过（限流/没配 Cookie 不算发布错误）；
+        # 网络抖动只告警，只有「拿到内容但明显不对」才失败。
+        run: python scripts/audit_links.py --n 5
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

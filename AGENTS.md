@@ -15,10 +15,20 @@
 ```bash
 python scripts/audit_bookids.py     # 公众号名字 ↔ bookId 对不对得上
 python scripts/audit_links.py       # 库里公众号链接能不能真打开
+python scripts/audit_pages.py       # 页面结构：转义/版本标记/刷新按钮/SW/相对路径
 python run_daily.py --no-wechat --no-llm   # 管道能不能跑通
 ```
 
-三条全绿才可以 push + dispatch。**不要凭"我本地看到的页面"判断线上没问题**。
+**CI 里已经强制了两道**（`.github/workflows/daily.yml`）：`audit_pages.py` 与 `audit_links.py`
+跑在「生成日报」之后、`upload-pages-artifact` 之前，**任一道退出码非 0 就不发布**。
+所以在 CI 上"忘了跑"已经不可能；`audit_bookids.py` 需要 Cookie，仍靠本地跑或手动 dispatch 前跑。
+
+`audit_links.py` 在 CI 里的判定边界（刻意设计，别改成"一律失败"）：
+- 库里没有公众号条目 → `[skip]` 跳过（限流/没配 Cookie 不是发布错误）
+- 请求异常（网络抖动） → `[warn]` 只告警，不拦发布
+- 拿到内容但 `200 且 <100KB` 或含「参数错误」→ **硬失败**
+
+**不要凭"我本地看到的页面"判断线上没问题**。
 
 ---
 

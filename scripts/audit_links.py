@@ -49,8 +49,10 @@ def main() -> int:
         "ORDER BY COALESCE(published, '') DESC"
     ).fetchall()
     if not rows:
-        print("[x] 库里没有带链接的公众号条目")
-        return 1
+        # 没有公众号条目不是渲染 bug（可能是限流/没配 Cookie），跳过而不是失败，
+        # 否则 CI 会因为「今天没抓到公众号」把整次发布拦下来。
+        print("[skip] 库里没有带链接的公众号条目，本次跳过抽查")
+        return 0
 
     if not args.all:
         random.seed(args.seed)
@@ -65,6 +67,7 @@ def main() -> int:
         return 1
 
     bad: list[tuple[str, str, str]] = []
+    net: list[tuple[str, str]] = []
     for source, title, url in rows:
         label = f"{source} · {(title or '')[:26]}"
         try:
@@ -76,11 +79,16 @@ def main() -> int:
             if not ok:
                 bad.append((label, url, f"status={r.status_code} size={size} 参数错误={err_txt}"))
         except Exception as e:  # noqa: BLE001
-            print(f"  [x] 请求失败  {label}   {e}")
-            bad.append((label, url, str(e)))
+            # 网络抖动不该拦发布：记下来当告警，只有「拿到内容但明显不对」才算硬失败。
+            print(f"  [warn] 请求失败  {label}   {e}")
+            net.append((label, str(e)))
         time.sleep(0.8)
 
     print()
+    if net:
+        print(f"[warn] {len(net)} 条因网络问题没验成（不拦发布）：")
+        for label, why in net:
+            print(f"    {label}  {why}")
     if bad:
         print(f"[x] {len(bad)} 条打不开：")
         for label, url, why in bad:
