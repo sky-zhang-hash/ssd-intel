@@ -22,6 +22,14 @@ try {
     exit 1
 }
 
+try {
+    Start-ScheduledTask -TaskName $taskName
+    Write-Host '[ok] started the watcher now as well' -ForegroundColor Green
+} catch {
+    Write-Host "[!] could not start automatically: $($_.Exception.Message)" -ForegroundColor Yellow
+    Write-Host '    (the background copy from register-watch.cmd should still be running)' -ForegroundColor Yellow
+}
+
 $t = Get-ScheduledTask -TaskName $taskName
 Write-Host "[ok] task created: $($t.TaskName) / state: $($t.State)" -ForegroundColor Green
 Write-Host '     it starts at next logon; to start now, run:'
