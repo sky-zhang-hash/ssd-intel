@@ -113,7 +113,11 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
     if not items:
         return None
 
-    materials = _material_list(items)
+    # 公众号条目排前面：模型看到的前十几条直接决定它写什么，
+    # 外媒条目多、时间新，会把它挤到注意力外。
+    wx_first = [it for it in items if getattr(it, "source_type", "") == "wechat"]
+    others = [it for it in items if getattr(it, "source_type", "") != "wechat"]
+    materials = _material_list(wx_first + others)
     user = f"日期：{date}\n\n今日素材：\n{materials}\n\n请按系统提示输出 JSON。"
 
     body = {
