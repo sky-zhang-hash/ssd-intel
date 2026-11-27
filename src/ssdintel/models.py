@@ -119,6 +119,28 @@ class Store:
         self.conn.commit()
         return added
 
+    def fix_relative_urls(self, bases: dict[str, str]) -> int:
+        """把站内相对路径的链接补成绝对地址（规则 2.4），幂等。
+
+        `bases` 是 `{source 名: "https://host"}`，来自 config/sources.yaml。
+        dramx（全球半导体观察）的 feed 给的是 `/WeeklyResearch/Post/8/41515.html`，
+        直接渲染会变成 `github.io/WeeklyResearch/...`（404）。这里按 source 补前缀；
+        认不出 source 的保持原样，交给渲染层当"没有链接"处理。
+        """
+        fixed = 0
+        for source, base in bases.items():
+            if not base:
+                continue
+            cur = self.conn.execute(
+                "UPDATE items SET url = ? || url "
+                "WHERE source = ? AND url LIKE '/%'",
+                (base.rstrip("/"), source),
+            )
+            fixed += cur.rowcount
+        if fixed:
+            self.conn.commit()
+        return fixed
+
     def blank_bad_wechat_urls(self) -> int:
         """把 `originalId` 拼出来的坏链（/s/WR1...）清空，幂等。
 

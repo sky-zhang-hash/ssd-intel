@@ -82,7 +82,8 @@ def group_by_day(items, date_str: str) -> list[dict]:
             "label": label,
             "rows": [{
                 "title": it.title,
-                "url": it.url,
+                # 只放绝对地址；认不出来的（比如历史坏数据）当"没有链接"处理
+                "url": it.url if (it.url or "").startswith("http") else "",
                 "source": it.source,
                 "time": report_mod.local_time(it.published, date_str),
                 "cats": list(it.categories or []),
@@ -118,6 +119,16 @@ def main() -> int:
     rules = score.load_rules(str(cfg_dir / "keywords.yaml"))
 
     store = Store(ROOT / "data" / "ssdintel.db")
+
+    # 规则 2.4：站内相对路径的历史行补成绝对地址（CI 的缓存库里可能还留着旧数据）
+    bases = {}
+    for s in sources:
+        u = (s.get("url") or "").strip()
+        if u.startswith("http"):
+            bases[s.get("name", "")] = "/".join(u.split("/")[:3])
+    fixed = store.fix_relative_urls(bases)
+    if fixed:
+        print(f"  修好 {fixed} 条站内相对路径链接")
 
     # ---------------- 采集 ----------------
     print(f"\n== 采集 · {date} ==")

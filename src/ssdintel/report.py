@@ -263,6 +263,11 @@ def build(items: list[Item], date: str | None = None, api_key: str | None = None
         print("  [report] 使用降级摘要（未配置 DEEPSEEK_API_KEY 或调用失败）")
         report = digest_report(items, date)
     sections = report.get("sections") or []
+    # 规则 2.3/2.4：不是 http(s) 的链接一律当"没有链接"——宁可不出 ↗，也不放会点错的链。
+    for sec in sections:
+        for p in sec["points"]:
+            if not (p.get("url") or "").startswith("http"):
+                p["url"] = ""
     # 读者要的是一条时间流：拍平所有板块，按发布时间从新到旧。
     # 必须在 order_by_time 之前取（它会 pop 掉 pub）。
     flat = [dict(p) for sec in sections for p in sec["points"]]
