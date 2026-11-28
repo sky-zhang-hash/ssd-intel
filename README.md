@@ -335,6 +335,24 @@ python scripts\verify_sources.py
 
 ---
 
+## 让它自己跑（开机自启 + 挂了自动重启）
+
+在 `collector\` 目录里双击：
+
+| 文件 | 作用 |
+|---|---|
+| `install-autostart.cmd` | 装好自启：登录 Windows 就自动起，keeper 挂掉 60 秒内自动拉起。装完立刻启动一次，会打印 `RESULT: OK   supervisor pid = …` |
+| `status-supervisor.cmd` | 一眼看状态：supervisor 在不在、keeper 进程数、`cookie.txt` 多少分钟前更新、日志最后 6 行 |
+| `stop-autostart.cmd` | 停掉 supervisor + keeper，并删掉自启快捷方式（以后不再自启） |
+| `update-cookie.cmd` | 只在**换了微信账号**或**页面出现登录态失效横幅**时用：扫码一次，cookie 写回 secret |
+
+实现方式：`install-autostart.ps1` 在 `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`
+放一个快捷方式指向 `watch-supervisor.vbs`（wscript 拉起隐藏窗口的 powershell，全程没有黑框），
+同时 disable 掉旧的两个计划任务，避免两个 keeper 抢同一个浏览器 profile。
+
+判断"到底在不在跑"只认 `data\keeper.log` 的时间戳（15 分钟一轮），不认窗口：
+`status-supervisor.cmd` 直接给这个数字。
+
 ## 公众号的两条长期路线
 
 公众号没有公开接口，唯一能拿到「文章列表」的通道是微信读书的登录态，而这个登录态会过期。两条路二选一（也可以都留着）：

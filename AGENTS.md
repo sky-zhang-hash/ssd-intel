@@ -188,6 +188,16 @@ python run_daily.py --no-wechat --no-llm   # 管道能不能跑通
 **硬规则 9.3** 常驻进程必须有**心跳日志**（每轮至少一行带时间戳）。判断"在不在跑"只认日志时间戳，
 不认"我双击过了"。
 
+**硬规则 9.5** 常驻进程一律交给 supervisor 管，不要指望"双击一次跑一辈子"。
+具体做法（本仓库已实现）：`watch-supervisor.ps1` 每 60 秒数一次 `node keeper.mjs` 进程，
+缺了就用 `Start-Process -WindowStyle Hidden` 拉起 `run-watch.cmd`；开机自启走**当前用户 Startup
+文件夹里的快捷方式 → `wscript.exe` → `watch-supervisor.vbs` → 隐藏窗口的 powershell**，
+不用计划任务（不需要管理员、不弹 UAC）。
+> 事故：我把 `register-watch.ps1` 写成只注册不启动，用户双击后以为在跑，实际零进程；
+> 后来用户又关掉黑窗口把 node 一起杀掉，cookie 就此停更。根因都是"没有人管进程"。
+> 另外**旧计划任务必须先 disable**（`SSD-Weread-Watch` / `SSD-Weread-Keeper`），
+> 否则会和 supervisor 同时起两个 keeper，抢同一个浏览器 profile —— 第二个必然起不来。
+
 **硬规则 9.4** 给用户的命令要写清"这是 cmd 还是 PowerShell"。`cd /d` 是 cmd 语法，
 PowerShell 里会报 `Set-Location: 找不到接受实际参数`。（真实事故，害用户多跑一趟。）
 
