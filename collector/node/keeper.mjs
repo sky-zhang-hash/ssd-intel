@@ -195,6 +195,25 @@ async function refreshOnce(headless = true) {
   return true;
 }
 
+// 文章列表一恢复就立刻触发一次云端日报（否则要等到第二天 08:10 才用得上）。
+async function dispatchWorkflow() {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  if (!token || !repo) return false;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/daily.yml/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+      body: JSON.stringify({ ref: 'main' }),
+    });
+    log(r.status === 204 ? '[watch] 已触发云端日报（文章列表恢复）' : `[watch] 触发云端失败：HTTP ${r.status}`);
+    return r.status === 204;
+  } catch (e) {
+    log(`[watch] 触发云端失败：${(e.message || e).toString().split('\n')[0]}`);
+    return false;
+  }
+}
+
 async function login() {
   log('打开浏览器窗口，请用微信扫码登录（这个窗口不要关）');
   let ctx;
@@ -265,6 +284,7 @@ async function watch() {
   log(`watch start（每 ${Math.max(5, WARM_MINUTES)} 分钟保活一次）`);
   let last = '';
   let cycles = 0;
+  let lastListOk = false;
   for (;;) {
     cycles += 1;
     try {
@@ -276,7 +296,8 @@ async function watch() {
       const cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
       const shelf = await shelfInfo(cookie);
       log(`[watch] #${cycles} ${shelf}`);
-      if (cookie.includes('wr_skey=') && (await alive(cookie))) {
+      const listOk = cookie.includes('wr_skey=') ? await alive(cookie) : false;
+      if (listOk) {
         if (cookie !== last) {
           fs.mkdirSync(DATA, { recursive: true });
           fs.writeFileSync(COOKIE_FILE, cookie);
@@ -284,7 +305,12 @@ async function watch() {
           await updateSecret(cookie);
           log(`[watch] cookie 已更新（长度 ${cookie.length}）并写回 secret`);
         }
-      } else {
+        // 从「被限流」变回「可用」的那一轮，立刻让云端重跑一次
+        if (!lastListOk) log('[watch] 文章列表接口恢复可用');
+        if (!lastListOk) await dispatchWorkflow();
+      }
+      lastListOk = listOk;
+      if (!listOk) {
         log('[watch] 登录态失效：请双击 update-cookie.cmd 重新扫码（扫码后会自动续期）');
       }
     } catch (e) {
