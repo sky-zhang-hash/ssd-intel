@@ -167,20 +167,40 @@ def _fix_token(token: str) -> str:
 def _token_from_review(review_id: str, book_id: str = "") -> str:
     """从 reviewId 里取真正的文章 token。
 
-    reviewId 形如 ``MP_WXS_3095382082_CgTzcUPf0E9NlYhdBqVLiw``，末段才是
-    mp.weixin.qq.com 的短链 token；``mpInfo.originalId`` 是微信读书自己包了一层
-    （``WR1`` 开头、76 位），拿它拼出来的链**一律「参数错误」**——2026-11-22 实测。
+    微信读书有**两种** reviewId 格式，都见过：
+
+    * 旧：``MP_WXS_3095382082_CgTzcUPf0E9NlYhdBqVLiw``
+    * 新：``93753_lvLsGRO~hHeZZxc56z6zyw``（2026-11-28 起网页版返回这个）
+
+    两种都是「某段前缀 + 下划线 + 22 位 token」，token 里的原始下划线被微信读书
+    写成了 ``~``，所以顺序必须是**先按前缀切开，再 ``~`` -> ``_``**。反了会把分隔符也换掉。
+
+    用 ``mpInfo.originalId``（``WR1`` 开头、76 位）拼出来的链接一律「参数错误」——2026-11-22 实测。
     """
     rid = (review_id or "").strip()
     if not rid:
         return ""
-    prefix = f"{book_id}_" if book_id else ""
-    if prefix and rid.startswith(prefix):
-        rid = rid[len(prefix):]
-    elif "_" in rid:
-        rid = rid.split("_")[-1]
-    # 拆分依赖原始的 '_'，~ → _ 的还原必须放在拆分之后
-    return _fix_token(rid)
+
+    token = ""
+    # 1) 旧格式：MP_WXS_<bookId>_<token>
+    m = re.match(r"^MP_WXS_\d+_(.+)$", rid)
+    if m:
+        token = m.group(1)
+    else:
+        # 2) 新格式：<数字前缀>_<token>
+        m = re.match(r"^\d+_(.+)$", rid)
+        if m:
+            token = m.group(1)
+        elif book_id and rid.startswith(f"{book_id}_"):
+            token = rid[len(book_id) + 1:]
+        elif "_" in rid:
+            token = rid.split("_", 1)[1]
+
+    token = token.replace("~", "_").strip()
+    # 防御：明显不是文章 token 的一律不返回，避免又放出死链
+    if not (10 <= len(token) <= 40) or token.startswith("WR1"):
+        return ""
+    return token
 
 
 def parse_articles(payload: dict) -> list[dict]:
@@ -335,22 +355,14 @@ _BODY_RE = re.compile(r'id="js_content".*?>(.*?)</div>', re.S)
 _TAG_RE = re.compile(r"<[^>]+>")
 
 
-def article_text(session: requests.Session, review_id: str, timeout: int = 30) -> tuple[str, str]:
-    """一篇文章的 (正文纯文本, 发布时间 UTC ISO)。
+_BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
 
-    用 `/web/mp/content?reviewId=`（不在被限流的 `/web/mp/articles` 上）：
-    实测能拿到整页 HTML，正文在 `#js_content`，时间在 `var ct` 或 `#publish_time`。
-    """
-    if not review_id:
-        return "", ""
-    try:
-        r = session.get(BASE + "/web/mp/content", params={"reviewId": review_id}, timeout=timeout)
-    except requests.RequestException as e:
-        print(f"  [wx]  正文拉取失败：{e}")
-        return "", ""
-    if r.status_code != 200:
-        return "", ""
-    html = r.text
+
+def _parse_article(html: str) -> tuple[str, str]:
+    """从公众号文章页 HTML 里取 (正文纯文本, 发布时间 UTC ISO)。"""
     published = ""
     ts = _CTA_RE.search(html)
     if ts:
@@ -366,6 +378,55 @@ def article_text(session: requests.Session, review_id: str, timeout: int = 30) -
         body = re.sub(r"&nbsp;", " ", body)
         body = re.sub(r"\s+", " ", body).strip()
     return body, published
+
+
+def article_text(session: requests.Session, review_id: str, timeout: int = 30) -> tuple[str, str]:
+    """一篇文章的 (正文纯文本, 发布时间 UTC ISO)。
+
+    2026-11-28 起改成分两步，原因见下：
+
+    1. **首选直接打 `https://mp.weixin.qq.com/s/<token>`**（浏览器 UA，不需要任何登录态）。
+       实测 3.8MB 整页、`#js_content` 正文、`var ct` 发布时间全都在，且不受微信读书限流影响。
+    2. 退回 `/web/mp/content?reviewId=`（这条路要 Cookie；Cookie 几小时就轮换，
+       过期时它返回 HTTP 200 但内容是 `{"errCode":-2012,...}` 的 JSON——**不会报错**，
+       旧代码直接把它当 HTML 解析，于是正文和发布时间静默变成空字符串，
+       页面上就出现"公众号条目没时间、没正文"的一排空壳）。
+    """
+    if not review_id:
+        return "", ""
+
+    token = _token_from_review(review_id)
+    if token:
+        try:
+            r = requests.get(
+                "https://mp.weixin.qq.com/s/" + token,
+                headers={"User-Agent": _BROWSER_UA},
+                timeout=timeout,
+            )
+            if r.status_code == 200 and ('id="js_content"' in r.text or _CTA_RE.search(r.text)):
+                body, published = _parse_article(r.text)
+                if body:
+                    return body, published
+        except requests.RequestException as e:
+            print(f"  [wx]  正文直连失败：{type(e).__name__}")
+
+    try:
+        r = session.get(BASE + "/web/mp/content", params={"reviewId": review_id}, timeout=timeout)
+    except requests.RequestException as e:
+        print(f"  [wx]  正文拉取失败：{e}")
+        return "", ""
+    if r.status_code != 200:
+        return "", ""
+    text = r.text
+    if text.lstrip().startswith("{") and "errCode" in text[:200]:
+        try:
+            code = r.json().get("errCode", 0)
+        except ValueError:
+            code = "?"
+        if code:
+            print(f"  [wx]  正文接口报错 errCode={code}（Cookie 过期就走第 1 步，可忽略）")
+        return "", ""
+    return _parse_article(text)
 
 
 def _ts_from_text(text: str) -> int:
