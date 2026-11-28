@@ -473,6 +473,9 @@ def load_snapshot(path, cookie: str = "", max_age_hours: float = 8.0,
             items.append(Item(source=name, source_type="wechat", title=title,
                               url=url, published=published, summary=summary,
                               weight=0.66))
+    if not items:
+        # 全被拦时 keeper 可能留下空快照；不能当成功，否则会把封面兜底也短路掉（规则 11.1）
+        return [], [], {"reason": "empty", "fetched_at": fetched}
     meta = {"reason": "ok", "fetched_at": fetched, "age_h": round(age_h, 1) if age_h else None,
             "accounts": len(snap.get("accounts") or [])}
     return items, health, meta

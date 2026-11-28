@@ -181,23 +181,75 @@ async function fetchList(cookie, bookId) {
   return { code: 0, articles: arts };
 }
 
-async function exportLists(cookie) {
+
+async function fetchListViaPage(page, bookId) {
+  // Node 的 fetch 被 -2041 拦时，用**真浏览器**导航到同一个接口地址：
+  // 走 Chromium 自己的 TLS/HTTP2 指纹，服务端看到的是页面请求。
+  const url = `https://weread.qq.com/web/mp/articles?bookId=${bookId}&offset=0`;
+  const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+  const text = resp ? await resp.text() : '';
+  let data = {};
+  try { data = JSON.parse(text); } catch { /* 非 JSON */ }
+  const code = Number(data.errCode ?? data.errcode ?? 0);
+  if (code !== 0) return { code, articles: [] };
+  return { code: 0, articles: parseListPayload(data) };
+}
+
+function parseListPayload(data) {
+  const arts = [];
+  for (const g of (data.reviews || [])) {
+    for (const sr of (g.subReviews || [])) {
+      const rv = sr.review || {};
+      const info = rv.mpInfo || {};
+      const rid = rv.reviewId || '';
+      const seg = rid.includes('_') ? rid.split('_').slice(2).join('_') : rid;
+      const token = seg.replace(/~/g, '_');
+      if (!info.title || !token) continue;
+      arts.push({
+        title: info.title,
+        url: `https://mp.weixin.qq.com/s/${token}`,
+        published: info.time ? new Date(Number(info.time) * 1000).toISOString() : '',
+        review_id: rid,
+        read_num: info.readNum || 0,
+      });
+    }
+  }
+  return arts;
+}
+
+async function exportLists(cookie, page) {
   const ids = readBookIds();
   if (!ids.length) { log('  没有 bookId，跳过文章列表演出'); return; }
   const out = { fetched_at: new Date().toISOString(), accounts: [] };
-  let ok = 0, blocked = 0;
+  let ok = 0, viaPage = 0, blocked = 0;
   for (const a of ids) {
+    let done = false;
     try {
       const { code, articles } = await fetchList(cookie, a.book_id);
-      if (code === 0) { ok++; out.accounts.push({ name: a.name, book_id: a.book_id, articles }); }
-      else { blocked++; log(`  list ${a.name}: errCode=${code}`); }
+      if (code === 0) { ok++; out.accounts.push({ name: a.name, book_id: a.book_id, articles }); done = true; }
+      else if (page) {
+        const alt = await fetchListViaPage(page, a.book_id);
+        if (alt.code === 0) { viaPage++; ok++; done = true; out.accounts.push({ name: a.name, book_id: a.book_id, articles: alt.articles }); }
+        else { blocked++; log(`  list ${a.name}: fetch=-2041 page=${alt.code}`); }
+      } else { blocked++; log(`  list ${a.name}: errCode=${code}`); }
     } catch (e) { blocked++; log(`  list ${a.name}: ${e.message}`); }
+    if (!done && !page) { /* 留空 */ }
     await new Promise((r) => setTimeout(r, 1200));
+  }
+  if (viaPage) log(`  （其中 ${viaPage} 个号是用浏览器页面取的）`);
+  if (page && viaPage) {
+    // 页面还停在 JSON 上，回首页把会话热着（也避免下一轮从奇怪的地址开始）
+    try { await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 45000 }); } catch { /* ignore */ }
   }
   const file = path.join(DATA, 'wechat_latest.json');
   fs.writeFileSync(file, JSON.stringify(out, null, 1), 'utf8');
   const total = out.accounts.reduce((n, x) => n + x.articles.length, 0);
   log(`  文章列表已导出：${ok} 个号 / ${total} 篇（被拦 ${blocked}） -> data/wechat_latest.json`);
+  if (total === 0) {
+    // 全被拦时不要上传：空快照会把云端上一次的好数据顶掉（AGENTS.md 5.2 同理）
+    log('  本次 0 篇，跳过上传（保留仓库里上一次的非空快照）');
+    return;
+  }
   await uploadFile(cookie, 'data/wechat_latest.json', JSON.stringify(out, null, 1));
 }
 
@@ -387,10 +439,10 @@ async function watch() {
       const cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
       const shelf = await shelfInfo(cookie);
     if (String(shelf).includes('登录 OK') && (cycles === 1 || cycles % 4 === 1)) {
-        try { await exportLists(cookie); } catch (e) { log(`  导出列表失败：${e.message}`); }
+        try { await exportLists(cookie, page); } catch (e) { log(`  导出列表失败：${e.message}`); }
       }
-      log(`[watch] #${cycles} ${shelf}`);
-      const listOk = cookie.includes('wr_skey=') ? await alive(cookie) : false;
+      log(`[watch] #${cycles} ${shelf}${cookie.includes('wr_skey=') && !(await verify(cookie)) ? '；文章列表仍被拦（每号一篇兜底）' : ''}`);
+      const listOk = cookie.includes('wr_skey=') ? await verify(cookie) : false;
       if (listOk) {
         if (cookie !== last) {
           fs.mkdirSync(DATA, { recursive: true });
@@ -400,7 +452,7 @@ async function watch() {
           log(`[watch] cookie 已更新（长度 ${cookie.length}）并写回 secret`);
         }
         // 从「被限流」变回「可用」的那一轮，立刻让云端重跑一次
-        if (!lastListOk) log('[watch] 文章列表接口恢复可用');
+        if (!lastListOk) log('[watch] 文章列表接口恢复可用（可以抓全量了）');
         if (!lastListOk) await dispatchWorkflow();
       }
       lastListOk = listOk;
