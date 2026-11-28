@@ -107,6 +107,16 @@ python run_daily.py --no-wechat --no-llm   # 管道能不能跑通
 
 ---
 
+### 4.3 列表接口对 Python 是关着的，对浏览器是开着的（2026-11-28）
+
+事故：`/web/mp/articles` 对 `requests` / `urllib` 一律 `-2041`，同一时刻同一 cookie 用 Node（undici）的 `fetch` 却 `errCode=0`。换 `Accept-Encoding`、换 HTTP/1.1 都不行——这是客户端指纹层面的拦截，不是账号限流，也不是 cookie 问题。
+
+规则：
+- **文章列表只由 keeper（浏览器/Node）取**，取到后写 `collector/data/wechat_latest.json`，并用 Contents API 推到仓库 `data/wechat_latest.json`；云端 CI 读这份快照。
+- Python 侧只做两件事：读快照（`weread.load_snapshot`，超过 8 小时视为过期）、以及用 `/web/mp/content` 取正文（这条没被拦）。
+- 快照必须带 `fetched_at`；`load_snapshot` 过期要**明确打印原因**再退回接口，不许静默当成功。
+- 判断「列表是否恢复」只能用 Node/浏览器侧的验证结果，不能用 Python 的结果（会得出相反结论）。
+
 ## 5. 入库：幂等写入要做"质量升级"，不是"一插了之"
 
 **硬规则 5.1** `INSERT OR IGNORE` 只能防重，不能当同步。冲突时必须比较字段质量并更新：

@@ -155,10 +155,24 @@ def main() -> int:
         elif not book_ids:
             print("  [wx]  还没解析 bookId，先跑 scripts/resolve_bookids.py，跳过")
         else:
-            print(f"  公众号：微信读书 · {len(book_ids)} 个号")
-            wx_items, wx_health = weread.collect(
-                book_ids, cookie, pages=args.pages
+            # 先看 keeper 有没有导出快照：Node fetch 能过 -2041，Python requests 过不了，
+            # 所以浏览器在跑的时候，这条路径比我们自己去拉更可靠。
+            snap_path = ROOT / "data" / "wechat_latest.json"
+            snap_items, snap_health, snap_meta = weread.load_snapshot(
+                snap_path, cookie=cookie
             )
+            if snap_items:
+                print(f"  公众号：keeper 快照 · {len(snap_items)} 篇 / "
+                      f"{snap_meta.get('accounts')} 个号（抓于 {snap_meta.get('fetched_at')}，"
+                      f"{snap_meta.get('age_h')} 小时前）")
+                wx_items, wx_health = snap_items, snap_health
+            else:
+                if snap_meta.get("reason") not in ("no-file",):
+                    print(f"  [wx]  快照不可用（{snap_meta.get('reason')}），改走接口")
+                print(f"  公众号：微信读书 · {len(book_ids)} 个号")
+                wx_items, wx_health = weread.collect(
+                    book_ids, cookie, pages=args.pages
+                )
     elif mode == "sogou":
         queries = wx_cfg.get("search_queries", [])
         if queries:

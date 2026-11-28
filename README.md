@@ -359,3 +359,15 @@ python scripts\verify_sources.py
 - 微信读书 Cookie 会过期（`wr_rt` 一般几个月）。失效时日志会直接说「Cookie 失效或配额用完」，换一串即可。
 - 去重按归一化标题算，同一事件不同措辞的两篇稿子会都留下。
 - LLM 输出偶尔带原稿记者的判断口吻，模板里已统一转成「影响：」前缀。
+
+## 公众号文章列表为什么由浏览器导出（2026-11-28）
+
+`/web/mp/articles` 对 Python 的 `requests` 一律返回 `-2041`，而同一 cookie 用浏览器/Node 的 `fetch` 能拿到 `errCode=0`。这不是账号限流，是客户端指纹层面的拦截。
+
+因此分工是：
+
+- `collector/node/keeper.mjs`（浏览器进程）每轮/每小时拉 23 个号的文章列表 → 写 `collector/data/wechat_latest.json` → 用 Contents API 推到仓库 `data/wechat_latest.json`
+- `run_daily.py` 优先读这份快照（`weread.load_snapshot`，超过 8 小时算过期并打印原因），快照没有才退回接口/封面兜底
+- 云端 CI 从仓库里读到同一份快照，所以**页面上的公众号条目来自浏览器抓到的那份列表**
+
+判定快照是否新鲜：`keeper.log` 里 `文章列表已导出：N 个号 / M 篇`，以及仓库 `data/wechat_latest.json` 的 `fetched_at`。

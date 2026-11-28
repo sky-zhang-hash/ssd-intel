@@ -25,6 +25,7 @@ const DATA = process.env.KEEPER_DATA || path.join(HERE, '..', 'data');
 const PROFILE = path.join(DATA, 'profile');
 const COOKIE_FILE = path.join(DATA, 'cookie.txt');
 const LOG_FILE = path.join(DATA, 'keeper.log');
+const REPO_ROOT = path.join(HERE, '..', '..'); // ssd-intel/
 
 const SECRET_NAME = process.env.SECRET_NAME || 'WEREAD_COOKIE';
 const BOOK_ID = process.env.BOOK_ID || 'MP_WXS_3095382082'; // 闪存市场
@@ -125,6 +126,96 @@ async function alive(cookie) {
   } catch {
     return false;
   }
+}
+
+
+// ---- 公众号文章列表导出（Node fetch 能过 -2041，Python requests 过不了）---
+// 每轮把 23 个号的文章列表落成 data/wechat_latest.json，并用 Contents API 推到仓库，
+// 这样云端 CI 也能用上「全量列表」（CI 里没有浏览器，自己拉是被拦的）。
+function readBookIds() {
+  const out = [];
+  try {
+    const yamlPath = path.join(REPO_ROOT, 'config', 'wechat_bookids.yaml');
+    const text = fs.readFileSync(yamlPath, 'utf8');
+    let curName = null;
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.trim();
+      const mName = line.match(/^-\s*name:\s*(.+)$/);
+      const mId = line.match(/^book_id:\s*(MP_WXS_\d+)$/);
+      if (mName) curName = mName[1].trim().replace(/^["']|["']$/g, '');
+      else if (mId && curName) { out.push({ name: curName, book_id: mId[1] }); curName = null; }
+    }
+  } catch (e) { log(`  读取 wechat_bookids.yaml 失败：${e.message}`); }
+  return out;
+}
+
+async function fetchList(cookie, bookId) {
+  const url = `https://weread.qq.com/web/mp/articles?bookId=${bookId}&offset=0`;
+  const r = await fetch(url, {
+    headers: { Cookie: cookie, 'User-Agent': UA, Accept: 'application/json, text/plain, */*',
+               Origin: 'https://weread.qq.com', Referer: 'https://weread.qq.com/' },
+  });
+  const text = await r.text();
+  let data = {};
+  try { data = JSON.parse(text); } catch { /* ignore */ }
+  const code = Number(data.errCode ?? data.errcode ?? 0);
+  if (code !== 0) return { code, articles: [] };
+  const arts = [];
+  for (const g of (data.reviews || [])) {
+    for (const sr of (g.subReviews || [])) {
+      const rv = sr.review || {};
+      const info = rv.mpInfo || {};
+      const rid = rv.reviewId || '';
+      const seg = rid.includes('_') ? rid.split('_').slice(2).join('_') : rid;
+      const token = seg.replace(/~/g, '_');
+      if (!info.title || !token) continue;
+      arts.push({
+        title: info.title,
+        url: `https://mp.weixin.qq.com/s/${token}`,
+        published: info.time ? new Date(Number(info.time) * 1000).toISOString() : '',
+        review_id: rid,
+        read_num: info.readNum || 0,
+      });
+    }
+  }
+  return { code: 0, articles: arts };
+}
+
+async function exportLists(cookie) {
+  const ids = readBookIds();
+  if (!ids.length) { log('  没有 bookId，跳过文章列表演出'); return; }
+  const out = { fetched_at: new Date().toISOString(), accounts: [] };
+  let ok = 0, blocked = 0;
+  for (const a of ids) {
+    try {
+      const { code, articles } = await fetchList(cookie, a.book_id);
+      if (code === 0) { ok++; out.accounts.push({ name: a.name, book_id: a.book_id, articles }); }
+      else { blocked++; log(`  list ${a.name}: errCode=${code}`); }
+    } catch (e) { blocked++; log(`  list ${a.name}: ${e.message}`); }
+    await new Promise((r) => setTimeout(r, 1200));
+  }
+  const file = path.join(DATA, 'wechat_latest.json');
+  fs.writeFileSync(file, JSON.stringify(out, null, 1), 'utf8');
+  const total = out.accounts.reduce((n, x) => n + x.articles.length, 0);
+  log(`  文章列表已导出：${ok} 个号 / ${total} 篇（被拦 ${blocked}） -> data/wechat_latest.json`);
+  await uploadFile(cookie, 'data/wechat_latest.json', JSON.stringify(out, null, 1));
+}
+
+async function uploadFile(cookie, repoPath, content) {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  if (!token || !repo) { log('  没有 GITHUB_TOKEN/GITHUB_REPO，跳过上传'); return; }
+  const api = `https://api.github.com/repos/${repo}/contents/${repoPath}`;
+  const headers = { Authorization: `Bearer ${token}`, 'User-Agent': UA, Accept: 'application/vnd.github+json' };
+  try {
+    let sha = null;
+    const cur = await fetch(api, { headers });
+    if (cur.ok) { const j = await cur.json(); sha = j.sha; }
+    const body = { message: `chore(data): 公众号文章列表快照 ${new Date().toISOString()}`, content: Buffer.from(content, 'utf8').toString('base64') };
+    if (sha) body.sha = sha;
+    const r = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    log(r.ok ? `  已上传 ${repoPath}` : `  上传 ${repoPath} 失败：HTTP ${r.status}`);
+  } catch (e) { log(`  上传 ${repoPath} 异常：${e.message}`); }
 }
 
 async function shelfInfo(cookie) {
@@ -295,6 +386,9 @@ async function watch() {
       const cookies = await ctx.cookies('https://weread.qq.com').catch(() => []);
       const cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
       const shelf = await shelfInfo(cookie);
+    if (String(shelf).includes('登录 OK') && (cycles === 1 || cycles % 4 === 1)) {
+        try { await exportLists(cookie); } catch (e) { log(`  导出列表失败：${e.message}`); }
+      }
       log(`[watch] #${cycles} ${shelf}`);
       const listOk = cookie.includes('wr_skey=') ? await alive(cookie) : false;
       if (listOk) {

@@ -411,3 +411,68 @@ def cover_items(book_ids: dict[str, str], cookie: str = "", delay: float = 1.2) 
             print(f"  [wx]  cover {name}: {title[:24]} 正文 {len(body)} 字")
         time.sleep(delay)
     return out
+
+# --------------------------------------------------------------------------
+# keeper 快照（Node fetch 能过 -2041，Python requests 过不了）
+# --------------------------------------------------------------------------
+def load_snapshot(path, cookie: str = "", max_age_hours: float = 8.0,
+                  enrich_top: bool = True, delay: float = 1.2):
+    """读 keeper 每轮导出的 data/wechat_latest.json。
+
+    返回 (items, health, meta)。文件不存在或过期时返回 ([], [], {"reason": ...})，
+    由调用方决定要不要退回网络采集——绝不静默当成功（规则 11.1）。
+    """
+    import json
+    import os
+    from datetime import datetime as _dt, timezone as _tz
+
+    if not os.path.exists(path):
+        return [], [], {"reason": "no-file"}
+    try:
+        with open(path, encoding="utf-8") as f:
+            snap = json.load(f)
+    except (OSError, ValueError) as e:
+        return [], [], {"reason": f"bad-file:{e}"}
+
+    fetched = snap.get("fetched_at") or ""
+    age_h = None
+    if fetched:
+        try:
+            ts = _dt.fromisoformat(fetched.replace("Z", "+00:00"))
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=_tz.utc)
+            age_h = (_dt.now(_tz.utc) - ts).total_seconds() / 3600.0
+        except ValueError:
+            age_h = None
+    if age_h is not None and age_h > max_age_hours:
+        return [], [], {"reason": "stale", "age_h": round(age_h, 1), "fetched_at": fetched}
+
+    items, health = [], []
+    session = new_session(cookie) if (cookie and enrich_top) else None
+    for acc in snap.get("accounts") or []:
+        name = acc.get("name") or ""
+        arts = acc.get("articles") or []
+        health.append({"source": name, "count": len(arts)})
+        for i, a in enumerate(arts):
+            title = (a.get("title") or "").strip()
+            url = a.get("url") or ""
+            if not title or not url:
+                continue
+            summary = ""
+            published = a.get("published") or ""
+            # 只给每个号的最新一篇取正文，其余保留标题（省请求，也避开频控）
+            if session is not None and i == 0 and a.get("review_id"):
+                try:
+                    body, pub = article_text(session, a["review_id"])
+                    summary = (body or "")[:1200]
+                    published = published or pub
+                    print(f"  [wx]  snapshot {name}: {title[:24]} 正文 {len(body or '')} 字")
+                except WereadError as e:
+                    print(f"  [wx]  snapshot {name} 正文失败 {e.code}（保留标题）")
+                time.sleep(random.uniform(delay * 0.8, delay * 1.4))
+            items.append(Item(source=name, source_type="wechat", title=title,
+                              url=url, published=published, summary=summary,
+                              weight=0.66))
+    meta = {"reason": "ok", "fetched_at": fetched, "age_h": round(age_h, 1) if age_h else None,
+            "accounts": len(snap.get("accounts") or [])}
+    return items, health, meta
