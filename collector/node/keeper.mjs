@@ -311,7 +311,12 @@ async function watch() {
       }
       lastListOk = listOk;
       if (!listOk) {
-        log('[watch] 登录态失效：请双击 update-cookie.cmd 重新扫码（扫码后会自动续期）');
+        // 登录好但列表被限流，和"要重新扫码"是两回事，别混成一句话（规则 4.2）
+        if (String(shelf).includes('登录 OK')) {
+          log('[watch] 登录态正常，文章列表仍被限流（-2041）：本轮只能靠封面兜底');
+        } else {
+          log('[watch] 登录态失效：请双击 collector\\refresh-login.cmd 重新扫码');
+        }
       }
     } catch (e) {
       const msg = (e && e.message ? e.message : String(e)).split('\n')[0];
