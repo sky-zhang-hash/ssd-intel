@@ -251,22 +251,31 @@ async function login() {
 // 目的只有一个——让服务端会话别闲到超时（实测 once/12h 的节奏撑不过一夜）。
 async function watch() {
   let ctx;
-  try {
+  let page;
+  const boot = async () => {
     ctx = await openContext(true);
+    page = await ctx.newPage();
+  };
+  try {
+    await boot();
   } catch (e) {
     log(`[watch] 浏览器启动失败：${e.message.split('\n')[0]}`);
     return false;
   }
-  const page = await ctx.newPage();
+  log(`watch start（每 ${Math.max(5, WARM_MINUTES)} 分钟保活一次）`);
   let last = '';
+  let cycles = 0;
   for (;;) {
+    cycles += 1;
     try {
-      await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 60000 })
-        .catch((e) => log(`[watch] 打开首页超时：${e.message.split('\n')[0]}`));
+      // 浏览器被关掉 / 崩溃时，这里会直接抛——必须让它抛到 catch 里去做重启，
+      // 以前用 .catch() 吞掉，结果每 15 分钟都对着一个死上下文重试，永远醒不过来。
+      if (page.isClosed()) throw new Error('page closed');
+      await page.goto('https://weread.qq.com/', { waitUntil: 'domcontentloaded', timeout: 60000 });
       const cookies = await ctx.cookies('https://weread.qq.com').catch(() => []);
       const cookie = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
       const shelf = await shelfInfo(cookie);
-      log(`[watch] ${shelf}`);
+      log(`[watch] #${cycles} ${shelf}`);
       if (cookie.includes('wr_skey=') && (await alive(cookie))) {
         if (cookie !== last) {
           fs.mkdirSync(DATA, { recursive: true });
@@ -276,10 +285,22 @@ async function watch() {
           log(`[watch] cookie 已更新（长度 ${cookie.length}）并写回 secret`);
         }
       } else {
-        log('[watch] 登录态失效，需要重新扫码：node keeper.mjs login');
+        log('[watch] 登录态失效：请双击 update-cookie.cmd 重新扫码（扫码后会自动续期）');
       }
     } catch (e) {
-      log(`[watch] 本轮异常：${e.message}`);
+      const msg = (e && e.message ? e.message : String(e)).split('\n')[0];
+      log(`[watch] 本轮异常：${msg}`);
+      const dead = page.isClosed() || /closed|disconnected|crash|Target page|has been closed/i.test(msg);
+      if (dead) {
+        log('[watch] 浏览器已关闭，重启中…');
+        try { await ctx.close(); } catch (e2) { /* 已经关了 */ }
+        try {
+          await boot();
+          log('[watch] 浏览器已重启，继续保活');
+        } catch (e2) {
+          log(`[watch] 重启失败：${(e2.message || e2).toString().split('\n')[0]}`);
+        }
+      }
     }
     await new Promise((r) => setTimeout(r, Math.max(5, WARM_MINUTES) * 60 * 1000));
   }
