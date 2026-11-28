@@ -107,9 +107,9 @@ python run_daily.py --no-wechat --no-llm   # 管道能不能跑通
 
 ---
 
-### 4.3 列表接口对 Python 是关着的，对浏览器是开着的（2026-11-28）
+### 4.3 列表接口目前对整个账号关闭；快照机制留给解封那天（2026-11-28 修正）
 
-事故：`/web/mp/articles` 对 `requests` / `urllib` 一律 `-2041`，同一时刻同一 cookie 用 Node（undici）的 `fetch` 却 `errCode=0`。换 `Accept-Encoding`、换 HTTP/1.1 都不行——这是客户端指纹层面的拦截，不是账号限流，也不是 cookie 问题。
+事故与纠错：先观察到 Python 全 `-2041`、Node 偶有 `errCode=0`，我据此判断成「客户端指纹拦截」；随后让浏览器页面直接导航到该接口，**同样 `-2041`**，证明是账号/接口层面的封禁。教训：**偶发的单次成功不能当成规律**，至少要用三种互相独立的客户端各测两次。
 
 规则：
 - **文章列表只由 keeper（浏览器/Node）取**，取到后写 `collector/data/wechat_latest.json`，并用 Contents API 推到仓库 `data/wechat_latest.json`；云端 CI 读这份快照。
@@ -235,7 +235,15 @@ PowerShell 里会报 `Set-Location: 找不到接受实际参数`。（真实事�
 
 ---
 
-## 挂账（截至 2026-11-27）
+## 挂账（截至 2026-11-28）
+
+0. **`/web/mp/articles` 对 23 个号全部关闭（`-2041`，已持续 27h+）**，且已验证与客户端无关：
+   Python `requests`/`urllib`、Node `fetch`、**真实 Chromium 页面导航**三种方式，同一 cookie 全部 `-2041`
+   （见 keeper.log 10:35 的 `list X: fetch=-2041 page=-2041`）。
+   → 结论：这是账号/接口层面的封禁，不是指纹拦截，**不要再尝试换客户端**。
+   → 现状接受：每号最新一篇（`/api/mp/cover` + `/web/mp/content`），23 个号里约 18 个能拿到正文。
+   → 代码里保留了「解封即自动抓全量」的路径（keeper 每轮导快照 → 上传仓库 → 云端读快照），解封后无需改代码。
+
 
 1. `/web/mp/articles` 的 `-2041` 未恢复 → 目前每号只能取"最新一篇"，不是全量。
 2. 23 个号里有 5 个最新一篇正文抓不到（芯智讯、群联电子、闪德资讯、联芸科技、+1），
