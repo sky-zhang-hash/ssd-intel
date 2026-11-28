@@ -104,3 +104,19 @@ print(requests.get("https://weread.qq.com/web/shelf/sync", headers=h, timeout=20
 print(requests.get("https://weread.qq.com/web/mp/articles",
                    params={"bookId": "MP_WXS_3095382082", "offset": 0}, headers=h, timeout=20).text[:200])
 ```
+
+## 公众号抓不到了？先双击这一个文件
+
+`refresh-login.cmd`（在 `collector/` 下）会一次做完三件事：
+
+1. 只杀掉旧的 `keeper.mjs` 进程（不动你其它 node 程序）
+2. 打开浏览器让你**扫码**登录微信读书
+3. 登录成功立刻在后台启动 watcher（每 15 分钟保活、自动续期 cookie）
+
+什么时候需要它：
+
+- `keeper.log` 里出现 `登录态失效` / `-2010 用户不存在` / `shelf 失败`
+- 页面上出现横幅「微信读书登录态失效」
+- 换了机器、重启后浏览器没起来
+
+判断"watcher 在不在跑"只认一件事：`collector/data/keeper.log` 的**最后一行时间戳是不是 15 分钟以内**。
