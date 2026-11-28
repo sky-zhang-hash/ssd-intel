@@ -172,7 +172,7 @@ PULL_CSS = """
                bottom:calc(var(--nav-h,56px) + var(--safe,0px) + 14px);
                z-index:55;width:46px;height:46px;border-radius:50%;
                border:1px solid var(--line);background:var(--card);
-               color:var(--accent);font-size:19px;line-height:1;
+               color:var(--accent);font-size:17px;line-height:1;
                box-shadow:0 2px 8px rgba(15,23,42,.16);
                display:flex;align-items:center;justify-content:center;
                cursor:pointer;-webkit-tap-highlight-color:transparent}

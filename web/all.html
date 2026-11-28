@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-28 11:38">
+<meta name="built" content="2026-11-28 19:12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -76,6 +76,11 @@
   /* 来源 + 发布时间 + ↗ 合成一个链接：读者点它到原网页。
      宽度占满一行，标签和 ☆ 落到第二行，避免在窄屏上挤成一团。 */
   .meta .src,.meta .nosrc{flex-basis:100%}
+  /* 公众号条目：一个显眼的小标记，避免和英文站点混在一起看不出差别 */
+  .wx{display:inline-block;margin-right:6px;padding:1px 6px;border-radius:4px;
+      background:rgba(15,143,142,.13);color:var(--accent-2-ink);
+      font-size:13px;line-height:1.5;font-weight:600;letter-spacing:.02em}
+  .wxline{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
   .meta .src{color:var(--accent);text-decoration:none;border:0;
              display:flex;align-items:baseline;gap:6px;
              padding:9px 0 8px;min-height:34px}
@@ -90,7 +95,7 @@
   .tag{font-size:var(--t-xs);padding:2px 8px;border-radius:6px;background:var(--chip);
        color:var(--muted);white-space:nowrap}
   /* 「全部」页：纯清单，标题本身就是原文链接 */
-  .lead{margin:14px 0 0;font-size:14.5px;line-height:1.78;color:var(--muted);
+  .lead{margin:14px 0 0;font-size:14px;line-height:1.78;color:var(--muted);
         border-left:3px solid var(--accent-2);padding:2px 0 2px 11px}
   .warn{margin:14px 0 0;padding:11px 13px;border-radius:var(--radius);
         background:rgba(214,88,58,.09);color:#A33C24;font-size:14px;line-height:1.65;
@@ -98,7 +103,7 @@
   .srcs{margin-top:14px}
   .srclist{list-style:none;margin:6px 0 0;padding:0}
   .srclist li{display:flex;align-items:baseline;gap:10px;padding:7px 0;
-              border-bottom:1px solid var(--line);font-size:13.5px}
+              border-bottom:1px solid var(--line);font-size:13px}
   .srclist li:last-child{border-bottom:none}
   .srclist .sname{flex:1;color:var(--ink)}
   .srclist .sday{color:var(--muted);font-variant-numeric:tabular-nums}
@@ -183,7 +188,7 @@
                bottom:calc(var(--nav-h,56px) + var(--safe,0px) + 14px);
                z-index:55;width:46px;height:46px;border-radius:50%;
                border:1px solid var(--line);background:var(--card);
-               color:var(--accent);font-size:19px;line-height:1;
+               color:var(--accent);font-size:17px;line-height:1;
                box-shadow:0 2px 8px rgba(15,23,42,.16);
                display:flex;align-items:center;justify-content:center;
                cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -322,7 +327,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/jQmD6GRtdif0SmxckuPKVw" target="_blank" rel="noopener noreferrer">深耕DRAM测试近40年，皇虎如何回应新的质量挑战？</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/jQmD6GRtdif0SmxckuPKVw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">全球SSD<span class="when">昨天 16:06</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>全球SSD<span class="when">昨天 16:06</span><span class="ext">↗</span></span></a>
 <span class="tag">产品</span><span class="tag">AI</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/jQmD6GRtdif0SmxckuPKVw" data-title="深耕DRAM测试近40年，皇虎如何回应新的质量挑战？"
                 data-source="全球SSD" data-time="昨天 16:06"
                 data-date="2026-11-27" aria-pressed="false" aria-label="收藏">☆</button>
@@ -332,7 +337,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/lvLsGRO_hHeZZxc56z6zyw" target="_blank" rel="noopener noreferrer">500+层NAND明年首发：单位成本直降三成；美国拟对韩国半导体加征15%关税；美光台湾桃园厂劳资争议仍在持续</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/lvLsGRO_hHeZZxc56z6zyw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">闪存市场<span class="when">昨天 15:35</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>闪存市场<span class="when">昨天 15:35</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/lvLsGRO_hHeZZxc56z6zyw" data-title="500+层NAND明年首发：单位成本直降三成；美国拟对韩国半导体加征15%关税；美光台湾桃园厂劳资争议仍在持续"
                 data-source="闪存市场" data-time="昨天 15:35"
                 data-date="2026-11-27" aria-pressed="false" aria-label="收藏">☆</button>
@@ -465,7 +470,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/wWte6oV05ATGJyCbW_0mmw" target="_blank" rel="noopener noreferrer">铠侠以XL-FLASH™第三代技术构建AI新内存层：GP2超高IOPS SSD发布，携手NVIDIA将GPU有效内存扩展至PB级</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/wWte6oV05ATGJyCbW_0mmw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-26 18:00</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>斯托瑞吉<span class="when">11-26 18:00</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/wWte6oV05ATGJyCbW_0mmw" data-title="铠侠以XL-FLASH™第三代技术构建AI新内存层：GP2超高IOPS SSD发布，携手NVIDIA将GPU有效内存扩展至PB级"
                 data-source="斯托瑞吉" data-time="11-26 18:00"
                 data-date="2026-11-26" aria-pressed="false" aria-label="收藏">☆</button>
@@ -495,7 +500,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/wwOpjJlh7bXxKHKYv0M1AA" target="_blank" rel="noopener noreferrer">铠侠三连发：Gen3 XL-FLASH、GP2，以及 Kioxia × NVIDIA 的“HBM 扩容”演示</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/wwOpjJlh7bXxKHKYv0M1AA" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">SGDLSHSV<span class="when">11-26 12:14</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>SGDLSHSV<span class="when">11-26 12:14</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/wwOpjJlh7bXxKHKYv0M1AA" data-title="铠侠三连发：Gen3 XL-FLASH、GP2，以及 Kioxia × NVIDIA 的“HBM 扩容”演示"
                 data-source="SGDLSHSV" data-time="11-26 12:14"
                 data-date="2026-11-26" aria-pressed="false" aria-label="收藏">☆</button>
@@ -505,7 +510,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/kyhrSUdtB7wnVsLcCkOj6g" target="_blank" rel="noopener noreferrer">SK海力士3D DRAM 100层堆叠起步；三星电子披露CXL内存路线图</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/kyhrSUdtB7wnVsLcCkOj6g" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">中国闪存市场<span class="when">11-26 12:10</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>中国闪存市场<span class="when">11-26 12:10</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/kyhrSUdtB7wnVsLcCkOj6g" data-title="SK海力士3D DRAM 100层堆叠起步；三星电子披露CXL内存路线图"
                 data-source="中国闪存市场" data-time="11-26 12:10"
                 data-date="2026-11-26" aria-pressed="false" aria-label="收藏">☆</button>
@@ -515,7 +520,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/GP5FXCHbd2Z5Rsb50lmx8A" target="_blank" rel="noopener noreferrer">SSD存储成为AI性能的新前沿</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/GP5FXCHbd2Z5Rsb50lmx8A" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">SSDFans<span class="when">11-26 08:42</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>SSDFans<span class="when">11-26 08:42</span><span class="ext">↗</span></span></a>
 <span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/GP5FXCHbd2Z5Rsb50lmx8A" data-title="SSD存储成为AI性能的新前沿"
                 data-source="SSDFans" data-time="11-26 08:42"
                 data-date="2026-11-26" aria-pressed="false" aria-label="收藏">☆</button>
@@ -568,7 +573,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/t8r81VPgWC1C73Z-8vNcSw" target="_blank" rel="noopener noreferrer">SSD科普四十八：FW内部按 4KB 映射，为什么还支持 512B？</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/t8r81VPgWC1C73Z-8vNcSw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">磊的收发室<span class="when">11-25 23:40</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>磊的收发室<span class="when">11-25 23:40</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/t8r81VPgWC1C73Z-8vNcSw" data-title="SSD科普四十八：FW内部按 4KB 映射，为什么还支持 512B？"
                 data-source="磊的收发室" data-time="11-25 23:40"
                 data-date="2026-11-25" aria-pressed="false" aria-label="收藏">☆</button>
@@ -608,7 +613,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/9_EBqEHoRQwOJy97lhw6kw" target="_blank" rel="noopener noreferrer">集邦：2027年NAND供需反转，价格转跌13%</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/9_EBqEHoRQwOJy97lhw6kw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">芯通社<span class="when">11-25 14:17</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>芯通社<span class="when">11-25 14:17</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/9_EBqEHoRQwOJy97lhw6kw" data-title="集邦：2027年NAND供需反转，价格转跌13%"
                 data-source="芯通社" data-time="11-25 14:17"
                 data-date="2026-11-25" aria-pressed="false" aria-label="收藏">☆</button>
@@ -697,7 +702,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" target="_blank" rel="noopener noreferrer">【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">全球半导体观察<span class="when">11-22 12:44</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>全球半导体观察<span class="when">11-22 12:44</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/_r_Afjv3bYT7fI0duyct5Q" data-title="【一周热点】MTS2027讲者阵容公布；NAND合约价预测；667亿12英寸晶圆厂动工"
                 data-source="全球半导体观察" data-time="11-22 12:44"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
@@ -717,7 +722,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/UnTdyrYce4xoI-erNdNflw" target="_blank" rel="noopener noreferrer">闪存价格开始跌了～</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/UnTdyrYce4xoI-erNdNflw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">存储随笔<span class="when">11-22 08:16</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>存储随笔<span class="when">11-22 08:16</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span><span class="tag">供应链</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/UnTdyrYce4xoI-erNdNflw" data-title="闪存价格开始跌了～"
                 data-source="存储随笔" data-time="11-22 08:16"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
@@ -727,7 +732,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" target="_blank" rel="noopener noreferrer">NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">闪德资讯<span class="when">11-22 07:31</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>闪德资讯<span class="when">11-22 07:31</span><span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">AI</span><span class="tag">价格</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/uxMdgS2PyfzJUS77uNlBZg" data-title="NAND明年看跌5%–10%，DRAM、HBM继续看涨；两大机构最新存储市场研判；11月DDR5价格再涨8.6%"
                 data-source="闪德资讯" data-time="11-22 07:31"
                 data-date="2026-11-22" aria-pressed="false" aria-label="收藏">☆</button>
@@ -760,7 +765,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer">群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">斯托瑞吉<span class="when">11-21 09:48</span><span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>斯托瑞吉<span class="when">11-21 09:48</span><span class="ext">↗</span></span></a>
 <span class="tag">主控</span><span class="tag">颗粒</span><span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/rAvbvUURxDMbB1gs8V3Cvw" data-title="群联公布内置 NPU、搭载 64GB/130 GB/s 内存的 SSD，同时推出全新 pSLC + QLC 混合介质设计"
                 data-source="斯托瑞吉" data-time="11-21 09:48"
                 data-date="2026-11-21" aria-pressed="false" aria-label="收藏">☆</button>
@@ -872,7 +877,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/wLhB4qA6d7f3okqdkk1llQ" target="_blank" rel="noopener noreferrer">AI驱动存储升级，芯录微依托二十年测试经验，为企业级客户提供LPDDR、DDR、Nand、UFS、SSD等存储产品提供测试服务</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/wLhB4qA6d7f3okqdkk1llQ" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">闪德资讯<span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>闪德资讯<span class="ext">↗</span></span></a>
 <span class="tag">颗粒</span><span class="tag">产品</span><span class="tag">AI</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/wLhB4qA6d7f3okqdkk1llQ" data-title="AI驱动存储升级，芯录微依托二十年测试经验，为企业级客户提供LPDDR、DDR、Nand、UFS、SSD等存储产品提供测试服务"
                 data-source="闪德资讯" data-time=""
                 data-date="日期未知" aria-pressed="false" aria-label="收藏">☆</button>
@@ -882,7 +887,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/DxjYF6AWP7loZS7k8Izc0A" target="_blank" rel="noopener noreferrer">群联电子 CFMS 2026 闪存峰会</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/DxjYF6AWP7loZS7k8Izc0A" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">群联电子<span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>群联电子<span class="ext">↗</span></span></a>
 <span class="tag">主控</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/DxjYF6AWP7loZS7k8Izc0A" data-title="群联电子 CFMS 2026 闪存峰会"
                 data-source="群联电子" data-time=""
                 data-date="日期未知" aria-pressed="false" aria-label="收藏">☆</button>
@@ -892,7 +897,7 @@
       <p class="pt-text"><a class="title" href="https://mp.weixin.qq.com/s/djbZRjldGKQ603BQEGzCOg" target="_blank" rel="noopener noreferrer">2026年11月份主流消费级固态硬盘（Client SSD）介绍</a></p>
       <p class="meta">
         <a class="src" href="https://mp.weixin.qq.com/s/djbZRjldGKQ603BQEGzCOg" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">固态硬盘吧<span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl"><span class="wx">公众号</span>固态硬盘吧<span class="ext">↗</span></span></a>
 <span class="tag">产品</span>        <button class="fav" data-url="https://mp.weixin.qq.com/s/djbZRjldGKQ603BQEGzCOg" data-title="2026年11月份主流消费级固态硬盘（Client SSD）介绍"
                 data-source="固态硬盘吧" data-time=""
                 data-date="日期未知" aria-pressed="false" aria-label="收藏">☆</button>
@@ -903,7 +908,7 @@
 
   <footer class="foot">
     <span>65 条素材 / 20 个源</span>
-    <span>2026-11-28 11:38 生成</span>
+    <span>2026-11-28 19:12 生成</span>
   </footer>
 </div>
 <nav class="nav"><a href="./index.html"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M7 9h7M7 13h10M7 17h5"/></svg><span>今日</span></a><a href="./all.html" class="on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>全部</span></a><a href="./archive.html"><svg viewBox="0 0 24 24"><path d="M4 7h16v3H4z"/><path d="M5 10v9h14v-9"/><path d="M10 14h4"/></svg><span>归档</span></a><a href="./fav.html"><svg viewBox="0 0 24 24"><path d="M12 5.5l2.1 4.3 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7L4.9 10.5l4.7-.7z"/></svg><span>收藏</span></a></nav>

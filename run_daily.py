@@ -85,6 +85,7 @@ def group_by_day(items, date_str: str) -> list[dict]:
                 # 只放绝对地址；认不出来的（比如历史坏数据）当"没有链接"处理
                 "url": it.url if (it.url or "").startswith("http") else "",
                 "source": it.source,
+                "wx": getattr(it, "source_type", "") == "wechat",
                 "time": report_mod.local_time(it.published, date_str),
                 "cats": list(it.categories or []),
             } for it in rows],

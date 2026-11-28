@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SSD 情报日报</title>
 <meta name="theme-color" content="#2457F5">
-<meta name="built" content="2026-11-28 11:38">
+<meta name="built" content="2026-11-28 19:12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SSD 日报">
@@ -76,6 +76,11 @@
   /* 来源 + 发布时间 + ↗ 合成一个链接：读者点它到原网页。
      宽度占满一行，标签和 ☆ 落到第二行，避免在窄屏上挤成一团。 */
   .meta .src,.meta .nosrc{flex-basis:100%}
+  /* 公众号条目：一个显眼的小标记，避免和英文站点混在一起看不出差别 */
+  .wx{display:inline-block;margin-right:6px;padding:1px 6px;border-radius:4px;
+      background:rgba(15,143,142,.13);color:var(--accent-2-ink);
+      font-size:13px;line-height:1.5;font-weight:600;letter-spacing:.02em}
+  .wxline{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
   .meta .src{color:var(--accent);text-decoration:none;border:0;
              display:flex;align-items:baseline;gap:6px;
              padding:9px 0 8px;min-height:34px}
@@ -90,7 +95,7 @@
   .tag{font-size:var(--t-xs);padding:2px 8px;border-radius:6px;background:var(--chip);
        color:var(--muted);white-space:nowrap}
   /* 「全部」页：纯清单，标题本身就是原文链接 */
-  .lead{margin:14px 0 0;font-size:14.5px;line-height:1.78;color:var(--muted);
+  .lead{margin:14px 0 0;font-size:14px;line-height:1.78;color:var(--muted);
         border-left:3px solid var(--accent-2);padding:2px 0 2px 11px}
   .warn{margin:14px 0 0;padding:11px 13px;border-radius:var(--radius);
         background:rgba(214,88,58,.09);color:#A33C24;font-size:14px;line-height:1.65;
@@ -98,7 +103,7 @@
   .srcs{margin-top:14px}
   .srclist{list-style:none;margin:6px 0 0;padding:0}
   .srclist li{display:flex;align-items:baseline;gap:10px;padding:7px 0;
-              border-bottom:1px solid var(--line);font-size:13.5px}
+              border-bottom:1px solid var(--line);font-size:13px}
   .srclist li:last-child{border-bottom:none}
   .srclist .sname{flex:1;color:var(--ink)}
   .srclist .sday{color:var(--muted);font-variant-numeric:tabular-nums}
@@ -183,7 +188,7 @@
                bottom:calc(var(--nav-h,56px) + var(--safe,0px) + 14px);
                z-index:55;width:46px;height:46px;border-radius:50%;
                border:1px solid var(--line);background:var(--card);
-               color:var(--accent);font-size:19px;line-height:1;
+               color:var(--accent);font-size:17px;line-height:1;
                box-shadow:0 2px 8px rgba(15,23,42,.16);
                display:flex;align-items:center;justify-content:center;
                cursor:pointer;-webkit-tap-highlight-color:transparent}

@@ -10,6 +10,10 @@
     {% if r.lead %}<p class="lead">{{ r.lead }}</p>{% endif %}
   </header>
 
+  {% if r.wx_stats %}
+  <p class="wxline">公众号素材 {{ r.wx_stats.total }} 条（带发布时间 {{ r.wx_stats.with_time }} 条）；今天新发 {{ r.wx_stats.today }} 条{% if r.wx_stats.latest %}，最新一条 {{ r.wx_stats.latest }}{% endif %}</p>
+  {% endif %}
+
   {% if r.warn %}
   <div class="warn">{{ r.warn }}</div>
   {% endif %}
@@ -22,7 +26,7 @@
       <p class="meta">
         {% if p.url %}
         <a class="src" href="{{ p.url }}" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">{% if p.wx %}<span class="wx">公众号</span>{% endif %}{{ p.source }}{% if p.time %}<span class="when">{{ p.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
         {% else %}
         <span class="nosrc" title="原文链接暂时取不到，稍后会自动补上">{{ p.source }}{% if p.time %} · {{ p.time }}{% endif %}</span>
         {% endif %}

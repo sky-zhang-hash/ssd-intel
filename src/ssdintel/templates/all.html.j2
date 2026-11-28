@@ -20,7 +20,7 @@
       <p class="pt-text"><a class="title" href="{{ it.url }}" target="_blank" rel="noopener noreferrer">{{ it.title }}</a></p>
       <p class="meta">
         <a class="src" href="{{ it.url }}" target="_blank" rel="noopener noreferrer"
-           title="打开原文"><span class="lbl">{{ it.source }}{% if it.time %}<span class="when">{{ it.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
+           title="打开原文"><span class="lbl">{% if it.wx %}<span class="wx">公众号</span>{% endif %}{{ it.source }}{% if it.time %}<span class="when">{{ it.time }}</span>{% endif %}<span class="ext">↗</span></span></a>
         {% for c in it.cats %}<span class="tag">{{ c }}</span>{% endfor %}
         <button class="fav" data-url="{{ it.url }}" data-title="{{ it.title }}"
                 data-source="{{ it.source }}" data-time="{{ it.time }}"

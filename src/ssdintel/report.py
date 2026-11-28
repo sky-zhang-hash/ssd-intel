@@ -175,6 +175,7 @@ def llm_report(items: list[Item], date: str, api_key: str | None = None,
                 "url": src.url,
                 "time": local_time(src.published, date),
                 "cats": src.categories,
+                "wx": src.source_type == "wechat",
                 "pub": src.published or "",
             })
         if points:
@@ -229,7 +230,8 @@ def digest_report(items: list[Item], date: str, per_section: int = 6) -> dict:
         points = [
             {"text": it.title, "impact": "", "source": it.source,
              "url": it.url, "time": local_time(it.published, date),
-             "cats": it.categories, "pub": it.published or ""}
+             "cats": it.categories, "wx": it.source_type == "wechat",
+            "pub": it.published or ""}
             for it in sorted(group_items, key=lambda x: x.published or "",
                              reverse=True)[:per_section]
         ]
@@ -256,6 +258,17 @@ def digest_report(items: list[Item], date: str, per_section: int = 6) -> dict:
     }
 
 
+def local_day_of(iso: str | None) -> str:
+    """UTC ISO -> 北京时间的 'YYYY-MM-DD'（解析失败返回空串）。"""
+    if not iso:
+        return ""
+    try:
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+        return dt.astimezone(CST).strftime("%Y-%m-%d")
+    except ValueError:
+        return ""
+
+
 def build(items: list[Item], date: str | None = None, api_key: str | None = None) -> dict:
     date = date or datetime.now().strftime("%Y-%m-%d")
     report = llm_report(items, date, api_key=api_key)
@@ -276,4 +289,14 @@ def build(items: list[Item], date: str | None = None, api_key: str | None = None
         p.pop("pub", None)
     report["flat"] = flat
     report["sections"] = order_by_time(sections)
+
+    # 公众号现状：用户最容易误会的一块（今天到底有没有新的？）
+    wx = [it for it in items if getattr(it, "source_type", "") == "wechat"]
+    wx_dated = [it for it in wx if it.published]
+    report["wx_stats"] = {
+        "total": len(wx),
+        "with_time": len(wx_dated),
+        "today": len([it for it in wx_dated if local_day_of(it.published) == date]),
+        "latest": local_time(max((it.published for it in wx_dated), default=""), date),
+    }
     return report
