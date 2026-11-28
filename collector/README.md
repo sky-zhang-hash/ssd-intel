@@ -120,3 +120,21 @@ print(requests.get("https://weread.qq.com/web/mp/articles",
 - 换了机器、重启后浏览器没起来
 
 判断"watcher 在不在跑"只认一件事：`collector/data/keeper.log` 的**最后一行时间戳是不是 15 分钟以内**。
+
+## 公众号停在旧状态：先杀进程再起 watcher（2026-11-28 实测）
+
+`keeper.log` 每 15 分钟出现这几行、时间戳一直在走，说明**旧的 watcher 进程还活着**，但它的浏览器上下文早就没了：
+
+```
+[watch] 打开首页超时：page.goto: Target page, context or browser has been closed
+[watch] shelf errCode=-2010 用户不存在
+[watch] 登录态失效，需要重新扫码：node keeper.mjs login
+```
+
+这时重新扫码也没用——扫码只会更新磁盘上的 `profile/` 与 `cookie.txt`，**跑着的旧进程不会去读它**。必须：
+
+1. 任务管理器（Ctrl+Shift+Esc）→「详细信息」→ 找到 `node.exe` → 结束任务（有多个就都结束）
+2. 双击 `run-watch.cmd`，窗口最小化，**别关**
+3. 看 `data/keeper.log` 最新一行，应在 1 分钟内出现 `[watch] #1 登录 OK，书架 20 本，其中公众号 20 个`
+
+判定是否恢复：日志里出现新的 `#N` 轮次且书架 20 本；再等一轮看 `/web/mp/articles` 是否解除 -2041（未解除时每号仍只有最新一篇）。
